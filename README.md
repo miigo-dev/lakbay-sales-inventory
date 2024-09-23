@@ -44,7 +44,7 @@ Before you begin, ensure you have met the following requirements:
 
     module.exports = {
         query: (text, params) => pool.query(text, params)
-    }
+    };
     ```
 
 2. Create a `.env` file in the `server` directory and add your environment variables:
@@ -60,5 +60,15 @@ Before you begin, ensure you have met the following requirements:
     cd server
     npm start
     ```
+
+2. Start the frontend development server:
+    ```sh
+    cd ../client
+    npm start
+    ```
+
+3. Open your browser and navigate to `http://localhost:3000`.
+
+## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more information.
