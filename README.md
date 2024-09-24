@@ -47,7 +47,7 @@ Before you begin, ensure you have met the following requirements:
     };
     ```
 
-2. Create a `.env` file in the `server` directory and add your environment variables:
+2. Create or update the `.env` file in the `server` directory and add your environment variables:
     ```env
     PORT=5000
     SECRET=your_jwt_secret
@@ -58,13 +58,13 @@ Before you begin, ensure you have met the following requirements:
 1. Start the backend server:
     ```sh
     cd server
-    npm start
+    nodemon server.js
     ```
 
 2. Start the frontend development server:
     ```sh
-    cd ../client
-    npm start
+    cd ../client/src
+    npm start app.js 
     ```
 
 3. Open your browser and navigate to `http://localhost:3000`.
