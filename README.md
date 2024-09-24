@@ -13,7 +13,7 @@ Before you begin, ensure you have met the following requirements:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-username/react-sales-inventory.git
+    git clone https://github.com/miigo-dev/react-sales-inventory.git
     cd react-sales-inventory
     ```
 
@@ -25,7 +25,7 @@ Before you begin, ensure you have met the following requirements:
 
 3. Install the frontend dependencies:
     ```sh
-    cd ../client
+    cd client
     npm install
     ```
 
@@ -41,10 +41,6 @@ Before you begin, ensure you have met the following requirements:
         password: 'your-password',
         port: 5432,
     });
-
-    module.exports = {
-        query: (text, params) => pool.query(text, params)
-    };
     ```
 
 2. Create or update the `.env` file in the `server` directory and add your environment variables:
@@ -58,13 +54,13 @@ Before you begin, ensure you have met the following requirements:
 1. Start the backend server:
     ```sh
     cd server
-    nodemon server.js
+    npm run dev
     ```
 
 2. Start the frontend development server:
     ```sh
-    cd ../client/src
-    npm start app.js 
+    cd client
+    npm start
     ```
 
 3. Open your browser and navigate to `http://localhost:3000`.
