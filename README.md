@@ -43,7 +43,7 @@ Before you begin, ensure you have met the following requirements:
     });
     ```
 
-2. Create or update the `.env` file in the `server` directory and add your environment variables:
+2. Create a `.env` file in the `server` directory and add your environment variables:
     ```env
     PORT = 8080
     SECRET = supersecret
