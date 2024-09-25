@@ -54,7 +54,7 @@ const Dashboard = () => {
       <img src="envelope_icon.png"/>
       </a>
       <div class="sidebar">
-        <a href="#dashboard">Dashboard
+        <a href="/dashboard">Dashboard
         <img src="envelope_icon.png"/>
         </a>
         <a href="#inventory">Inventory
