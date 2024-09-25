@@ -16,10 +16,10 @@ const login = () => {
 
                 <form>
                     <div className='form_input'>
-                        <label htmlFor='email' className='email_icon'>
+                        <label htmlFor='username' className='username'>
                         <img src="envelope_icon.png" alt="email icon" className="input_icon"/>
                         </label>  
-                        <input type='email' id='email' placeholder='Email Address' required />
+                        <input type='username' id='username' placeholder='Username' required />
                     </div>
 
                     <div className='form_input'>
