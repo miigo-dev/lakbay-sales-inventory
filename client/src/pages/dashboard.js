@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { fetchProtectedInfo, onLogout } from '../api/auth'
 import { unauthenticateUser } from '../redux/slices/authSlice'
+import '../css/dashboard.css'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
