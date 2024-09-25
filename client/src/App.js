@@ -11,15 +11,14 @@ import Dashboard from './pages/dashboard'
 import Login from './pages/login'
 
 const PrivateRoutes = () => {
-  const isAuthenticated = false
+  const isAuthenticated = true
   return <>{isAuthenticated ? <Outlet /> : <Navigate to='/login' />}</>
 }
 
 const RestrictedRoutes = () => {
-  const isAuthenticated = false
+  const isAuthenticated = true
   return <>{!isAuthenticated ? <Outlet /> : <Navigate to='/dashboard' />}</>
 }
-
 function App() {
   return (
     <BrowserRouter>
