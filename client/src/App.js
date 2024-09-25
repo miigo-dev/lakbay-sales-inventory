@@ -12,29 +12,29 @@ import Login from './pages/login'
 import { useSelector } from 'react-redux'
 
 const PrivateRoutes = () => {
-  const authState = useSelector((state) => state.auth)
-  console.log(authState)
-  return <>{authState ? <Outlet /> : <Navigate to='/login' />}</>
+  const { isAuth } = useSelector((state) => state.auth)
+
+  return <>{isAuth ? <Outlet /> : <Navigate to='/login' />}</>
 }
 
 const RestrictedRoutes = () => {
-  const authState = useSelector((state) => state.auth)
-  console.log(authState)
-  return <>{!authState ? <Outlet /> : <Navigate to='/dashboard' />}</>
+  const { isAuth } = useSelector((state) => state.auth)
+
+  return <>{!isAuth ? <Outlet /> : <Navigate to='/dashboard' />}</>
 }
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
 
         <Route element={<PrivateRoutes />}>
-        <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/dashboard' element={<Dashboard />} />
         </Route>
 
         <Route element={<RestrictedRoutes />}>
-        <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<Login />} />
         </Route>
       </Routes>
     </BrowserRouter>
