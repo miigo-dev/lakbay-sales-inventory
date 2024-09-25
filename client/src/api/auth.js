@@ -3,9 +3,7 @@ axios.defaults.withCredentials = true
 
 export async function onRegistration(registrationData) {
   return await axios.post(
-    'http://localhost:8080/api/register',
-    registrationData
-  )
+    'http://localhost:8080/api/register', registrationData)
 }
 
 export async function onLogin(loginData) {
