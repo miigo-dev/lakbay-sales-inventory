@@ -45,8 +45,11 @@ Before you begin, ensure you have met the following requirements:
 
 2. Create or update the `.env` file in the `server` directory and add your environment variables:
     ```env
-    PORT=5000
-    SECRET=your_jwt_secret
+    PORT = 8080
+    SECRET = supersecret
+    
+    CLIENT_URL = http://localhost:3000
+    SERVER_URL = http://localhost:8080
     ```
 
 ## Running the Project
