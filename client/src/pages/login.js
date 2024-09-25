@@ -1,8 +1,17 @@
 import React from 'react'
+import { useState } from 'react';
 import '../css/login.css';
 
-
 const login = () => {
+
+    const [values, setValues] = useState({
+        username: '',
+        password: ''
+    })
+
+    const [error, setError] = useState(false);
+    const [success, setSuccess] = React.useState(false);
+    
 
     return (
         <div className='login_container'>
