@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import Home from './pages/home'
 import Dashboard from './pages/dashboard'
+import Admin from './pages/admin_d'
 import Login from './pages/login'
 import Register from'./pages/register'
 import { useSelector } from 'react-redux'
@@ -25,9 +26,13 @@ const RestrictedRoutes = () => {
 const App = () => {
   return (
     <BrowserRouter>
+    <sidebar/>
       <Routes>
       <Route path='/' element={<Navigate to='/login' />} />
 
+        <Route element={<PrivateRoutes />}>
+          <Route path='/admin_d' element={<Admin />} />
+        </Route>
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
         </Route>
@@ -37,6 +42,7 @@ const App = () => {
         </Route>
       </Routes>
     </BrowserRouter>
+    
   )
 }
 
