@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { authenticateUser } from '../redux/slices/authSlice';
 import '../css/login.css';
 import logo from '../assets/lakbaylogo50px.png'
-import email_icon from '../assets/email_icon25px.png' ;
+import profile_icon from '../assets/profile_icon25px.png' ;
 import password_icon from '../assets/pass_icon25px.png';
 
 const Login = () => {
@@ -47,7 +47,7 @@ const Login = () => {
                 <form onSubmit={(e) => onSubmit(e)}>
                     <div className='form_input'>
                         <label htmlFor='username' className='username'>
-                        <img src={email_icon} alt="email icon" className="input_icon"/>
+                        <img src={profile_icon} alt="email icon" className="input_icon"/>
                         </label>  
                         <input
                         onChange={(e) => onChange(e)}
