@@ -1,10 +1,12 @@
 import React from 'react'
 import { useState } from 'react';
 import { onLogin } from '../api/auth';
-import '../css/login.css';
 import { useDispatch } from 'react-redux';
 import { authenticateUser } from '../redux/slices/authSlice';
-
+import '../css/login.css';
+import logo from '../assets/lakbaylogo50px.png'
+import email_icon from '../assets/email_icon25px.png' ;
+import password_icon from '../assets/pass_icon25px.png';
 
 const Login = () => {
     const [values, setValues] = useState({
@@ -36,7 +38,7 @@ const Login = () => {
         <div className='login_container'>
             <div className='login_box'>
                 <div className='logo_container'>
-                    <img src='lakbaylogo.png' alt='Lakbay Logo' className='logo'/>
+                    <img src={logo} alt='Lakbay Logo' className='logo'/>
                 </div>
 
             <h2>Lakbay Kape and Kain</h2>
@@ -45,7 +47,7 @@ const Login = () => {
                 <form onSubmit={(e) => onSubmit(e)}>
                     <div className='form_input'>
                         <label htmlFor='username' className='username'>
-                        <img src="envelope_icon.png" alt="email icon" className="input_icon"/>
+                        <img src={email_icon} alt="email icon" className="input_icon"/>
                         </label>  
                         <input
                         onChange={(e) => onChange(e)}
@@ -60,7 +62,7 @@ const Login = () => {
 
                     <div className='form_input'>
                         <label htmlFor='password' className='password'>
-                        <img src="password_icon.png" alt="password icon" className="input_icon"/>
+                        <img src={password_icon} alt="password icon" className="input_icon"/>
                         </label>  
                         <input
                         onChange={(e) => onChange(e)}
