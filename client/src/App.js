@@ -10,6 +10,8 @@ import Dashboard from './pages/dashboard'
 import Login from './pages/login'
 import Register from'./pages/register'
 import { useSelector } from 'react-redux'
+import Inventory_Dashboard from './pages/inventory_personel_dashboard'
+
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth)
@@ -29,6 +31,8 @@ const App = () => {
 
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/inventory_dashboard' element={<Inventory_Dashboard />} />
+
         </Route>
         <Route element={<RestrictedRoutes />}>
         <Route path='/login' element={<Login />} />
