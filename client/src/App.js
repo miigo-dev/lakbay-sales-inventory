@@ -6,7 +6,6 @@ import {
   Route,
   Outlet
 } from 'react-router-dom'
-import Home from './pages/home'
 import Dashboard from './pages/dashboard'
 import Admin from './pages/admin_d'
 import Login from './pages/login'

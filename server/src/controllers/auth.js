@@ -23,6 +23,23 @@ exports.register = async (req, res) => {
     }
 }
 
+exports.getUser = async (req, res) => {
+    try {
+        const users = await db.query('SELECT * FROM users')
+
+        return res.status(200).json({
+            success: true,
+            data: users.rows
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            error: error.message
+        })
+    }
+}
+
 exports.login = async (req, res) => {
     let user = req.user
 
