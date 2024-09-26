@@ -37,7 +37,25 @@ const login = check('username').custom(async (value, { req }) => {
     req.user = user.rows[0]
 })
 
+const getUser = async (req, res) => {
+    try {
+        const users = await db.query('SELECT * FROM users')
+
+        return res.status(200).json({
+            success: true,
+            data: users.rows
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            error: error.message
+        })
+    }
+}
+
 module.exports = {
     registerValidation: [username, password, userExists],
-    loginValidation: [login]
+    loginValidation: [login],
+    getUser: [getUser]
 }
