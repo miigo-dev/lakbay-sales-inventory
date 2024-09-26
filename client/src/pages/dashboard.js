@@ -50,7 +50,7 @@ const Dashboard = () => {
       </button>
 
       <div class="header">
-      <a href="#home">Lakbay
+      <a href="/">Lakbay
       <img src="envelope_icon.png"/>
       </a>
       <div class="sidebar">
