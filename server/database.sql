@@ -6,6 +6,11 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE Roles (
+    RoleID SERIAL PRIMARY KEY,
+    RoleName VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE UserInfo (
     UserID INT REFERENCES Users(UserID),
     FirstName VARCHAR(100),
@@ -82,11 +87,6 @@ CREATE TABLE Logs (
 CREATE TABLE Permissions (
     PermissionID SERIAL PRIMARY KEY,
     PermissionName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE Roles (
-    RoleID SERIAL PRIMARY KEY,
-    RoleName VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE RolePermissions (

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { fetchProtectedInfo, onLogout } from '../api/auth'
 import { unauthenticateUser } from '../redux/slices/authSlice'
 import '../css/dashboard.css'
+import logo from '../assets/lakbaylogo50px.png'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -49,11 +50,12 @@ const Dashboard = () => {
         Logout
       </button>
 
-      <div class="header">
-      <a href="/">Lakbay
-      <img src="envelope_icon.png"/>
+      <div className="header">
+      <a href="/">Lakbay 
+      <img src={logo} alt="Lakbay Logo" />
       </a>
-      <div class="sidebar">
+
+      <div className="sidebar">
         <a href="/dashboard">Dashboard
         <img src="envelope_icon.png"/>
         </a>
