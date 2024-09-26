@@ -31,25 +31,19 @@ Before you begin, ensure you have met the following requirements:
 
 ## Configuration
 
-1. Configure the PostgreSQL connection in `server/index.js`:
-    ```javascript
-    const { Pool } = require('pg');
-    const pool = new Pool({
-        user: 'your-username',
-        host: 'localhost',
-        database: 'your-database',
-        password: 'your-password',
-        port: 5432,
-    });
-    ```
-
-2. Create or update the `.env` file in the `server` directory and add your environment variables:
+1. Create a `.env` file in the `server` directory and add your environment variables:
     ```env
     PORT = 8080
     SECRET = supersecret
     
     CLIENT_URL = http://localhost:3000
     SERVER_URL = http://localhost:8080
+
+    DB_USER = user
+    DB_HOST = host
+    DB_DATABASE = db
+    DB_PASSWORD = password
+    DB_PORT = port
     ```
 
 ## Running the Project
