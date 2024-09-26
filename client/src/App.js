@@ -36,13 +36,10 @@ const App = () => {
 
         <Route element={<RestrictedRoutes />}>
         <Route path='/login' element={<Login />} />
-
         <Route path='/register' element={<Register />} />
+        <Route path='/login' element={<Login />} />
 
-          <Route path='/login' element={<Login />} />
         </Route>
-
-        
       </Routes>
     </BrowserRouter>
   )
