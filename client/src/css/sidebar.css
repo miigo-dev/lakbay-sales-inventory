@@ -1,3 +1,85 @@
-.sidebar{
-    
+.sidebar {
+    width: 310px;
+    height: 100vh;
+    background-color: #ffffff; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-weight: 100;
+    font-size: large;
+    display: flex;
+    flex-direction: column;
+}
+
+.header_sidebar {
+    text-align: center;
+    padding: 20px 0; 
+    background-color: #ffffff;
+}
+
+.logo {
+    width: 80px; 
+    height: auto;
+    margin-bottom: 10px; 
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: black;
+    padding: 15px 40px; 
+    margin: 10px 0; 
+    text-decoration: none;
+}
+
+.sidebar a img {
+    width: 20px; 
+    height: 20px;
+    margin-right: 15px; 
+}
+
+.sidebar a.active {
+    background-color: #C2A790;
+    color: white;
+    border-radius: 10px;
+}
+
+.sidebar a:hover {
+    background-color: #C2A790;
+    color: white;
+    border-radius: 10px;
+}
+
+.bot_sidebar {
+    margin-top: 750px;
+    padding-top: 100px;
+}
+
+.content {
+    margin-left: 320px; 
+    padding: 20px;
+    background-color: #f1f1f1;
+    min-height: 100vh;
+}
+
+@media screen and (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .sidebar a {
+        float: left;
+    }
+    .content {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .sidebar a {
+        text-align: center;
+        float: none;
+    }
 }

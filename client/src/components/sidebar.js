@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import '../css/sidebar.css'
 
 const Sidebar = () => {
   const { isAuth } = useSelector((state) => state.auth);
@@ -10,41 +11,54 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
+
+      <div className="header_sidebar">
+        <img src="path/to/logo.png" alt="Logo" className="logo" />
+        <h2>Lakbay Kape</h2>
+      </div>
+
       <NavLink to="/dashboard" activeClassName="active">
-        Dashboard
-        <img src="" alt="Dashboard icon" />
+      <img src="" alt="Dashboard icon" />
+        Dashboard    
       </NavLink>
+
       <NavLink to="/orders" activeClassName="active">
+      <img src="../assets/order_basketicon24px.png" alt="Orders icon" />
         Orders
-        <img src=".png" alt="Orders icon" />
       </NavLink>
+
       <NavLink to="/inventory" activeClassName="active">
+      <img src="" alt="Inventory icon" />
         Inventory
-        <img src="" alt="Inventory icon" />
       </NavLink>
+
       <NavLink to="/sales" activeClassName="active">
-        Sales
-        <img src="" alt="Sales icon" />
+      <img src="" alt="Sales icon" />
+        Sales      
       </NavLink>
+
       <NavLink to="/reports" activeClassName="active">
-        Reports
-        <img src="" alt="Reports icon" />
+      <img src="" alt="Reports icon" />
+        Reports    
       </NavLink>
+
       <NavLink to="/users" activeClassName="active">
-        Users
-        <img src="" alt="Users icon" />
+      <img src="" alt="Users icon" />
+        Users   
       </NavLink>
 
       <div className="bot_sidebar">
         <NavLink to="/settings" activeClassName="active">
+        <img src="" alt="Settings icon" />
           Settings
-          <img src="" alt="Settings icon" />
         </NavLink>
+
         <NavLink to="/logout" activeClassName="active">
+        <img src="" alt="Logout icon" />
           Logout
-          <img src="" alt="Logout icon" />
         </NavLink>
       </div>
+
     </div>
   )
 }
