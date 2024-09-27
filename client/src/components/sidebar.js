@@ -8,7 +8,7 @@ import order_icon from '../assets/order_icon_dark.png'
 import inventory_icon from '../assets/folder_icon_dark.png'
 
 import reports_icon from '../assets/report_icon_dark.png'
-import users_icon from '../assets/profile_icon25px.png'
+import users_icon from '../assets/users_icon_dark.png'
 import settings_icon from '../assets/settings_icon_dark.png'
 
 const Sidebar = () => {
