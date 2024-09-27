@@ -6,14 +6,34 @@ import {
   Route,
   Outlet
 } from 'react-router-dom'
-import Dashboard from './pages/dashboard'
 import Login from './pages/login'
 import Register from'./pages/register'
+import Dashboard from './pages/dashboard'
+import Orders from './pages/orders'
+import Inventory from './pages/inventory';
+import Sales from './pages/sales';
+import Reports from './pages/reports';
+import Users from './pages/users';
+import Settings from './pages/settings';
 import { useSelector } from 'react-redux'
+import Sidebar from './components/sidebar'
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth)
-  return <>{isAuth ? <Outlet /> : <Navigate to='/login' />}</>
+  return (
+    <>
+      {isAuth ? (
+        <div className="app-layout">
+          <Sidebar />
+          <div className="main-content">
+            <Outlet />
+          </div>
+        </div>
+      ) : (
+        <Navigate to='/login' />
+      )}
+    </>
+  );
 }
 
 const RestrictedRoutes = () => {
@@ -29,6 +49,13 @@ const App = () => {
 
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/orders' element={<Orders />} />
+          <Route path='/inventory' element={<Inventory />} />
+          <Route path='/sales' element={<Sales />} />
+          <Route path='/reports' element={<Reports />} />
+          <Route path='/users' element={<Users />} />
+          <Route path='/settings' element={<Settings />} />
+          
         </Route>
         <Route element={<RestrictedRoutes />}>
         <Route path='/login' element={<Login />} />
