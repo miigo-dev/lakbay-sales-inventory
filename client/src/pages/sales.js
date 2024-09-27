@@ -1,14 +1,9 @@
-import React from 'react'
-import { connect } from 'react-redux'
-
-export const sales = (props) => {
+const Sales = () => {
   return (
-    <div>sales</div>
+    <div>
+        <h1>Sales</h1>
+    </div>
   )
 }
 
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(sales)
+export default Sales

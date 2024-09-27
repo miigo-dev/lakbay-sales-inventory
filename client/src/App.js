@@ -6,6 +6,8 @@ import {
   Route,
   Outlet
 } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+
 import Dashboard from './pages/dashboard'
 import Login from './pages/login'
 import Register from'./pages/register'
@@ -15,7 +17,7 @@ import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';
 import Settings from './pages/settings';
-import { useSelector } from 'react-redux'
+
 import Sidebar from './components/sidebar'
 
 

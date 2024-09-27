@@ -1,14 +1,9 @@
-import React from 'react'
-import { connect } from 'react-redux'
-
-export const settings = (props) => {
+const Settings = () => {
   return (
-    <div>settings</div>
+    <div>
+        <h1>Settings</h1>
+    </div>
   )
 }
 
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(settings)
+export default Settings

@@ -1,14 +1,9 @@
-import React from 'react'
-import { connect } from 'react-redux'
-
-export const users = (props) => {
+const Users = () => {
   return (
-    <div>users</div>
+    <div>
+        <h1>Users</h1>
+    </div>
   )
 }
 
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(users)
+export default Users

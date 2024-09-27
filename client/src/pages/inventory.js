@@ -1,14 +1,9 @@
-import React from 'react'
-import { connect } from 'react-redux'
-
-export const inventory = (props) => {
+const Inventory = () => {
   return (
-    <div>inventory</div>
+    <div>
+        <h1>Inventory</h1>
+    </div>
   )
 }
 
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(inventory)
+export default Inventory
