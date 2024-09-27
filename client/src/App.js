@@ -10,7 +10,6 @@ import Dashboard from './pages/dashboard'
 import Admin from './pages/admin_d'
 import Login from './pages/login'
 import Register from'./pages/register'
-import Dashboard from './pages/dashboard'
 import Orders from './pages/orders'
 import Inventory from './pages/inventory';
 import Sales from './pages/sales';
