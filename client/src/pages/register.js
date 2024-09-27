@@ -1,6 +1,6 @@
 import React from 'react'
 import '../css/register.css';
-import logo from '../assets/lakbaylogo50px.png';
+import logo from '../assets/lakbay_logo50px.png';
 import user_icon from '../assets/profile_icon25px.png';
 import email_icon from '../assets/email_icon25px.png';
 import password_icon from '../assets/pass_icon25px.png';
