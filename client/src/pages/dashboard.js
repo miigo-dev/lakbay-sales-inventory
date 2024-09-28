@@ -36,7 +36,7 @@ const Dashboard = () => {
   return loading ? (
     <h1>Loading...</h1>
   ) : (
-    <div className="content">
+    <div className="container">
       <h1>Dashboard</h1>
       <h2>{protectedData}</h2>
 
