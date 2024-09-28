@@ -3,23 +3,24 @@ import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import '../css/sidebar.css';
 
-import logo from '../assets/lakbay_logo50px.png';
-import logout_icon from '../assets/logout_icon_dark.png';
+import logo from '../assets/icons/lakbay_logo50px.png';
+import logout_icon from '../assets/icons/logout_icon_dark.png';
 
-import dash_active from '../assets/dashboard_active.png';
-import order_active from '../assets/orders_active.png';
-import inventory_active from '../assets/inventory_active.png';
+import dash_active from '../assets/icons/dashboard_active.png';
+import order_active from '../assets/icons/orders_active.png';
+import inventory_active from '../assets/icons/inventory_active.png';
 // import sales_active from '../assets/sales_active.png';
-import reports_active from '../assets/reports_active.png';
-import users_active from '../assets/users_active.png';
+import reports_active from '../assets/icons/reports_active.png';
+import users_active from '../assets/icons/users_active.png';
 
-import dash_inactive from '../assets/dashboard_inactive.png';
-import order_inactive from '../assets/orders_inactive.png';
-import inventory_inactive from '../assets/inventory_inactive.png';
+import dash_inactive from '../assets/icons/dashboard_inactive.png';
+import order_inactive from '../assets/icons/orders_inactive.png';
+import inventory_inactive from '../assets/icons/inventory_inactive.png';
 // import sales_inactive from '../assets/sales_inactive.png';
-import reports_inactive from '../assets/reports_inactive.png';
-import users_inactive from '../assets/users_inactive.png';
-import settings_inactive from '../assets/settings_inactive.png';
+import reports_inactive from '../assets/icons/reports_inactive.png';
+import users_inactive from '../assets/icons/users_inactive.png';
+import settings_inactive from '../assets/icons/settings_inactive.png';
+
 
 const Sidebar = () => {
   const { isAuth } = useSelector((state) => state.auth);
