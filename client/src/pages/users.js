@@ -7,26 +7,27 @@ const Users = () => {
 
   return (
     <div className="container">
-      {/* User Details Card */}
       <div className="card">
         <div className="user-details">
           <div className="user-card">
             <img src={user_img} alt="User" />
             <h2>Isaac Mariano</h2>
           </div>
-          <div className="user-info">
+          <div className="user-info-main">
             <div className="info-row">
               <span>Email</span>
               <span>bossmalupiton@lakbaykk.live</span>
+                </div>
+                <div className="info-row">
+                  <span>User ID</span>
+                  <span>ds74nv-h438-d435-29fd-34hf8d38549</span>
+                </div>
+                <div className="info-row">
+                  <span>Role</span>
+                  <span>Owner</span>
+                </div>
             </div>
-            <div className="info-row">
-              <span>User ID</span>
-              <span>ds74nv-h438-d435-29fd-34hf8d38549</span>
-            </div>
-            <div className="info-row">
-              <span>Role</span>
-              <span>Owner</span>
-            </div>
+          <div className="user-info-extra">
             <div className="info-row">
               <span>Mobile Phone</span>
               <span>+63 1234-567-890</span>
@@ -51,9 +52,16 @@ const Users = () => {
         </div>
       </div>
 
-      {/* User Management Table */}
       <div className="user-management">
-        <h2>User Management</h2>
+        <div className="header-search">
+            <h2>User Management</h2>
+            <div className="search-bar">
+                <input type="text" placeholder="Search User" />
+                <button>Search</button>
+            </div>
+        </div>
+
+        <div className="table-responsive">
         <table>
           <thead>
             <tr>
@@ -108,7 +116,9 @@ const Users = () => {
             </tr>
           </tbody>
         </table>
+        <button className="register-button">Register New User</button>
       </div>
+    </div>
     </div>
   );
 };
