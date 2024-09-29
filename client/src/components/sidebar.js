@@ -21,13 +21,7 @@ import reports_inactive from '../assets/icons/reports_inactive.png';
 import users_inactive from '../assets/icons/users_inactive.png';
 import settings_inactive from '../assets/icons/settings_inactive.png';
 
-
 const Sidebar = () => {
-  const { isAuth } = useSelector((state) => state.auth);
-
-  if (!isAuth) {
-    return null;
-  }
 
   return (
     <div className="sidebar">

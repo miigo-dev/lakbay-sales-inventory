@@ -1,0 +1,110 @@
+/* Container settings */
+.container {
+    margin-left: 260px; /* To not overlap the sidebar */
+    height: 100vh;
+    padding: 20px;
+    background-color: white;
+    max-width: calc(100% - 260px);
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-details {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.user-card {
+    text-align: center;
+}
+
+.user-card img {
+    border-radius: 5%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.user-card h2 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.user-info {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-row span:first-child {
+    font-weight: bold;
+    color: #666;
+}
+
+.user-management {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-management h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.user-management table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-management th, .user-management td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-management th {
+    background: #f4f5fa;
+}
+
+.user-management tr:hover {
+    background: #f9f9f9;
+}
+
+.user-management button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.user-management .view-button {
+    background: #5bc0de;
+    color: white;
+}
+
+.user-management .edit-button {
+    background: #5cb85c;
+    color: white;
+}
+
+.user-management .delete-button {
+    background: #d9534f;
+    color: white;
+}
