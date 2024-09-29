@@ -7,8 +7,6 @@
     max-width: calc(100% - 260px);
 }
 
-
-/* Card settings */
 .card {
     background: #ffffff;
     border-radius: 15px;
@@ -17,14 +15,12 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* User details layout */
 .user-details {
     display: flex;
     align-items: flex-start;
     gap: 20px;
 }
 
-/* User card settings */
 .user-card {
     text-align: center;
 }
@@ -42,7 +38,6 @@
     font-weight: bold;
 }
 
-/* User information settings */
 .user-info {
     flex-grow: 1;
     display: grid;
@@ -60,7 +55,6 @@
     color: #666;
 }
 
-/* User management table settings */
 .user-management {
     background: #ffffff;
     border-radius: 15px;
