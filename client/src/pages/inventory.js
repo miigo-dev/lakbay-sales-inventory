@@ -39,6 +39,25 @@ const Inventory = () => {
     setProducts([...products, newProduct]); 
   };
 
+  
+  const deleteItem = (id, type) => {
+
+    const confirmDelete = window.confirm('Delete this item?');
+    
+    if (confirmDelete) {
+      if (type === 'item') {
+        setItems(items.filter((item) => item.id !== id));
+      } else if (type === 'product') {
+        setProducts(products.filter((product) => product.id !== id));
+      }
+      else {
+        console.log('Invalid');
+      }
+    }
+
+  }
+  
+
   return (
     <div className="inventory_container">
       <div className="searchbar">
@@ -64,16 +83,16 @@ const Inventory = () => {
             Product Status
           </button>
 
-          <button className="add_product_btn" onClick={handleAddItem} disabled={activeTab === 'Product Status'}>Add</button>
+          <button className="add_product_btn" onClick={handleAddItem} disabled={activeTab === 'Product Status'}>Add Item</button>
 
-          <button className="add_product_btn" onClick={handleAddProduct} disabled={activeTab === 'Order Status'}>
+          <button className="add_product_btn2" onClick={handleAddProduct} disabled={activeTab === 'Order Status'}>
           Add Product
         </button>
 
       </div>
 
       {activeTab === 'Order Status' ? (
-        <>
+        <div>
             <table className="order_table">
               <thead>
                 <tr>
@@ -107,12 +126,18 @@ const Inventory = () => {
                         {item.status}
                       </span>
                     </td>
+
+                    <td className='item_action_btns'>
+                      <button onClick={() => (item.id)}>View</button>
+                      <button onClick={() => (item.id)}>Edit</button>
+                      <button onClick={() => deleteItem(item.id, 'item')}>Delete</button>
+              </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-        </>
+        </div>
       ) : (
 
         <table className="order_table">
@@ -139,6 +164,14 @@ const Inventory = () => {
                   {product.status}
                 </span>
               </td>
+
+              <td className='products_action_btns'>
+              <button onClick={() => (product.id)}>View</button>
+                    <button onClick={() => (product.id)}>Edit</button>
+                    <button onClick={() => deleteItem(product.id, 'product')}>Delete</button>
+
+              </td>
+                
             </tr>
           ))}
         </tbody>
