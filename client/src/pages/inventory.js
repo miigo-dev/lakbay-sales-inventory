@@ -8,46 +8,78 @@ const Inventory = () => {
     setActiveTab(tabName);
   };
 
-  const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
+
+  const [modalOpen, setModalOpen] = useState (false);
+  const [modalData, setModalData] = useState ({
+        id: '',
+        productName: '',
+        category: '',
+        unitofMeasure: '',
+        price: '',
+        stockQuantity: '',
+        reorderLevel: '',
+        productStatus: '',
+        supplierId: ''
+      });
+
+  const [edit, setEdit] = useState(false);
+
+  const openModal = (product = null) => {
   
-
-  const handleAddItem = () => {
-    const newItem = {
-      id: `#${Math.floor(Math.random() * 10000)}`, 
-      product: 'New Product',
-      category: 'raw',
-      store: 'Store name',
-      instruction: 'Stock adjustment',
-      items: '80/100',
-      status: 'Pending',
-    };
-
-    setItems([...items, newItem]); 
+    if (product) {
+      setModalData (product);
+      setEdit (true);
+    } else {
+      setModalData ({
+        id: '',
+        productName: '',
+        category: '',
+        unitofMeasure: '',
+        price: '',
+        stockQuantity: '',
+        reorderLevel: '',
+        productStatus: '',
+        supplierId: ''
+      });
+      setEdit (false);
+    }
+    
+    setModalOpen (true);
+  };
+  
+  const closeModal = () => {
+    setModalOpen (false);
   };
 
-  const handleAddProduct = () => {
-    const newProduct = {
-      id: `#${Math.floor(Math.random() * 10000)}`,
-      category: 'Category A', 
-      quantity: 100, 
-      dateAdded: new Date().toLocaleDateString(), 
-      expiration: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      status: 'In Stock',
-    };
-
-    setProducts([...products, newProduct]); 
+  const inputChange = (e) => {
+    const { 
+      name,
+      value 
+    } = e.target;
+    setModalData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const submitForm = () => {
+
+    if (edit) {
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === modalData.id ? modalData : product
+        )
+      );
+    } else {
+      setProducts([...products, modalData]);
+    }
+    setModalOpen(false);
+  };
   
   const deleteItem = (id, type) => {
 
     const confirmDelete = window.confirm('Delete this item?');
     
     if (confirmDelete) {
-      if (type === 'item') {
-        setItems(items.filter((item) => item.id !== id));
-      } else if (type === 'product') {
+      if (type === 'product') {
         setProducts(products.filter((product) => product.id !== id));
       }
       else {
@@ -56,7 +88,6 @@ const Inventory = () => {
     }
 
   }
-  
 
   return (
     <div className="inventory_container">
@@ -83,9 +114,8 @@ const Inventory = () => {
             Product Status
           </button>
 
-          <button className="add_product_btn" onClick={handleAddItem} disabled={activeTab === 'Product Status'}>Add Item</button>
-
-          <button className="add_product_btn2" onClick={handleAddProduct} disabled={activeTab === 'Order Status'}>
+          
+          <button className="add_product_btn2" onClick={() => openModal()} disabled={activeTab === 'Order Status'}>
           Add Product
         </button>
 
@@ -108,33 +138,6 @@ const Inventory = () => {
                   <th>Status</th>
                 </tr>
               </thead>
-
-              <tbody>
-                {items.map((item, index) => (
-                  <tr key={index}>
-                    <td>
-                      <input type="checkbox" />
-                    </td>
-                    <td>{item.id}</td>
-                    <td>{item.product}</td>
-                    <td>{item.category}</td>
-                    <td>{item.store}</td>
-                    <td>{item.instruction}</td>
-                    <td>{item.items}</td>
-                    <td>
-                      <span className={`status ${item.status === 'Completed' ? 'completed' : 'pending'}`}>
-                        {item.status}
-                      </span>
-                    </td>
-
-                    <td className='item_action_btns'>
-                      <button onClick={() => (item.id)}>View</button>
-                      <button onClick={() => (item.id)}>Edit</button>
-                      <button onClick={() => deleteItem(item.id, 'item')}>Delete</button>
-              </td>
-                  </tr>
-                ))}
-              </tbody>
             </table>
 
         </div>
@@ -144,39 +147,88 @@ const Inventory = () => {
         <thead>
           <tr>
             <th>Product ID</th>
+            <th>Product Name</th>
             <th>Category</th>
-            <th>Quantity</th>
-            <th>Date Added</th>
-            <th>Expiration</th>
-            <th>Status</th>
+            <th>Unit of Measure</th>
+            <th>Price</th>
+            <th>Stock Quantity</th>
+            <th>Reorder Level</th>
+            <th>Product Status</th>
+            <th>Supplier ID</th>
+            
           </tr>
         </thead>
         <tbody>
           {products.map((product, index) => (
             <tr key={index}>
               <td>{product.id}</td>
+              <td>{product.productName}</td>
               <td>{product.category}</td>
-              <td>{product.quantity}</td>
-              <td>{product.dateAdded}</td>
-              <td>{product.expiration}</td>
+              <td>{product.unitofMeasure}</td>
+              <td>{product.price}</td>
+              <td>{product.stockQuantity}</td>
+              <td>{product.reorderLevel}</td>
+              <td>{product.productStatus}</td>
+              <td>{product.supplierId}</td>
               <td>
-                <span className={`status ${product.status === 'In Stock' ? 'completed' : 'pending'}`}>
-                  {product.status}
-                </span>
-              </td>
-
-              <td className='products_action_btns'>
-              <button onClick={() => (product.id)}>View</button>
-                    <button onClick={() => (product.id)}>Edit</button>
-                    <button onClick={() => deleteItem(product.id, 'product')}>Delete</button>
-
-              </td>
-                
+                  <button onClick={() => openModal(product)}>Edit</button>
+                  <button onClick={() => deleteItem(product.id, 'product')}>Delete</button>
+              
+              </td>               
             </tr>
           ))}
         </tbody>
       </table>
     )}
+
+{modalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+
+            <h2>{edit ? 'Edit Product' : 'Add Product'}</h2>
+
+            <form onSubmit={(e) => { e.preventDefault(); submitForm(); }}>
+              
+            <label>Product ID:</label>
+              <input type="text" name="productId" 
+              value={modalData.productId} 
+              onChange={inputChange} required/>
+              <br/>
+
+              <label>Product Name:</label>
+              <input type="text" name="productName" 
+              value={modalData.productName} 
+              onChange={inputChange} required/>
+              <br/>
+
+              <label>Category:</label>
+              <input type="text" name="category" 
+              value={modalData.category} 
+              onChange={inputChange} required/>
+              <br/>
+
+              <label>Unit of Measure:</label>
+              <input type="text" name="unitofMeasure" 
+              value={modalData.unitofMeasure} 
+              onChange={inputChange}required/>
+              <br/>
+
+              <label>Price:</label>
+              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
+              <label>Stock Quantity:</label>
+              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
+              <label>Reorder Level:</label>
+              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
+              <label>Product Status:</label>
+              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
+              <label>Supplier ID:</label>
+              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} required /><br />
+              <button type="submit">{edit ? 'Update' : 'Add'} Product</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
