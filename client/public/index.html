@@ -27,5 +27,25 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
     </div>
+    <script>
+      let quantity = 1;
+  
+      document.getElementById('increase').addEventListener('click', function() {
+          quantity++;
+          document.getElementById('quantity').textContent = quantity;
+      });
+  
+      document.getElementById('decrease').addEventListener('click', function() {
+          if (quantity > 1) {
+              quantity--;
+              document.getElementById('quantity').textContent = quantity;
+          }
+      });
+  
+      document.getElementById('proceed-button').addEventListener('click', function() {
+          // Handle the proceed action (e.g., navigate to the next page, add to cart)
+          alert("Proceeding with size " + document.getElementById('size').value + " and quantity " + quantity);
+      });
+  </script>
   </body>
 </html>
