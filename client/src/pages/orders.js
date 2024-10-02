@@ -1,111 +1,101 @@
-import React,{useState}from 'react'
-import '../css/orders.css'
+import React, { useState } from 'react';
+import '../css/orders.css';
+
 const menuItems = {
-  all: ['Pizza', 'Burger', 'Pasta', 'Royal', 'Water', 'Coke', 'Cake','Ice Cream','Espresso','Latte','Cappucino','Macchiato','Caramel','Vanilla','Hazelnut'],
-  meals: ['Tapsilog', 'Burger', 'Pasta','Menudo','Tocino','Hotdog'],
-  drinks: ['Coke', 'Water', 'Royal', 'Sprite','Mountain Dew','Nestea'],
-  sideorders: ['Fries', 'Salad', 'Rice','Extras','Shanghai',],
-  desserts: ['Cake', 'Ice Cream', 'Leche flan', 'Halo Halo', 'Atsara', 'Bagoong'],
-  coffee: ['Espresso', 'Latte', 'Cappuccino', 'Macchiato', 'Vanilla','Hazelnut']
+  all: ['Pizza', 'Burger', 'Pasta', 'Royal', 'Water', 'Coke', 'Cake', 'Ice Cream', 'Espresso', 'Latte', 'Cappuccino', 'Macchiato', 'Caramel', 'Vanilla', 'Hazelnut'],
+  meals: ['Tapsilog', 'Burger', 'Pasta', 'Menudo', 'Tocino', 'Hotdog'],
+  drinks: ['Coke', 'Water', 'Royal', 'Sprite', 'Mountain Dew', 'Nestea'],
+  sideorders: ['Fries', 'Salad', 'Rice', 'Extras', 'Shanghai'],
+  desserts: ['Cake', 'Ice Cream', 'Leche Flan', 'Halo Halo', 'Atsara', 'Bagoong'],
+  coffee: ['Espresso', 'Latte', 'Cappuccino', 'Macchiato', 'Vanilla', 'Hazelnut']
 };
 
-
 const Orders = () => {
-
   const [activeLink, setActiveLink] = useState('all');
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+  const [size, setSize] = useState('');
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
   };
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
+    setQuantity(0);
+    setSize('');
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedItem(null);
   };
 
-  return (   
+  const handleQuantityChange = (operation) => {
+    setQuantity((prev) => (operation === 'increase' ? prev + 1 : prev > 0 ? prev - 1 : prev));
+  };
+
+  const handleSizeSelection = (selectedSize) => {
+    setSize(selectedSize);
+  };
+
+  const getItemType = (item) => {
+    return menuItems.drinks.includes(item) || menuItems.coffee.includes(item) ? 'drink' : 'meal';
+  };
+
+  return (
     <div className='dashboard'>
-      <header className='header'>
+      <div className='header'>
         <div className="search-bar">
-          <i className="fas fa-search search-icon"></i>
-          <input type="text" className="search-input" placeholder="Search" />
-          <ul>
-            <li>
-              <a 
-                href="#all" 
-                className={activeLink === 'all' ? 'active' : ''}
-                onClick={() => handleLinkClick('all')}>
-                All
+          <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
+            <i className="fas fa-search search-icon"></i>
+          </button>
+          <input className="search-input" placeholder="Search your Orders" />
+        <ul>
+          {Object.keys(menuItems).map((category) => (
+            <li key={category}>
+              <a
+                href="#!"
+                className={activeLink === category ? 'active' : ''}
+                onClick={() => handleLinkClick(category)}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}
               </a>
             </li>
-            <li>
-              <a 
-                href="#meals" 
-                className={activeLink === 'meals' ? 'active' : ''}
-                onClick={() => handleLinkClick('meals')}>
-                Meals
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#drinks" 
-                className={activeLink === 'drinks' ? 'active' : ''}
-                onClick={() => handleLinkClick('drinks')}>
-                Drinks
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#sideorders" 
-                className={activeLink === 'sideorders' ? 'active' : ''}
-                onClick={() => handleLinkClick('sideorders')}>
-                Side Orders
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#desserts" 
-                className={activeLink === 'desserts' ? 'active' : ''}
-                onClick={() => handleLinkClick('desserts')}>
-                Desserts
-              </a>
-            </li>
-            <li>
-              <a 
-                href="#coffee" 
-                className={activeLink === 'coffee' ? 'active' : ''}
-                onClick={() => handleLinkClick('coffee')}>
-                Coffee
-              </a>
-            </li>
-          </ul>
-        </div>
-      </header>
+          ))}
+        </ul>
+      </div>
+      </div>
       <div className='order_container'>
-        {menuItems[activeLink].map((item, index) => (
-          <div className='order_item' key={index} onClick={() => handleItemClick(item)}>
+        {menuItems[activeLink].map((item) => (
+          <div key={item} className='order_item' onClick={() => handleItemClick(item)}>
             {item}
           </div>
         ))}
       </div>
       {isModalOpen && (
-        <div className='modal'>
-          <div className='modal_content'>
-            <span className='close_button' onClick={closeModal}>&times;</span>
-            <p>Sizes</p>{}
-            <button class='button button1 btn'>Small</button>
-            <button class='button button1 btn'>Medium</button>
-            <button class='button button1 btn'>Large</button>
+        <div className="modal">
+          <div className="modal_content">
+            <button className="close_button" onClick={closeModal}>
+              &times;
+            </button>
+            <h2>{selectedItem}</h2>
+            <div className="size-options">
+              <button onClick={() => handleSizeSelection('Small')} className={size === 'Small' ? 'active' : ''}>Small</button>
+              <button onClick={() => handleSizeSelection('Medium')} className={size === 'Medium' ? 'active' : ''}>Medium</button>
+              <button onClick={() => handleSizeSelection('Large')} className={size === 'Large' ? 'active' : ''}>Large</button>           
+            <div className="quantity-control">
+              <button onClick={() => handleQuantityChange('decrease')}>-</button>
+              <span>{quantity}</span>
+              <button onClick={() => handleQuantityChange('increase')}>+</button>
+              </div>
+            <button id="proceed-button" onClick={() => alert(`Proceeding with ${quantity} ${size} ${selectedItem}`)}>Proceed</button>
+            </div>
           </div>
         </div>
-      )}
-    </div>
-  )
-}
+         )}
+    </div>   
+  );
+};
+
 export default Orders;

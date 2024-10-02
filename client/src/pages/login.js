@@ -46,37 +46,37 @@ const Login = () => {
 
                 <form onSubmit={(e) => onSubmit(e)}>
                     <div className='form_input'>
-                        <label htmlFor='username' className='username'>
-                        <img src={profile_icon} alt="email icon" className="input_icon"/>
-                        </label>  
-                        <input
-                        onChange={(e) => onChange(e)}
-                        type='username' 
-                        value={values.username}
-                        id='username'
-                        name='username'
-                        placeholder='Username' 
-                        required
-                        />
+                      <label htmlFor='username' className='username'>
+                      <img src={profile_icon} alt="email icon" className="input_icon"/>
+                      </label>  
+                      <input
+                      onChange={(e) => onChange(e)}
+                      type='username' 
+                      value={values.username}
+                      id='username'
+                      name='username'
+                      placeholder='Username' 
+                      required
+                      />
                     </div>
 
                     <div className='form_input'>
-                        <label htmlFor='password' className='password'>
-                        <img src={password_icon} alt="password icon" className="input_icon"/>
-                        </label>  
-                        <input
-                        onChange={(e) => onChange(e)}
-                        type='password' 
-                        value={values.password}
-                        id='password'
-                        name='password'
-                        placeholder='Password' 
-                        required
-                        />
+                      <label htmlFor='password' className='password'>
+                      <img src={password_icon} alt="password icon" className="input_icon"/>
+                      </label>  
+                      <input
+                      onChange={(e) => onChange(e)}
+                      type='password' 
+                      value={values.password}
+                      id='password'
+                      name='password'
+                      placeholder='Password' 
+                      required
+                      />
                     </div>
 
                     <div className='forgot_pass'>
-                        <a href='/forgot_password'>Forgot Password</a>
+                      <a href='/forgot_password'>Forgot Password</a>
                     </div>
 
                     <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>

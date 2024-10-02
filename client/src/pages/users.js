@@ -38,7 +38,7 @@ const Users = () => {
             </div>
             <div className="info-row">
               <span>Username</span>
-              <span>TOBITCH</span>
+              <span>tobimariano</span>
             </div>
             <div className="info-row">
               <span>Created</span>
@@ -116,7 +116,7 @@ const Users = () => {
             </tr>
           </tbody>
         </table>
-        <button className="register-button">Register New User</button>
+        <button className="register-button">Register User</button>
       </div>
     </div>
     </div>
