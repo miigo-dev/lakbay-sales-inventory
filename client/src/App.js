@@ -17,7 +17,6 @@ import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';
 import Settings from './pages/settings';
-
 import Sidebar from './components/sidebar';
 
 const PrivateRoutes = () => {

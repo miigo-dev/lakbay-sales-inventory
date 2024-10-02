@@ -1,7 +1,19 @@
 import '../css/sales.css'
-import { BarChart } from '@mui/x-charts/BarChart'
+import { LineChart } from '@mui/x-charts/LineChart'
 import sales_icon from '../assets/icons/sales_data.png'
 import products_icon from '../assets/icons/products_data.svg'
+
+const tSales = [4700, 2500, 800, 1020, 6500, 2390, 3490];
+const tOrders = [4000, 1398, 1000, 3908, 6000, 3800, 4300];
+const xLabels = [
+  'Sept 26',
+  'Sept 27',
+  'Sept 28',
+  'Sept 39',
+  'Sept 30',
+  'Oct 1',
+  'Oct 2',
+];
 
 const Sales = () => {
   return (
@@ -46,24 +58,16 @@ const Sales = () => {
         <div class='bar-head'>
           <h2>Summary</h2>
         </div>
-        <BarChart
-          xAxis={[
-            {
-              id: 'barCategories',
-              data: ['Sept 10', 'Sept 11', 'Sept 12', 'Sept 13', 'Sept 14', 'Sept 15', 'Sept 16'],
-              scaleType: 'band',
-            },
-          ]}
+        
+        <LineChart
+          width={1200}
+          height={300}
           series={[
-            {
-              data: [2, 5, 3, 11, 4, 5, 9],
-              color: '#C2A790',
-            },
+            { data: tSales, label: 'Sales', color: '#FFA800'},
+            { data: tOrders, label: 'Orders', color : '#3699FF' },
           ]}
-          borderRadius={100}
-          width={500}
-          height={500}
-          />
+          xAxis={[{ scaleType: 'point', data: xLabels }]}
+        />
       </div>
     </div>
   )
