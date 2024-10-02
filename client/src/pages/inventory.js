@@ -5,6 +5,7 @@ const Inventory = () => {
   const [activeTab, setActiveTab] = useState('Order Status');
   const [products, setProducts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false); // State for edit modal
   const [modalData, setModalData] = useState({
     productName: '',
     category: '',
@@ -15,6 +16,7 @@ const Inventory = () => {
     productStatus: '',
     supplierId: ''
   });
+  const [editingProductId, setEditingProductId] = useState(null); // State for tracking which product is being edited
 
   const openModal = () => {
     console.log("Add Product button clicked!");
@@ -31,8 +33,25 @@ const Inventory = () => {
     setModalOpen(true);
   };
 
+  const openEditModal = (product) => {
+    console.log("Edit Product button clicked!", product);
+    setModalData({
+      productName: product.productname,
+      category: product.category,
+      unitofMeasure: product.unitofmeasure,
+      price: product.price,
+      stockQuantity: product.stockquantity,
+      reorderLevel: product.reorderlevel,
+      productStatus: product.productstatus,
+      supplierId: product.supplierId
+    });
+    setEditingProductId(product.productid); // Set the ID of the product being edited
+    setEditModalOpen(true);
+  };
+
   const closeModal = () => {
     setModalOpen(false);
+    setEditModalOpen(false); // Close edit modal as well
   };
 
   const inputChange = (e) => {
@@ -54,40 +73,84 @@ const Inventory = () => {
     const url = 'http://localhost:8080/api/add-inv'; // Only POST for adding products
 
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ProductName: modalData.productName,
-                Category: modalData.category,
-                UnitOfMeasure: modalData.unitofMeasure,
-                Price: modalData.price,
-                StockQuantity: modalData.stockQuantity,
-                SupplierID: modalData.supplierId || null,
-            })
-        });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ProductName: modalData.productName,
+          Category: modalData.category,
+          UnitOfMeasure: modalData.unitofMeasure,
+          Price: modalData.price,
+          StockQuantity: modalData.stockQuantity,
+          SupplierID: modalData.supplierId || null,
+        })
+      });
 
-        if (response.ok) {
-            const newProduct = await response.json();
-            console.log('New Product:', newProduct); // Log the new product
-            setProducts((prevProducts) => [...prevProducts, newProduct]);
-            setModalOpen(false);
-        } else {
-            console.error('Failed to save product:', response.statusText);
-        }
+      if (response.ok) {
+        const newProduct = await response.json();
+        console.log('New Product:', newProduct); // Log the new product
+        setProducts((prevProducts) => [...prevProducts, newProduct]);
+        setModalOpen(false);
+      } else {
+        console.error('Failed to save product:', response.statusText);
+      }
     } catch (error) {
-        console.error('Error saving product:', error);
+      console.error('Error saving product:', error);
     }
   };
 
-  const deleteItem = async (productId) => { // Accept productId as parameter
+  // !! add auth implementation for editedby column in db !!
+
+  const editProduct = async () => {
+    const url = `http://localhost:8080/api/inventory/${editingProductId}`; // Endpoint for editing products
+  
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ProductName: modalData.productName,
+          Category: modalData.category,
+          UnitOfMeasure: modalData.unitofMeasure,
+          Price: modalData.price,
+          StockQuantity: modalData.stockQuantity,
+          SupplierID: modalData.supplierId || null,
+        }),
+      });
+  
+      if (response.ok) {
+        const updatedProduct = await response.json();
+        console.log('Updated Product:', updatedProduct);
+        setProducts((prevProducts) => {
+          const index = prevProducts.findIndex((item) => item.productid === editingProductId);
+          if (index > -1) {
+            const updatedProducts = [...prevProducts];
+            updatedProducts[index] = updatedProduct;
+            return updatedProducts;
+          }
+          return prevProducts;
+        });
+        setEditModalOpen(false); // Close edit modal
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to update product:', response.statusText, errorData);
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+  
+
+  const deleteProduct = async (productId) => {
     const confirmDelete = window.confirm('Delete this item?');
   
     if (confirmDelete) {
       try {
-        const response = await fetch(`http://localhost:8080/api/inventory/${productId}`, { // Correct endpoint with productId
+        const response = await fetch(`http://localhost:8080/api/inventory/${productId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -177,7 +240,7 @@ const Inventory = () => {
           <tbody>
             {Array.isArray(products) && products.length > 0 ? (
               products.map((product) => (
-                <tr key={product.id}>
+                <tr key={product.productid}>
                   <td>{product.productid}</td>
                   <td>{product.productname}</td>
                   <td>{product.category}</td>
@@ -187,9 +250,10 @@ const Inventory = () => {
                   <td>{product.reorderlevel}</td>
                   <td>{product.productstatus}</td>
                   <td>{product.supplierId}</td>
-              <td>
-                <button onClick={() => deleteItem(product.productid)}>Delete</button> {/* Pass the whole product object */}
-              </td>
+                  <td>
+                    <button onClick={() => openEditModal(product)}>Edit</button> {/* Open edit modal */}
+                    <button onClick={() => deleteProduct(product.productid)}>Delete</button>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -222,16 +286,52 @@ const Inventory = () => {
               <br />
 
               <label>Price:</label>
-              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br/>
+              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
               <label>Stock Quantity:</label>
-              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br/>
+              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
               <label>Reorder Level:</label>
-              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br/>
+              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
               <label>Product Status:</label>
               <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
               <label>Supplier ID (optional):</label>
               <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} /><br />
               <button type="submit">Add Product</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {editModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+
+            <h2>Edit Product</h2>
+
+            <form onSubmit={(e) => { e.preventDefault(); editProduct(); }}>
+              <label>Product Name:</label>
+              <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
+              <br />
+
+              <label>Category:</label>
+              <input type="text" name="category" value={modalData.category} onChange={inputChange} required />
+              <br />
+
+              <label>Unit of Measure:</label>
+              <input type="text" name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required />
+              <br />
+
+              <label>Price:</label>
+              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
+              <label>Stock Quantity:</label>
+              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
+              <label>Reorder Level:</label>
+              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
+              <label>Product Status:</label>
+              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
+              <label>Supplier ID (optional):</label>
+              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} /><br />
+              <button type="submit">Save Changes</button>
             </form>
           </div>
         </div>
