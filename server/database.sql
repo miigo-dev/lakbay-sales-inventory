@@ -2,6 +2,17 @@ CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE test_users (
+    serial_id SERIAL PRIMARY KEY,
+    uuid_id UUID DEFAULT gen_random_uuid(),
+    FirstName VARCHAR(100),
+    LastName VARCHAR(100),
+    PhoneNumber VARCHAR(20),
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     RoleID INT REFERENCES Roles(RoleID),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -9,13 +20,6 @@ CREATE TABLE users (
 CREATE TABLE Roles (
     RoleID SERIAL PRIMARY KEY,
     RoleName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE UserInfo (
-    UserID INT REFERENCES Users(UserID),
-    FirstName VARCHAR(100),
-    LastName VARCHAR(100),
-    PhoneNumber VARCHAR(20)
 );
 
 CREATE TABLE UserPermissions (

@@ -1,0 +1,229 @@
+/* Container settings */
+.container {
+    margin-left: 260px; /* To not overlap the sidebar */
+    height: 100vh;
+    padding: 20px;
+    background-color: white;
+    max-width: calc(100% - 260px);
+}
+
+.card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.user-details {
+    display: flex;
+    align-items: flex-start;
+    gap: 50px;
+}
+
+.user-card {
+    text-align: center;
+}
+
+.user-card img {
+    border-radius: 5%;
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.user-card h2 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.user-info-main {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(1, 3fr);
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.user-info-extra {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-row span:first-child {
+    font-weight: bold;
+    color: #666;
+}
+
+.user-management {
+    background: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.search-bar input {
+    margin-right: 10px;
+    max-width: 500px;
+    margin-bottom: 5px;
+    flex-grow: 1;
+}
+
+.user-management h2 {
+    font-size: 20px;
+    margin-right: 1000px;
+    margin-bottom: 20px;
+}
+
+.user-management table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-management th, .user-management td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-management th {
+    background: #f4f5fa;
+}
+
+.user-management tr:hover {
+    background: #f9f9f9;
+}
+
+.user-management button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.user-management .view-button {
+    background: #5bc0de;
+    color: white;
+}
+
+.user-management .edit-button {
+    background: #5cb85c;
+    color: white;
+}
+
+.user-management .delete-button {
+    background: #d9534f;
+    color: white;
+}
+
+.user-management .register-button {
+    background: #f0ad4e;
+    color: white;
+    margin-top: 15px;
+}
+
+.user-management .view-button,
+.user-management .edit-button,
+.user-management .delete-button,
+.user-management .register-button {
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-management .view-button:hover {
+    background: #31a2c3;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-management .edit-button:hover {
+    background: #4cae4c;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-management .delete-button:hover {
+    background: #c9302c;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-management .register-button:hover {
+    background: #ec971f;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0; /* Remove sidebar margin on small screens */
+        max-width: 100%; /* Full width */
+    }
+
+    .user-details {
+        flex-direction: column; /* Stack user details */
+        gap: 20px; /* Reduce gap between elements */
+    }
+
+    .user-card img {
+        width: 100%; /* Full width on mobile */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    .user-info-main,
+    .user-info-extra {
+        grid-template-columns: repeat(1, 1fr); /* Stack columns */
+    }
+
+    .user-management h2 {
+        margin-right: 0; /* Remove large right margin */
+        font-size: 18px; /* Smaller font size */
+    }
+
+    .search-bar input {
+        max-width: 100%; /* Full width input */
+    }
+
+    .search-bar {
+        flex-direction: column; /* Stack input and button */
+        align-items: stretch; /* Stretch to full width */
+    }
+
+    .user-management button {
+        width: 100%; /* Full width buttons */
+        margin-bottom: 5px; /* Space between buttons */
+    }
+}
+

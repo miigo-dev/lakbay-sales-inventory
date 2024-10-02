@@ -1,55 +1,50 @@
-import React from 'react'
+import React from 'react';
 import {
   BrowserRouter,
   Navigate,
   Routes,
   Route,
   Outlet
-} from 'react-router-dom'
-import { useSelector } from 'react-redux'
+} from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-import Dashboard from './pages/dashboard'
-import Login from './pages/login'
-import Register from'./pages/register'
-import Orders from './pages/orders'
+import Dashboard from './pages/dashboard';
+import Login from './pages/login';
+import Register from './pages/register';
+import Orders from './pages/orders';
 import Inventory from './pages/inventory';
 import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';
 import Settings from './pages/settings';
 
-import Sidebar from './components/sidebar'
-
+import Sidebar from './components/sidebar';
 
 const PrivateRoutes = () => {
-  const { isAuth } = useSelector((state) => state.auth)
+  const { isAuth } = useSelector((state) => state.auth);
+
+  if (!isAuth) {
+    return <Navigate to='/login' />;
+  }
+
   return (
     <>
-      {isAuth ? (
-        <div className="app-layout">
-          <Sidebar />
-          <div className="main-content">
-            <Outlet />
-          </div>
-        </div>
-      ) : (
-        <Navigate to='/login' />
-      )}
+      <Sidebar />
+      <Outlet />
     </>
   );
-}
+};
 
 const RestrictedRoutes = () => {
-  const { isAuth } = useSelector((state) => state.auth)
-  return <>{!isAuth ? <Outlet /> : <Navigate to='/dashboard' />}</>
-}
+  const { isAuth } = useSelector((state) => state.auth);
+  return <>{!isAuth ? <Outlet /> : <Navigate to='/dashboard' />}</>;
+};
 
 const App = () => {
   return (
     <BrowserRouter>
-    <sidebar/>
       <Routes>
-      <Route path='/' element={<Navigate to='/login' />} />
+        <Route path='/' element={<Navigate to='/login' />} />
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/orders' element={<Orders />} />
@@ -58,16 +53,14 @@ const App = () => {
           <Route path='/reports' element={<Reports />} />
           <Route path='/users' element={<Users />} />
           <Route path='/settings' element={<Settings />} />
-          
         </Route>
         <Route element={<RestrictedRoutes />}>
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>
-    
-  )
-}
+  );
+};
 
-export default App
+export default App;
