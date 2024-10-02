@@ -2,24 +2,24 @@ const {
     validateAddInventoryItem,
     validateUpdateInventoryItem,
     validate,
-} = require('./validations/inventoryValidation');
-const express = require('express');
-const router = express.Router();
-const inventoryController = require('./controllers/inventory');
+} = require('../validators/inventory');
+const { Router } = require('express');
+const router = Router();
+const inventoryController = require('../controllers/inventory');
 
 // Get all inventory items
-router.get('/', inventoryController.getInventory);
+router.get('/get-inv', inventoryController.getInventory);
 
 // Get a single inventory item by ID
-router.get('/:id', inventoryController.getInventoryById);
+router.get('/inventory/:id', inventoryController.getInventoryById);
 
 // Add a new inventory item with validation
-router.post('/', validateAddInventoryItem, validate, inventoryController.addInventoryItem);
+router.post('/add-inv', validateAddInventoryItem, validate, inventoryController.addInventoryItem);
 
 // Update an existing inventory item with validation
-router.put('/:id', validateUpdateInventoryItem, validate, inventoryController.updateInventoryItem);
+router.put('/inventory/:id', validateUpdateInventoryItem, validate, inventoryController.updateInventoryItem); // Updated path to include '/inventory'
 
 // Delete an inventory item
-router.delete('/:id', inventoryController.deleteInventoryItem);
+router.delete('/inventory/:id', inventoryController.deleteInventoryItem);
 
 module.exports = router;
