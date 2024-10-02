@@ -16,7 +16,7 @@ router.get('/inventory/:id', inventoryController.getInventoryById);
 // Add a new inventory item with validation
 router.post('/add-inv', validateAddInventoryItem, validate, inventoryController.addInventoryItem);
 
-// Update an existing inventory item with validation
+// Update an existing inventory item with validation/'
 router.put('/inventory/:id', validateUpdateInventoryItem, validate, inventoryController.updateInventoryItem); // Updated path to include '/inventory'
 
 // Delete an inventory item

@@ -1,74 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../css/orders.css';
-
-const menuItems = {
-  all: [
-    { name: 'Pizza', price: 300.00 },
-    { name: 'Burger', price: 89.00 },
-    { name: 'Pasta', price: 250.00 },
-    { name: 'Royal', price: 25.00 },
-    { name: 'Water', price: 15.00 },
-    { name: 'Coke', price: 25.00 },
-    { name: 'Cake', price: 175.00 },
-    { name: 'Ice Cream', price: 70.00 },
-    { name: 'Espresso', price: 120.00 },
-    { name: 'Latte', price: 145.00 },
-    { name: 'Cappuccino', price: 130.00 },
-    { name: 'Macchiato', price: 135.00 },
-    { name: 'Caramel', price: 110.00 },
-    { name: 'Vanilla', price: 105.00 },
-    { name: 'Hazelnut', price: 140.00 },
-  ],
-  meals: [
-    { name: 'Tapsilog', price: 110.00 },
-    { name: 'Burger', price: 89.00 },
-    { name: 'Pasta', price: 250.00 },
-    { name: 'Menudo', price: 115.00 },
-    { name: 'Tocino', price: 109.00 },
-    { name: 'Hotdog', price: 90.00 },
-  ],
-  drinks: [
-    { name: 'Coke', price: 25.00 },
-    { name: 'Water', price: 15.00 },
-    { name: 'Royal', price: 25.00 },
-    { name: 'Sprite', price: 25.00 },
-    { name: 'Mountain Dew', price: 25.00 },
-    { name: 'Nestea', price: 27.00 },
-  ],
-  sideorders: [
-    { name: 'Fries', price: 80.00 },
-    { name: 'Salad', price: 90.00 },
-    { name: 'Rice', price: 30.00 },
-    { name: 'Turon', price: 20.00 },
-    { name: 'Shanghai', price: 25.00 },
-  ],
-  desserts: [
-    { name: 'Cake', price: 175.00 },
-    { name: 'Ice Cream', price: 70.00 },
-    { name: 'Leche Flan', price: 100.00 },
-    { name: 'Halo Halo', price: 69.00 },
-    { name: 'Atsara', price: 55.00 },
-    { name: 'Bagoong', price: 60.00 },
-  ],
-  coffee: [
-    { name: 'Espresso', price: 130.00 },
-    { name: 'Latte', price: 145.00 },
-    { name: 'Cappuccino', price: 130.00 },
-    { name: 'Macchiato', price: 135.00 },
-    { name: 'Vanilla', price: 105.00 },
-    { name: 'Hazelnut', price: 140.00 },
-  ],
-};
 
 const Orders = () => {
   const [activeLink, setActiveLink] = useState('all');
-  const [selectedItem, setSelectedItem] = useState('');
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
   const [size, setSize] = useState('');
   const [orders, setOrders] = useState([]);
   const [customAmount, setCustomAmount] = useState('');
   const [change, setChange] = useState(0);
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, [activeLink]);
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/get-inv');
+      const items = response.data;
+
+      if (activeLink === 'all') {
+        setMenuItems(items);
+      } else {
+        const filteredItems = items.filter(item => item.category === activeLink);
+        setMenuItems(filteredItems);
+      }
+    } catch (error) {
+      console.error('Error fetching menu items:', error);
+    }
+  };
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
@@ -86,7 +49,14 @@ const Orders = () => {
   };
 
   const handleQuantityChange = (operation) => {
-    setQuantity((prev) => (operation === 'increase' ? prev + 1 : prev > 0 ? prev - 1 : prev));
+    setQuantity((prev) => {
+      if (operation === 'increase' && prev < selectedItem.stockquantity) {
+        return prev + 1;
+      } else if (operation === 'decrease' && prev > 0) {
+        return prev - 1;
+      }
+      return prev;
+    });
   };
 
   const handleSizeSelection = (selectedSize) => {
@@ -95,17 +65,17 @@ const Orders = () => {
 
   const addOrder = () => {
     if (quantity > 0) {
-      if (getItemType(selectedItem.name) === 'drink' && !size) {
+      if (selectedItem.category.toLowerCase() === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
       setOrders((prevOrders) => [
         ...prevOrders,
         {
-          item: selectedItem.name,
-          size: getItemType(selectedItem.name) === 'meal' ? '' : size,
+          item: selectedItem.productname,
+          size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
           quantity,
-          price: selectedItem.price,
+          price: parseFloat(selectedItem.price),
         },
       ]);
       setIsModalOpen(false);
@@ -117,35 +87,43 @@ const Orders = () => {
   const deleteOrder = (index) => {
     setOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
   };
-  const getItemType = (itemName) => {
-    for (const category in menuItems) {
-      const item = menuItems[category].find((menuItem) => menuItem.name === itemName);
-      if (item) {
-        return category === 'drinks' ? 'drink' : 'meal';
-      }
-    }
-    return null; 
-  };
+
   const totalPrice = orders.reduce((total, order) => total + order.price * order.quantity, 0);
 
   const handleCharge = () => {
     const amount = parseFloat(customAmount);
 
     if (orders.length === 0) {
-        alert("Please add items to your order before charging.");
-        return; 
+      alert("Please add items to your order before charging.");
+      return;
     }
-    if (amount > totalPrice) {
-      setChange(amount - totalPrice); 
+
+    if (amount >= totalPrice) {
+      // Update stock quantity for each item ordered
+      const updatedMenuItems = menuItems.map(item => {
+        const order = orders.find(o => o.item === item.productname);
+        if (order) {
+          return {
+            ...item,
+            stockquantity: item.stockquantity - order.quantity, // Decrease stock based on the quantity ordered
+            
+          };
+        }
+        return item;
+      });
+
+      setMenuItems(updatedMenuItems); // Update the menu items with the new stock quantities
+
+      setChange(amount - totalPrice);
       alert(`Charged $${amount.toFixed(2)} successfully!`);
-      setCustomAmount(''); 
+      setCustomAmount('');
       setOrders([]);
-    } 
-    else {
+    } else {
       alert(`Please enter an amount greater than the total price of $${totalPrice.toFixed(2)}.`);
-      setChange(0); 
+      setChange(0);
     }
-};
+  };
+
   return (
     <div className='dashboard'>
       <div className='header_container'>
@@ -153,27 +131,30 @@ const Orders = () => {
           <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
             <i className="fas fa-search search-icon"></i>
           </button>
-          <input className="search-input" placeholder="Search your Orders" />     
-        <ul className='navigation-bar'>
-          {Object.keys(menuItems).map((category) => (
-            <li key={category}>
-              <a
-                href="#!"
-                className={activeLink === category ? 'active' : ''}
-                onClick={() => handleLinkClick(category)}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </a>
-            </li>
-          ))}
-        </ul>
+          <input className="search-input" placeholder="Search your Orders" />
+          <ul className='navigation-bar'>
+            {['all', 'meals', 'drinks', 'sideorders', 'desserts', 'coffee'].map((category) => (
+              <li key={category}>
+                <a
+                  href="#!"
+                  className={activeLink === category ? 'active' : ''}
+                  onClick={() => handleLinkClick(category)}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       <div className='order_container'>
-        {menuItems[activeLink]?.map((item, index) => (
-          <div key={index} className='order_item' onClick={() => handleItemClick(item)}>
-            {item.name}
-          </div>
-        ))}
+        {menuItems
+          .filter(item => item.stockquantity > 0) // Only display items with stock > 0
+          .map((item, index) => (
+            <div key={index} className='order_item' onClick={() => handleItemClick(item)}>
+              {item.productname}
+            </div>
+          ))}
       </div>
 
       {isModalOpen && selectedItem && (
@@ -182,8 +163,8 @@ const Orders = () => {
             <button className="close_button" onClick={closeModal}>
               &times;
             </button>
-            <h2>{selectedItem.name}</h2>
-            {activeLink === 'drinks' || activeLink === 'coffee' ? (
+            <h2>{selectedItem.productname}</h2>
+            {selectedItem.category.toLowerCase() === 'drinks' || selectedItem.category.toLowerCase() === 'coffee' ? (
               <div className="size-options">
                 <button onClick={() => handleSizeSelection('Small')} className={size === 'Small' ? 'active' : ''}>Small</button>
                 <button onClick={() => handleSizeSelection('Medium')} className={size === 'Medium' ? 'active' : ''}>Medium</button>
@@ -210,36 +191,37 @@ const Orders = () => {
           <p>No items added yet.</p>
         ) : (
           <ul>
-          {orders.map((order, index) => (
-            <li key={index} className="order-item">
-              <div className="order-content">
-                <span>
-                  {order.item}
-                  {getItemType(order.item) === 'drink' && order.size && ` - Size: ${order.size}`}
-                  {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
-                </span>
-                <button className="delete-button" onClick={() => deleteOrder(index)}>
-                  <i className="fa-solid fa-trash"></i>
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        )}  
+            {orders.map((order, index) => (
+              <li key={index} className="order-item">
+                <div className="order-content">
+                  <span>
+                    {order.item}
+                    {order.size && ` - Size: ${order.size}`}
+                    {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
+                  </span>
+                  <button className="delete-button" onClick={() => deleteOrder(index)}>
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="total-section">
-              <h4>Total: {totalPrice.toFixed(2)}</h4>      
-        <div className="custom-amount-section">
+          <h4>Total: {totalPrice.toFixed(2)}</h4>
+          <div className="custom-amount-section">
             <input
               type="number"
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder="Enter amount"
-              min={totalPrice + 0.00}/>
-            <button onClick={handleCharge}>Charge</button> 
-            {change > 0 && <label className="change-label">Change: {change.toFixed(2)}</label>}  
+              min={totalPrice + 0.00}
+            />
+            <button onClick={handleCharge}>Charge</button>
+            {change > 0 && <label className="change-label">Change: {change.toFixed(2)}</label>}
           </div>
-        </div>    
-      </div>    
+        </div>
+      </div>
     </div>
   );
 };
