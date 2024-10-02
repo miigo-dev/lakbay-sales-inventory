@@ -215,15 +215,15 @@ const Inventory = () => {
               <br/>
 
               <label>Price:</label>
-              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
+              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br/>
               <label>Stock Quantity:</label>
-              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
+              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br/>
               <label>Reorder Level:</label>
-              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
+              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br/>
               <label>Product Status:</label>
-              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
+              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br/>
               <label>Supplier ID:</label>
-              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} required /><br />
+              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} required /><br/>
               <button type="submit">{edit ? 'Update' : 'Add'} Product</button>
             </form>
           </div>
