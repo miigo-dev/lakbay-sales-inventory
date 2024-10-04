@@ -16,6 +16,12 @@ CREATE TABLE Users (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE UserPermissions (
+    UserPermissionID SERIAL PRIMARY KEY,
+    UserID INT REFERENCES Users(UserID),
+    PermissionID INT REFERENCES Permissions(PermissionID)
+);
+
 -- Suppliers
 CREATE TABLE Suppliers (
     SupplierID SERIAL PRIMARY KEY,
