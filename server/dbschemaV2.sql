@@ -1,10 +1,8 @@
--- User Roles
 CREATE TABLE Roles (
     RoleID SERIAL PRIMARY KEY,
     RoleName VARCHAR(100) NOT NULL
 );
 
--- Users
 CREATE TABLE Users (
     UserID SERIAL PRIMARY KEY,
     FirstName VARCHAR(100),
@@ -16,13 +14,6 @@ CREATE TABLE Users (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE UserPermissions (
-    UserPermissionID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    PermissionID INT REFERENCES Permissions(PermissionID)
-);
-
--- Suppliers
 CREATE TABLE Suppliers (
     SupplierID SERIAL PRIMARY KEY,
     SupplierName VARCHAR(100) NOT NULL,
@@ -32,12 +23,11 @@ CREATE TABLE Suppliers (
     Address VARCHAR(255)
 );
 
--- Products
 CREATE TABLE Products (
     ProductID SERIAL PRIMARY KEY,
     ProductName VARCHAR(100) NOT NULL,
-    Category VARCHAR(50), -- e.g., 'Beverage', 'Food'
-    UnitOfMeasure VARCHAR(50), -- e.g., 'ml', 'pcs'
+    Category VARCHAR(50),
+    UnitOfMeasure VARCHAR(50),
     Price DECIMAL(10, 2) NOT NULL,
     StockQuantity INT NOT NULL,
     ReorderLevel INT DEFAULT 10,
@@ -45,7 +35,6 @@ CREATE TABLE Products (
     SupplierID INT REFERENCES Suppliers(SupplierID)
 );
 
--- Product In (Adding stock)
 CREATE TABLE ProductIn (
     ProductInID SERIAL PRIMARY KEY,
     ProductID INT REFERENCES Products(ProductID),
@@ -55,17 +44,15 @@ CREATE TABLE ProductIn (
     Remarks TEXT
 );
 
--- Product Out (Removing stock)
 CREATE TABLE ProductOut (
     ProductOutID SERIAL PRIMARY KEY,
     ProductID INT REFERENCES Products(ProductID),
     QuantityRemoved INT NOT NULL,
     RemovalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Reason VARCHAR(100), -- e.g., 'Expired', 'Damaged'
+    Reason VARCHAR(100),
     Remarks TEXT
 );
 
--- Orders
 CREATE TABLE Orders (
     OrderID SERIAL PRIMARY KEY,
     ProductID INT REFERENCES Products(ProductID),
@@ -76,7 +63,6 @@ CREATE TABLE Orders (
     UserID INT REFERENCES Users(UserID)
 );
 
--- Sales
 CREATE TABLE Sales (
     SaleID SERIAL PRIMARY KEY,
     ProductID INT REFERENCES Products(ProductID),
@@ -86,7 +72,6 @@ CREATE TABLE Sales (
     UserID INT REFERENCES Users(UserID)
 );
 
--- Logs
 CREATE TABLE Logs (
     LogID SERIAL PRIMARY KEY,
     UserID INT REFERENCES Users(UserID),
@@ -96,18 +81,84 @@ CREATE TABLE Logs (
     Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Permissions
 CREATE TABLE Permissions (
     PermissionID SERIAL PRIMARY KEY,
     PermissionName VARCHAR(100) NOT NULL
 );
 
--- Role Permissions
 CREATE TABLE RolePermissions (
     RolePermissionID SERIAL PRIMARY KEY,
     RoleID INT REFERENCES Roles(RoleID),
     PermissionID INT REFERENCES Permissions(PermissionID)
 );
+
+CREATE TABLE UserPermissions (
+    UserPermissionID SERIAL PRIMARY KEY,
+    UserID INT REFERENCES Users(UserID),
+    PermissionID INT REFERENCES Permissions(PermissionID)
+);
+
+-- Insert statements
+
+INSERT INTO Roles (RoleName) VALUES 
+('Owner'),
+('Admin'),
+('Inventory Personnel'),
+('Cashier');
+
+INSERT INTO Users (FirstName, LastName, PhoneNumber, Username, Password, RoleID) VALUES 
+('John', 'Doe', '09123456789', 'johndoe', 'hashed_password_1', 1),
+('Jane', 'Smith', '09122334455', 'janesmith', 'hashed_password_2', 2),
+('Alex', 'Johnson', '09125678901', 'alexjohnson', 'hashed_password_3', 3),
+('Emily', 'Davis', '09129876543', 'emilydavis', 'hashed_password_4', 4);
+
+INSERT INTO Suppliers (SupplierName, ContactPerson, PhoneNumber, Email, Address) VALUES 
+('Supplier A', 'Alice Brown', '09121111111', 'alice@suppliera.com', '123 Supplier St.'),
+('Supplier B', 'Bob Green', '09122222222', 'bob@supplierb.com', '456 Supplier Ave.');
+
+INSERT INTO Products (ProductName, Category, UnitOfMeasure, Price, StockQuantity, ReorderLevel, ProductStatus, SupplierID) VALUES 
+('Espresso', 'Beverage', 'ml', 150.00, 50, 10, 'Active', 1),
+('Frappuccino', 'Beverage', 'ml', 180.00, 30, 10, 'Active', 1),
+('Biryani', 'Food', 'pcs', 250.00, 20, 5, 'Active', 2),
+('Sinigang', 'Food', 'pcs', 300.00, 25, 5, 'Active', 2),
+('Coke', 'Beverage', 'ml', 60.00, 100, 20, 'Active', 2);
+
+INSERT INTO ProductIn (ProductID, QuantityAdded, SupplierID, ReceivedDate, Remarks) VALUES 
+(1, 20, 1, CURRENT_TIMESTAMP, 'New batch received'),
+(3, 15, 2, CURRENT_TIMESTAMP, 'Monthly delivery');
+
+INSERT INTO ProductOut (ProductID, QuantityRemoved, RemovalDate, Reason, Remarks) VALUES 
+(2, 5, CURRENT_TIMESTAMP, 'Expired', 'Old stock removed'),
+(4, 2, CURRENT_TIMESTAMP, 'Damaged', 'Sinigang pots spilled');
+
+INSERT INTO Orders (ProductID, Quantity, OrderDate, OrderStatus, OrderTotal, UserID) VALUES 
+(1, 3, CURRENT_TIMESTAMP, 'Completed', 450.00, 4), 
+(3, 2, CURRENT_TIMESTAMP, 'Pending', 500.00, 4), 
+(5, 10, CURRENT_TIMESTAMP, 'Completed', 600.00, 4);
+
+INSERT INTO Sales (ProductID, Quantity, SaleDate, SaleStatus, UserID) VALUES 
+(1, 3, CURRENT_TIMESTAMP, 'Completed', 4), 
+(2, 1, CURRENT_TIMESTAMP, 'Completed', 4), 
+(3, 2, CURRENT_TIMESTAMP, 'Completed', 4);
+
+INSERT INTO Permissions (PermissionName) VALUES 
+('View Inventory'),
+('Edit Inventory'),
+('View Orders'),
+('Edit Orders'),
+('Manage Users');
+
+INSERT INTO RolePermissions (RoleID, PermissionID) VALUES 
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+(2, 1), (2, 2), (2, 3), (2, 4),
+(3, 1), (3, 2),
+(4, 3), (4, 4);
+
+INSERT INTO UserPermissions (UserID, PermissionID) VALUES 
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+(2, 1), (2, 2), (2, 3), (2, 4),
+(3, 1), (3, 2),
+(4, 3), (4, 4);
 
 -- Optimized queries
 
