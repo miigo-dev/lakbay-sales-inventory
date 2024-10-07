@@ -9,7 +9,6 @@ const Reports = () => {
     const [lakbay_Kape, setProductsKape] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
-        type:'',
         id: '',
         productName: '',
         category: '',
@@ -31,7 +30,6 @@ const Reports = () => {
             setEdit(true);
         } else {
             setModalData({
-                type:'',
                 id: '',
                 productName: '',
                 category: '',
@@ -100,21 +98,21 @@ const Reports = () => {
                     Lakbay Kain
                 </button>
 
-                <button className="add_report" onClick={() => openModal()} disabled={activeTab === 'Lakbay Kain'}>
+                <button className="addReport" onClick={() => openModal()} disabled={activeTab === 'Lakbay Kain'}>
                 Add Report
                 </button>
 
             </div>
 
-            {activeTab === 'Lakbay Kape' ? (
+            {activeTab === 'Lakbay Kain' ? (
                 <div>
                     <table className="kape_table">
                         <thead>
                             <tr>
-                                <th>Lakbay</th>
                                 <th>Product ID</th>
                                 <th>Product</th>
                                 <th>Category</th>
+                                <th>Unit</th>
                                 <th>Quantity</th>
                                 <th>Date Added</th>
                                 <th>Reason</th>
@@ -127,10 +125,10 @@ const Reports = () => {
                 <table className="kain_table">
                     <thead>
                         <tr>
-                            <th>Lakbay</th>
                             <th>Product ID</th>
                             <th>Product</th>
                             <th>Category</th>
+                            <th>Unit</th>
                             <th>Quantity</th>
                             <th>Date Added</th>
                             <th>Reason</th>
@@ -140,7 +138,6 @@ const Reports = () => {
                     <tbody>
                         {lakbay_Kape.map((lakbayKape, index) => (
                             <tr key={index}>
-                                <td>{lakbayKape.type}</td>
                                 <td>{lakbayKape.id}</td>
                                 <td>{lakbayKape.productName}</td>
                                 <td>{lakbayKape.category}</td>
@@ -148,6 +145,24 @@ const Reports = () => {
                                 <td>{lakbayKape.stockQuantity}</td>
                                 <td>{lakbayKape.dateAdded}</td>
                                 <td>{lakbayKape.reason}</td>
+                                <td>{lakbayKape.action}</td>
+                                <td>
+                                    <button onClick={() => openModal(lakbayKape)}>Edit</button>
+                                    <button onClick={() => deleteItem(lakbayKape.id, 'Lakbay Kape')}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+
+                        {lakbay_Kain.map((lakbayKain, index) => (
+                            <tr key={index}>
+                                <td>{lakbayKain.id}</td>
+                                <td>{lakbayKain.productName}</td>
+                                <td>{lakbayKain.category}</td>
+                                <td>{lakbayKain.unitofMeasure}</td>
+                                <td>{lakbayKain.stockQuantity}</td>
+                                <td>{lakbayKain.dateAdded}</td>
+                                <td>{lakbayKain.reason}</td>
+                                <td>{lakbayKain.action}</td>
                                 <td>
                                     <button onClick={() => openModal(lakbayKape)}>Edit</button>
                                     <button onClick={() => deleteItem(lakbayKape.id, 'Lakbay Kape')}>Delete</button>
@@ -158,6 +173,8 @@ const Reports = () => {
                 </table>
             )}
             
+
+            
             {modalOpen && (
                 <div className="modal">
                     <div className="modal-content">
@@ -166,29 +183,6 @@ const Reports = () => {
                         <h2>{edit ? 'Edit Report' : 'Add Report'}</h2>
 
                         <form onSubmit={(e) => { e.preventDefault(); submitForm(); }} className='input_report'>
-
-                        <div className='type'>
-                            <label>
-                                <input 
-                                    type="radio" 
-                                    name="choice" 
-                                    value="Kape" 
-                                    onChange={inputChange} 
-                                    required 
-                                />
-                                Kape
-                            </label>
-                            <label>
-                                <input 
-                                    type="radio" 
-                                    name="choice" 
-                                    value="Kain" 
-                                    onChange={inputChange} 
-                                    required 
-                                />
-                                Kain
-                            </label>
-                        </div>
 
 
                             <label>Product ID:</label>
@@ -239,7 +233,7 @@ const Reports = () => {
                             </select>
                             <br />
 
-                            <button type="submit">{edit ? 'Update' : 'Add'} Kape</button>
+                            <button type="submit">{edit ? 'Update' : 'Add'} Report</button>
                         </form>
                     </div>
                 </div>
