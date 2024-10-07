@@ -212,3 +212,17 @@ ALTER TABLE Products ALTER COLUMN SupplierID DROP NOT NULL;
 ALTER TABLE products ADD COLUMN lastupdated TIMESTAMP DEFAULT NOW();
 
 ALTER TABLE products ADD COLUMN updatedby VARCHAR(255);
+
+-- new --
+
+CREATE TABLE ingredients (
+    ingredientid SERIAL PRIMARY KEY,
+    category VARCHAR(50),
+    ingredient_name VARCHAR(100) NOT NULL,
+    unit VARCHAR(50),
+    price DECIMAL(10, 2) NOT NULL,
+    stockquantity INT NOT NULL,
+    reorderlevel INT DEFAULT 10,
+    productstatus VARCHAR(50) DEFAULT 'Active',
+    supplierid INT REFERENCES suppliers(supplierid)
+);
