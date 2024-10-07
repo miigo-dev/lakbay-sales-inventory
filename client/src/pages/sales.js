@@ -39,7 +39,7 @@ const Sales = () => {
         <div className='damage_container'>
             <div className="content-wrapper">
                 <div className="sales-timeframes">
-                    <h2>Select Time Frame</h2>
+                    <h2>Sales</h2>
                     <div className="timeframe-options">
                         {['Today', 'Weekly', 'Monthly', 'Yearly'].map((frame) => (
                             <button key={frame} onClick={() => setTimeFrame(frame)}>
@@ -81,9 +81,7 @@ const Sales = () => {
                 </div>
             </div>
 
-            <div>
-                <p>No Damage Report Added Yet</p>
-            </div>
+
         </div>
     );
 };
