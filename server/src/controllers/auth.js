@@ -4,22 +4,17 @@ const { sign } = require('jsonwebtoken')
 const { SECRET } = require('../constants')
 
 exports.register = async (req, res) => {
-    const { username, password } = req.body;
+    const { firstName, lastName, phoneNumber, username, password, roleID } = req.body;
     try {
         const hashedPassword = await hash(password, 10)
-
-        await db.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword])
-
-        return res.status(201).json({
-            success: true,
-            message: 'User created successfully'
-        })
-
+        await db.query(
+            `INSERT INTO Users (FirstName, LastName, PhoneNumber, Username, Password, RoleID)
+            VALUES ($1, $2, $3, $4, $5, $6)`,
+            [firstName, lastName, phoneNumber, username, hashedPassword, roleID]
+        );
+      res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            error: error.message
-        })
+      res.status(500).json({ error: error.message });
     }
 }
 
