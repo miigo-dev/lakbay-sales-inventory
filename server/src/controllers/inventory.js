@@ -16,27 +16,15 @@ exports.addInventoryItem = async (req, res) => {
     }
 };
 
-exports.getActiveProducts('/api/products', async (req, res) => {
+exports.getInventory = async (req, res) => {
     try {
-      const result = await db.query('SELECT ProductName, Price FROM Products WHERE StockQuantity > 0');
-      res.json(result.rows);
+        const result = await pool.query('SELECT * FROM Products');
+        res.status(200).json(result.rows);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        console.error('Error fetching inventory:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
-
-app.post('/api/orders', async (req, res) => {
-  const { productID, quantity, userID } = req.body;
-  try {
-    await db.query(
-      'INSERT INTO Orders (ProductID, Quantity, OrderDate, OrderStatus, UserID) VALUES ($1, $2, NOW(), $3, $4)',
-      [productID, quantity, 'Pending', userID]
-    );
-    res.status(201).json({ message: 'Order created successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+};
 
 exports.getInventoryById = async (req, res) => {
     const id = parseInt(req.params.id);
