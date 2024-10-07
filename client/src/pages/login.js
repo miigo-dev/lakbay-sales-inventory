@@ -1,12 +1,12 @@
 import React from 'react'
-import { useState } from 'react';
-import { onLogin } from '../api/auth';
-import { useDispatch } from 'react-redux';
-import { authenticateUser } from '../redux/slices/authSlice';
-import '../css/login.css';
+import { useState } from 'react'
+import { onLogin } from '../api/auth'
+import { useDispatch } from 'react-redux'
+import { authenticateUser } from '../redux/slices/authSlice'
+import '../css/login.css'
 import logo from '../assets/icons/lakbay_logo50px.png'
-import profile_icon from '../assets/icons/users_inactive.png' ;
-import password_icon from '../assets/icons/pass_icon25px.png';
+import profile_icon from '../assets/icons/users_inactive.png' 
+import password_icon from '../assets/icons/pass_icon25px.png'
 
 const Login = () => {
     const [values, setValues] = useState({
