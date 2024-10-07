@@ -18,13 +18,13 @@ passport.use(
   new Strategy(opts, async ({ id }, done) => {
     try {
       const { rows } = await db.query(
-        'SELECT user_id, username FROM users WHERE user_id = $1',[id])
+        'SELECT UserID, Username FROM users WHERE UserID = $1',[id])
 
       if (!rows.length) {
         throw new Error('401 not authorized')
       }
 
-      let user = { id: rows[0].user_id, username: rows[0].username }
+      let user = { id: rows[0].UserID, Username: rows[0].Username }
 
       return await done(null, user)
     } catch (error) {

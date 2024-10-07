@@ -62,10 +62,8 @@ CREATE TABLE Orders (
     ProductID INT REFERENCES Products(ProductID),
     Quantity INT NOT NULL,
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    DeliveryDate TIMESTAMP,
     OrderStatus VARCHAR(50) DEFAULT 'Pending',
     OrderTotal DECIMAL(10, 2),
-    SupplierID INT REFERENCES Suppliers(SupplierID),
     UserID INT REFERENCES Users(UserID)
 );
 

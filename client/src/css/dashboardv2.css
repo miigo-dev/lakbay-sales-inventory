@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
+.container {
+    margin-left: 260px;
+    height: 100vh;
+    padding: 20px;
+    background-color: white;
+    max-width: calc(100% - 260px);
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 30px;
+}
+
+.card-sales, .card-products {
+    flex: 1 1 calc(50% - 20px);
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    max-height: fit-content;
+}
+
+.card-summary {
+    flex: 1 1 100%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    max-width: fit-content;
+    max-height: fit-content;
+}
+
+.card-icon {
+    margin-bottom: 30px;
+}
+
+.sales-info-main {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.products-info-main {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    font-size: 10px;
+}
+
+.sales-info-main h2, .products-info-main h2 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-top: 10px;
+}
