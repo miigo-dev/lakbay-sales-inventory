@@ -2,13 +2,11 @@ import '../css/damage.css';
 import { useState } from 'react';
 
 const Reports = () => {
-
-
     const [activeTab, setActiveTab] = useState('Lakbay Kape');
-    const [lakbay_Kape, setProductsKape] = useState([]);
+    const [lakbayKape, setProductsKape] = useState([]);
+    const [lakbayKain, setProductsKain] = useState([]); // New state for Lakbay Kain
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
-        type:'',
         id: '',
         productName: '',
         category: '',
@@ -24,13 +22,12 @@ const Reports = () => {
         setActiveTab(tabName);
     };
 
-    const openModal = (lakbayKape = null) => {
-        if (lakbayKape) {
-            setModalData(lakbayKape);
+    const openModal = (product = null) => {
+        if (product) {
+            setModalData(product);
             setEdit(true);
         } else {
             setModalData({
-                type:'',
                 id: '',
                 productName: '',
                 category: '',
@@ -56,24 +53,36 @@ const Reports = () => {
 
     const submitForm = () => {
         if (edit) {
-            setProductsKape((prevProducts) =>
-                prevProducts.map((lakbayKape) =>
-                    lakbayKape.id === modalData.id ? modalData : lakbayKape
-                )
-            );
+            if (activeTab === 'Lakbay Kape') {
+                setProductsKape((prevProducts) =>
+                    prevProducts.map((product) =>
+                        product.id === modalData.id ? modalData : product
+                    )
+                );
+            } else {
+                setProductsKain((prevProducts) =>
+                    prevProducts.map((product) =>
+                        product.id === modalData.id ? modalData : product
+                    )
+                );
+            }
         } else {
-            setProductsKape([...lakbay_Kape, modalData]);
+            if (activeTab === 'Lakbay Kape') {
+                setProductsKape([...lakbayKape, modalData]);
+            } else {
+                setProductsKain([...lakbayKain, modalData]);
+            }
         }
         setModalOpen(false);
     };
 
-    const deleteItem = (id, type) => {
+    const deleteItem = (id) => {
         const confirmDelete = window.confirm('Delete this item?');
         if (confirmDelete) {
-            if (type === 'Lakbay Kape') {
-                setProductsKape(lakbay_Kape.filter((lakbayKape) => lakbayKape.id !== id));
+            if (activeTab === 'Lakbay Kape') {
+                setProductsKape(lakbayKape.filter((product) => product.id !== id));
             } else {
-                console.log('Invalid');
+                setProductsKain(lakbayKain.filter((product) => product.id !== id));
             }
         }
     };
@@ -99,146 +108,145 @@ const Reports = () => {
                     Lakbay Kain
                 </button>
 
-                <button className="add_report" onClick={() => openModal()} disabled={activeTab === 'Lakbay Kain'}>
-                Add Report
+                <button className="addReport" onClick={() => openModal()}>
+                    Add Report
                 </button>
-
             </div>
 
-            {activeTab === 'Lakbay Kape' ? (
+            {activeTab === 'Lakbay Kain' ? (
                 <div>
-                    <table className="kape_table">
-                        <thead>
-                            <tr>
-                                <th>Lakbay</th>
-                                <th>Product ID</th>
-                                <th>Product</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
-                                <th>Date Added</th>
-                                <th>Reason</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    {lakbayKain.length === 0 ? (
+                        <p>No Damage Report Added Yet</p>
+                    ) : (
+                        <table className="kain_table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Date Added</th>
+                                    <th>Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lakbayKain.map((product, index) => (
+                                    <tr key={index}>
+                                        <td>{product.id}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.category}</td>
+                                        <td>{product.unitofMeasure}</td>
+                                        <td>{product.stockQuantity}</td>
+                                        <td>{product.dateAdded}</td>
+                                        <td>{product.reason}</td>
+                                        <td>
+                                            <button onClick={() => openModal(product)}>Edit</button>
+                                            <button onClick={() => deleteItem(product.id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             ) : (
-                <table className="kain_table">
-                    <thead>
-                        <tr>
-                            <th>Lakbay</th>
-                            <th>Product ID</th>
-                            <th>Product</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Date Added</th>
-                            <th>Reason</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lakbay_Kape.map((lakbayKape, index) => (
-                            <tr key={index}>
-                                <td>{lakbayKape.type}</td>
-                                <td>{lakbayKape.id}</td>
-                                <td>{lakbayKape.productName}</td>
-                                <td>{lakbayKape.category}</td>
-                                <td>{lakbayKape.unitofMeasure}</td>
-                                <td>{lakbayKape.stockQuantity}</td>
-                                <td>{lakbayKape.dateAdded}</td>
-                                <td>{lakbayKape.reason}</td>
-                                <td>
-                                    <button onClick={() => openModal(lakbayKape)}>Edit</button>
-                                    <button onClick={() => deleteItem(lakbayKape.id, 'Lakbay Kape')}>Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div>
+                    {lakbayKape.length === 0 ? (
+                        <p>No Damage Report Added Yet</p>
+                    ) : (
+                        <table className="kape_table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Date Added</th>
+                                    <th>Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lakbayKape.map((product, index) => (
+                                    <tr key={index}>
+                                        <td>{product.id}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.category}</td>
+                                        <td>{product.unitofMeasure}</td>
+                                        <td>{product.stockQuantity}</td>
+                                        <td>{product.dateAdded}</td>
+                                        <td>{product.reason}</td>
+                                        <td>
+                                            <button onClick={() => openModal(product)}>Edit</button>
+                                            <button onClick={() => deleteItem(product.id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             )}
-            
+
             {modalOpen && (
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={closeModal}>&times;</span>
-
                         <h2>{edit ? 'Edit Report' : 'Add Report'}</h2>
-
                         <form onSubmit={(e) => { e.preventDefault(); submitForm(); }} className='input_report'>
-
-                        <div className='type'>
-                            <label>
-                                <input 
-                                    type="radio" 
-                                    name="choice" 
-                                    value="Kape" 
-                                    onChange={inputChange} 
-                                    required 
-                                />
-                                Kape
-                            </label>
-                            <label>
-                                <input 
-                                    type="radio" 
-                                    name="choice" 
-                                    value="Kain" 
-                                    onChange={inputChange} 
-                                    required 
-                                />
-                                Kain
-                            </label>
-                        </div>
-
-
                             <label>Product ID:</label>
                             <input type="text" name="id" value={modalData.id} onChange={inputChange} required />
                             <br />
-
                             <label>Product Name:</label>
                             <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
                             <br />
-
                             <label>Category:</label>
                             <select name="category" value={modalData.category} onChange={inputChange} required>
+
+                                <option value="categ">Select a category</option>
+
                                 <option value="raw">raw</option>
                                 <option value="frozen">frozen</option>
                                 <option value="equipment">equipment</option>
                             </select>
                             <br />
-
                             <label>Stock Quantity:</label>
                             <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
-
                             <label>Unit of Measure:</label>
                             <select name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required>
+
+                                <option value="categ">Select a unit</option>		
                                 <option value="pieces">pieces</option>
                                 <option value="bulk">bulk</option>
                                 <option value="dozen">dozen</option>
                             </select>
                             <br />
-
                             <label>Date Added:</label>
                             <input type="date" name="dateAdded" value={modalData.dateAdded} onChange={inputChange} required /><br />
-
                             <label>Reason:</label>
                             <select name="reason" value={modalData.reason} onChange={inputChange} required>
+
+                                <option value="categ">Select a reason</option>
                                 <option value="expired">expired</option>
                                 <option value="wrong item">wrong item</option>
                                 <option value="missing">missing</option>
                                 <option value="damage">damage</option>
                             </select>
                             <br />
-
                             <label>Action:</label>
                             <select name="action" value={modalData.action} onChange={inputChange} required>
+
+                                <option value="categ">Select a action</option>
                                 <option value="disposed">disposed</option>
                                 <option value="replacement">replacement</option>
                                 <option value="refund">refund</option>
                                 <option value="compensation">compensation</option>
                             </select>
                             <br />
-
-                            <button type="submit">{edit ? 'Update' : 'Add'} Kape</button>
+                            <button type="submit">{edit ? 'Update' : 'Add'} Report</button>
                         </form>
                     </div>
                 </div>

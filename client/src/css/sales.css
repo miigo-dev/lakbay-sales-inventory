@@ -1,26 +1,78 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
-
-.container {
-    margin-left: 260px;
-    height: 100vh;
+.damage_container {
     padding: 20px;
-    background-color: white;
-    max-width: calc(100% - 260px);
-    display: flex;
-    flex-wrap: wrap; 
-    gap: 30px;
+    background-color: #f9f9f9;
 }
 
-.card-sales,
-.card-sales-stats,
-.card-daily,
-.card-weekly,
-.card-monthly,
-.card-annually {
-    flex: 1 1 calc(50% - 20px);
+.content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.sales-timeframes {
+    width: 30%;
     padding: 20px;
+    background-color: white;
     border: 1px solid #ccc;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    max-height: fit-content;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sales-timeframes h2 {
+    margin-bottom: 15px;
+}
+
+.timeframe-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.timeframe-options button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.timeframe-options button:hover {
+    background-color: #0056b3;
+}
+
+.line-graph-container {
+    width: 65%;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.line-graph-container h2 {
+    margin-bottom: 20px;
+}
+
+.top-sales {
+    margin-top: 40px;
+}
+
+.top-sales-list {
+    display: flex;
+    gap: 15px;
+}
+
+.top-sales-item {
+    text-align: center;
+}
+
+.top-sales-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+}
+
+.top-sales-item p {
+    margin-top: 10px;
 }
