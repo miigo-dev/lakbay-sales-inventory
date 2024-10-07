@@ -114,69 +114,81 @@ const Reports = () => {
             </div>
 
             {activeTab === 'Lakbay Kain' ? (
-                <table className="kain_table">
-                    <thead>
-                        <tr>
-                            <th>Product ID</th>
-                            <th>Product</th>
-                            <th>Category</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Date Added</th>
-                            <th>Reason</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lakbayKain.map((product, index) => (
-                            <tr key={index}>
-                                <td>{product.id}</td>
-                                <td>{product.productName}</td>
-                                <td>{product.category}</td>
-                                <td>{product.unitofMeasure}</td>
-                                <td>{product.stockQuantity}</td>
-                                <td>{product.dateAdded}</td>
-                                <td>{product.reason}</td>
-                                <td>
-                                    <button onClick={() => openModal(product)}>Edit</button>
-                                    <button onClick={() => deleteItem(product.id)}>Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div>
+                    {lakbayKain.length === 0 ? (
+                        <p>No Damage Report Added Yet</p>
+                    ) : (
+                        <table className="kain_table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Date Added</th>
+                                    <th>Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lakbayKain.map((product, index) => (
+                                    <tr key={index}>
+                                        <td>{product.id}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.category}</td>
+                                        <td>{product.unitofMeasure}</td>
+                                        <td>{product.stockQuantity}</td>
+                                        <td>{product.dateAdded}</td>
+                                        <td>{product.reason}</td>
+                                        <td>
+                                            <button onClick={() => openModal(product)}>Edit</button>
+                                            <button onClick={() => deleteItem(product.id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             ) : (
-                <table className="kape_table">
-                    <thead>
-                        <tr>
-                            <th>Product ID</th>
-                            <th>Product</th>
-                            <th>Category</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Date Added</th>
-                            <th>Reason</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lakbayKape.map((product, index) => (
-                            <tr key={index}>
-                                <td>{product.id}</td>
-                                <td>{product.productName}</td>
-                                <td>{product.category}</td>
-                                <td>{product.unitofMeasure}</td>
-                                <td>{product.stockQuantity}</td>
-                                <td>{product.dateAdded}</td>
-                                <td>{product.reason}</td>
-                                <td>
-                                    <button onClick={() => openModal(product)}>Edit</button>
-                                    <button onClick={() => deleteItem(product.id)}>Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div>
+                    {lakbayKape.length === 0 ? (
+                        <p>No Damage Report Added Yet</p>
+                    ) : (
+                        <table className="kape_table">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Date Added</th>
+                                    <th>Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lakbayKape.map((product, index) => (
+                                    <tr key={index}>
+                                        <td>{product.id}</td>
+                                        <td>{product.productName}</td>
+                                        <td>{product.category}</td>
+                                        <td>{product.unitofMeasure}</td>
+                                        <td>{product.stockQuantity}</td>
+                                        <td>{product.dateAdded}</td>
+                                        <td>{product.reason}</td>
+                                        <td>
+                                            <button onClick={() => openModal(product)}>Edit</button>
+                                            <button onClick={() => deleteItem(product.id)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             )}
 
             {modalOpen && (
@@ -193,6 +205,9 @@ const Reports = () => {
                             <br />
                             <label>Category:</label>
                             <select name="category" value={modalData.category} onChange={inputChange} required>
+
+                                <option value="categ">Select a category</option>
+
                                 <option value="raw">raw</option>
                                 <option value="frozen">frozen</option>
                                 <option value="equipment">equipment</option>
@@ -202,6 +217,8 @@ const Reports = () => {
                             <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
                             <label>Unit of Measure:</label>
                             <select name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required>
+
+                                <option value="categ">Select a unit</option>		
                                 <option value="pieces">pieces</option>
                                 <option value="bulk">bulk</option>
                                 <option value="dozen">dozen</option>
@@ -211,6 +228,8 @@ const Reports = () => {
                             <input type="date" name="dateAdded" value={modalData.dateAdded} onChange={inputChange} required /><br />
                             <label>Reason:</label>
                             <select name="reason" value={modalData.reason} onChange={inputChange} required>
+
+                                <option value="categ">Select a reason</option>
                                 <option value="expired">expired</option>
                                 <option value="wrong item">wrong item</option>
                                 <option value="missing">missing</option>
@@ -219,6 +238,8 @@ const Reports = () => {
                             <br />
                             <label>Action:</label>
                             <select name="action" value={modalData.action} onChange={inputChange} required>
+
+                                <option value="categ">Select a action</option>
                                 <option value="disposed">disposed</option>
                                 <option value="replacement">replacement</option>
                                 <option value="refund">refund</option>
