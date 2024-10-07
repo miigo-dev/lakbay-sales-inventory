@@ -4,10 +4,9 @@ import { LineChart } from '@mui/x-charts/LineChart';
 
 const Sales = () => {
     const [timeFrame, setTimeFrame] = useState('Today');
-    const [products, setProducts] = useState([]);
 
-    const getSalesData = () => {
-        switch (timeFrame) {
+    const getSalesData = (frame) => {
+        switch (frame) {
             case 'Today':
                 return {
                     labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'],
@@ -33,7 +32,20 @@ const Sales = () => {
         }
     };
 
-    const salesData = getSalesData();
+    const calculateTotalSales = (data) => {
+        return data.reduce((total, value) => total + value, 0);
+    };
+
+    const salesData = getSalesData(timeFrame);
+    const totalSales = calculateTotalSales(salesData.data);
+
+    // Pre-calculate totals for each time frame
+    const totalSalesData = {
+        Today: calculateTotalSales(getSalesData('Today').data),
+        Weekly: calculateTotalSales(getSalesData('Weekly').data),
+        Monthly: calculateTotalSales(getSalesData('Monthly').data),
+        Yearly: calculateTotalSales(getSalesData('Yearly').data),
+    };
 
     return (
         <div className='damage_container'>
@@ -43,7 +55,7 @@ const Sales = () => {
                     <div className="timeframe-options">
                         {['Today', 'Weekly', 'Monthly', 'Yearly'].map((frame) => (
                             <button key={frame} onClick={() => setTimeFrame(frame)}>
-                                {frame}
+                                {frame} - Total: {totalSalesData[frame]}
                             </button>
                         ))}
                     </div>
@@ -60,6 +72,7 @@ const Sales = () => {
                             height={400}
                         />
                     </div>
+                    <p>Total Sales: {totalSales}</p>
                 </div>
             </div>
 
@@ -80,8 +93,6 @@ const Sales = () => {
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 };
