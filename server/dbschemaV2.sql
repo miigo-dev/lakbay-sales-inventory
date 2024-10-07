@@ -191,3 +191,24 @@ SELECT o.OrderID,
 FROM Orders o
 JOIN Products p ON o.ProductID = p.ProductID
 WHERE p.ProductStatus = 'Expired' OR p.StockQuantity < o.Quantity;
+
+('John', 'Doe', '09123456789', 'johndoe', 'hashed_password_1', 1),
+
+-- reg new user --
+
+{
+    "firstname": "a",
+    "lastname": "b",
+    "phonenumber": "123",
+    "username": "admin",
+    "password": "password",
+    "roleid": "1"
+}
+
+-- alter tables (optional) --
+
+ALTER TABLE Products ALTER COLUMN SupplierID DROP NOT NULL;
+
+ALTER TABLE products ADD COLUMN lastupdated TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE products ADD COLUMN updatedby VARCHAR(255);
