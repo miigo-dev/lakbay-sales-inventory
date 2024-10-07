@@ -277,24 +277,54 @@ const Inventory = () => {
               <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
               <br />
 
+              {/* Category Dropdown */}
               <label>Category:</label>
-              <input type="text" name="category" value={modalData.category} onChange={inputChange} required />
+              <select name="category" value={modalData.category} onChange={inputChange} required>
+                <option value="">Select a category</option>
+                <option value="Meals">Meals</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Sideorders">Sideorders</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Coffee">Coffee</option>
+                {/* Add more options as needed */}
+              </select>
               <br />
 
+              {/* Unit of Measure Dropdown */}
               <label>Unit of Measure:</label>
-              <input type="text" name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required />
+              <select name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required>
+                <option value="">Select a unit</option>
+                <option value="Piece">Piece</option>
+                <option value="Box">Box</option>
+                <option value="Kilogram">Kilogram</option>
+                <option value="Liter">Liter</option>
+                {/* Add more options as needed */}
+              </select>
               <br />
 
               <label>Price:</label>
               <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
+              
               <label>Stock Quantity:</label>
               <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
+
               <label>Reorder Level:</label>
               <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
+
               <label>Product Status:</label>
               <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
+
+              {/* Supplier Dropdown */}
               <label>Supplier ID (optional):</label>
-              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} /><br />
+              <select name="supplierId" value={modalData.supplierId} onChange={inputChange}>
+                <option value="">Select a supplier</option>
+                <option value="Supplier1">Supplier 1</option>
+                <option value="Supplier2">Supplier 2</option>
+                <option value="Supplier3">Supplier 3</option>
+                {/* Add more options as needed */}
+              </select>
+              <br />
+              
               <button type="submit">Add Product</button>
             </form>
           </div>
