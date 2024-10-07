@@ -1,4 +1,3 @@
-
 import '../css/damage.css';
 import { useState } from 'react';
 
