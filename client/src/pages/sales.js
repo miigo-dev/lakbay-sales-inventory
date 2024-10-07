@@ -56,7 +56,7 @@ const Sales = () => {
                             data={salesData}
                             xField="labels"
                             yField="data"
-                            series={[{ name: 'Sales', data: salesData.data }]}
+                            series={[{ name: 'Sales', data: salesData.data, color: '#C2A790' }]}
                             height={400}
                         />
                     </div>
@@ -81,7 +81,9 @@ const Sales = () => {
                 </div>
             </div>
 
-
+            <div>
+                <p>No Damage Report Added Yet</p>
+            </div>
         </div>
     );
 };

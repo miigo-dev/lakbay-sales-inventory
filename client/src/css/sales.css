@@ -30,7 +30,7 @@
 
 .timeframe-options button {
     padding: 10px;
-    background-color: #007bff;
+    background-color: #C2A790;
     color: white;
     border: none;
     border-radius: 5px;
@@ -38,7 +38,7 @@
 }
 
 .timeframe-options button:hover {
-    background-color: #0056b3;
+    background-color: #C2A790;
 }
 
 .line-graph-container {
