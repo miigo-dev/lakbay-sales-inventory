@@ -1,4 +1,5 @@
 .damage_container {
+    font-family: 'Inter', sans-serif;
     padding: 20px;
     background-color: #f9f9f9;
 }
@@ -10,14 +11,24 @@
 }
 
 .sales-timeframes {
+
     width: 30%;
     padding: 20px;
-    background-color: white;
+    background: linear-gradient(to top, #ffffff, #C2A790); /* Red to Blue */
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.text {
 
+    border-radius: 5px;
+    color: #ffffff;
+    border: none;
+    background-color: #d9c0a5; 
+    padding: 10px 20px;
+    width: 100px;
+
+}
 .sales-timeframes h2 {
     margin-bottom: 15px;
 }
@@ -29,16 +40,36 @@
 }
 
 .timeframe-options button {
+    height: 100px;
     padding: 10px;
-    background-color: #C2A790;
-    color: white;
+    color: black; /* Change font color to black */
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Add transition */
 }
 
+.timeframe-options button.today {
+    background-color: #FFE2E5;
+}
+
+.timeframe-options button.weekly {
+    background-color: #C9F7F5;
+}
+
+.timeframe-options button.monthly {
+    background-color: #FFF4DE;
+}
+
+.timeframe-options button.yearly {
+    background-color: #E1F0FF;
+}
+
+/* Hover effects */
 .timeframe-options button:hover {
-    background-color: #C2A790;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transform: scale(1.05);
+
 }
 
 .line-graph-container {
