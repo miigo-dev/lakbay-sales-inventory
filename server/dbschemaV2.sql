@@ -227,6 +227,11 @@ CREATE TABLE ingredients (
     ingredient_status VARCHAR(50) DEFAULT 'Active'
 );
 
+CREATE TABLE ingredient_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL
+)
+
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
@@ -235,4 +240,13 @@ CREATE TABLE products (
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
     product_status VARCHAR(50) DEFAULT 'Active'
+);
+
+CREATE TABLE order_summary (
+    order_id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    order_status VARCHAR(50) DEFAULT 'Pending',
+    order_total DECIMAL(10, 2),
 );
