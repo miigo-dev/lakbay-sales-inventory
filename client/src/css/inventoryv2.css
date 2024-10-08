@@ -1,0 +1,112 @@
+
+.dashboard_container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f5f7fa;
+}
+
+.dashboard_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search_bar {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    width: 300px;
+}
+
+.profile_section {
+    display: flex;
+    align-items: center;
+}
+
+.username {
+    margin-right: 10px;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.dashboard_content {
+    margin-top: 20px;
+}
+
+.dashboard_title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions .btn {
+    padding: 10px 15px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.export_btn {
+    background-color: #f5f7fa;
+    border: 1px solid #ddd;
+}
+
+.add-inventory_btn {
+    background-color: #f47545;
+    color: white;
+    border: none;
+}
+
+.inventory_table {
+    margin-top: 20px;
+}
+
+.inventory_table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inventorytable th, .inventory_table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.inventory_table th {
+    background-color: #f5f7fa;
+}
+
+.btn {
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit_btn {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 5px;
+}
+
+.delete_btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.pagination {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination_btn {
+    margin-left: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
