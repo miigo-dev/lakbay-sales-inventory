@@ -212,3 +212,45 @@ ALTER TABLE Products ALTER COLUMN SupplierID DROP NOT NULL;
 ALTER TABLE products ADD COLUMN lastupdated TIMESTAMP DEFAULT NOW();
 
 ALTER TABLE products ADD COLUMN updatedby VARCHAR(255);
+
+-- new --
+
+CREATE TABLE ingredients (
+    ingredient_id SERIAL PRIMARY KEY,
+    ingredient_name VARCHAR(100) NOT NULL,
+    ingredient_type VARCHAR(50),
+    quantity INT NOT NULL,
+    unit VARCHAR(50),
+    price DECIMAL(10, 2) NOT NULL,
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    reorder_level INT DEFAULT 10,
+    ingredient_status VARCHAR(50) DEFAULT 'Active'
+);
+
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    reorder_level INT DEFAULT 10,
+    product_status VARCHAR(50) DEFAULT 'Active'
+);
+
+CREATE TABLE product_inout (
+    inout_id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL,
+    action_type VARCHAR(50) CHECK (action_type IN ('IN', 'OUT')), -- IN for restock, OUT for sales
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+    remarks TEXT
+);
+
+CREATE TABLE ingredient_inout (
+    inout_id SERIAL PRIMARY KEY,
+    ingredient_id INT REFERENCES ingredients(ingredient_id),
+    quantity INT NOT NULL,
+    action_type VARCHAR(50) CHECK (action_type IN ('IN', 'OUT')), -- IN for restock, OUT for usage or spoilage
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    remarks TEXT
+);
