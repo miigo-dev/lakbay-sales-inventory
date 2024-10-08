@@ -82,7 +82,7 @@ const Sales = () => {
             </div>
 
             <div className="top-sales">
-    <h2>Top Sales</h2>
+    <h2 className='Top'>Lakbay's Best Seller</h2>
     <div className="top-sales-list">
         <div className="top-sales-item">
             <img src="path/to/image1.jpg" alt="Top Product 1" />
@@ -99,6 +99,7 @@ const Sales = () => {
         {/* Add more items as needed */}
     </div>
 </div>
+
 
         </div>
     );

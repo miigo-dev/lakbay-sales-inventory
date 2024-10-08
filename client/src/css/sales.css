@@ -88,21 +88,29 @@
     margin-top: 40px;
     overflow-x: auto; /* Enables horizontal scrolling */
     white-space: nowrap; /* Prevents items from wrapping */
+    padding: 10px 0; /* Optional: Adds padding to the top and bottom */
 }
 
 .top-sales-list {
-    display: inline-flex; /* Change to inline-flex for horizontal alignment */
+    display: inline-flex; /* Use inline-flex for horizontal alignment */
     gap: 15px; /* Space between items */
 }
 
 .top-sales-item {
     text-align: center;
     display: inline-block; /* Ensures items are treated as inline elements */
-    min-width: 120px; /* Adjust width to control item size */
+    min-width: 120px; /* Minimum width for each item */
 }
 
 .top-sales-item img {
     width: 100px; /* Fixed width for images */
     height: 100px; /* Fixed height for images */
     border-radius: 8px; /* Rounding the corners of images */
+}
+
+.Top{
+    margin-left: 10px;
+    color: 53545C;
+    font-weight: bold;
+
 }
