@@ -100,24 +100,20 @@ const Orders = () => {
 
   return (
     <div className='dashboard'>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=restaurant,local_cafe" />
       <div className="toggle_header">
-  <input type="checkbox" id="toggle" onChange={toggleView} />
-
-  <div className="display">
-    <label htmlFor="toggle">
-      <div className="circle">
-      <span class="material-symbols-outlined food">lunch_dining</span>
-      <span class="material-symbols-outlined coffee">local_cafe</span>
+        <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
+          <div className="display">
+            <label htmlFor="toggle">
+              <div className="circle">
+              <span class="material-symbols-outlined food">restaurant</span>
+              <span class="material-symbols-outlined coffee">local_cafe</span>
+              </div>
+            </label>
+            <span className="toggle-text">
+              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+            </span>
+          </div>
       </div>
-    </label>
-
-    {/* Text showing Lakbay Kape / Lakbay Kain */}
-    <span className="toggle-text">
-      {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-    </span>
-  </div>
-</div>
       <div className='search-container'>
         <input className="search-input" placeholder="Search your Orders"/>
         <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
