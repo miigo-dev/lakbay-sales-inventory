@@ -18,4 +18,3 @@ exports.addProduct = async (req, res) => {
         console.error(error.message);
     }
 }
-}
