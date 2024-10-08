@@ -3,6 +3,7 @@ import '../css/inventory.css';
 
 const Inventory = () => {
   const [activeTab, setActiveTab] = useState('Order Status');
+  const [activeSection, setActiveSection] = useState('Lakbay Kape');
   const [products, setProducts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false); // State for edit modal
@@ -176,162 +177,265 @@ const Inventory = () => {
 
   return (
     <div className="inventory_container">
-      <div className="searchbar">
-        <input type="text" placeholder="Search a product" className="searchbar_input" />
-        <button className="search_btn">Search</button>
-        <button className="filter_btn">Filter</button>
-      </div>
+    <div className="searchbar">
+      <input type="text" placeholder="Search a product" className="searchbar_input" />
+      <button className="search_btn">Search</button>
+      <button className="filter_btn">Filter</button>
+    </div>
 
-      <div className="tabs">
-        <button
-          className={`tab ${activeTab === 'Order Status' ? 'active' : ''}`}
-          onClick={() => setActiveTab('Order Status')}
-        >
-          Order Status
-        </button>
+    <div className="toggle-buttons">
+      {/* Toggle between Lakbay Kape and Lakbay Kain */}
+      <button
+        className={`toggle-btn ${activeSection === 'Lakbay Kape' ? 'active' : ''}`}
+        onClick={() => setActiveSection('Lakbay Kape')}
+      >
+        Lakbay Kape
+      </button>
+      <button
+        className={`toggle-btn ${activeSection === 'Lakbay Kain' ? 'active' : ''}`}
+        onClick={() => setActiveSection('Lakbay Kain')}
+      >
+        Lakbay Kain
+      </button>
+      <button className="toggle-btn">Add Report</button>
+    </div>
 
-        <button
-          className={`tab ${activeTab === 'Product Status' ? 'active' : ''}`}
-          onClick={() => setActiveTab('Product Status')}
-        >
-          Product Status
-        </button>
-
-        <button className="add_product_btn2" onClick={openModal} disabled={activeTab === 'Order Status'}>
-          Add Product
-        </button>
-      </div>
-
-      {activeTab === 'Order Status' ? (
+    {/* Container for both sections */}
+    <div className="content-container">
+      {/* Conditionally render content based on active section */}
+      {activeSection === 'Lakbay Kape' && (
         <div>
-          <table className="order_table">
-            <thead>
-              <tr>
-                <td>
-                  <input type="checkbox" className="hidden_checkbox" />
-                </td>
-                <th>Order ID</th>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Store</th>
-                <th>Instruction</th>
-                <th>Items</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      ) : (
-        <table className="order_table">
-          <thead>
-            <tr>
-              <th>Product ID</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Unit of Measure</th>
-              <th>Price</th>
-              <th>Stock Quantity</th>
-              <th>Reorder Level</th>
-              <th>Product Status</th>
-              <th>Supplier ID</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(products) && products.length > 0 ? (
-              products.map((product) => (
-                <tr key={product.productid}>
-                  <td>{product.productid}</td>
-                  <td>{product.productname}</td>
-                  <td>{product.category}</td>
-                  <td>{product.unitofmeasure}</td>
-                  <td>{product.price}</td>
-                  <td>{product.stockquantity}</td>
-                  <td>{product.reorderlevel}</td>
-                  <td>{product.productstatus}</td>
-                  <td>{product.supplierId}</td>
-                  <td>
-                    <button onClick={() => openEditModal(product)}>Edit</button> {/* Open edit modal */}
-                    <button onClick={() => deleteProduct(product.productid)}>Delete</button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10">No products available.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-
-      {modalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>&times;</span>
-
-            <h2>Add Product</h2>
-
-            <form onSubmit={(e) => { e.preventDefault(); submitForm(); }}>
-              <label>Product Name:</label>
-              <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
-              <br />
-
-              {/* Category Dropdown */}
-              <label>Category:</label>
-              <select name="category" value={modalData.category} onChange={inputChange} required>
-                <option value="">Select a category</option>
-                <option value="Meals">Meals</option>
-                <option value="Drinks">Drinks</option>
-                <option value="Sideorders">Sideorders</option>
-                <option value="Dessert">Dessert</option>
-                <option value="Coffee">Coffee</option>
-                {/* Add more options as needed */}
-              </select>
-              <br />
-
-              {/* Unit of Measure Dropdown */}
-              <label>Unit of Measure:</label>
-              <select name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required>
-                <option value="">Select a unit</option>
-                <option value="Piece">Piece</option>
-                <option value="Box">Box</option>
-                <option value="Kilogram">Kilogram</option>
-                <option value="Liter">Liter</option>
-                {/* Add more options as needed */}
-              </select>
-              <br />
-
-              <label>Price:</label>
-              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
-              
-              <label>Stock Quantity:</label>
-              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
-
-              <label>Reorder Level:</label>
-              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
-
-              <label>Product Status:</label>
-              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
-
-              {/* Supplier Dropdown */}
-              <label>Supplier ID (optional):</label>
-              <select name="supplierId" value={modalData.supplierId} onChange={inputChange}>
-                <option value="">Select a supplier</option>
-                <option value="Supplier1">Supplier 1</option>
-                <option value="Supplier2">Supplier 2</option>
-                <option value="Supplier3">Supplier 3</option>
-                {/* Add more options as needed */}
-              </select>
-              <br />
-              
-              <button type="submit">Add Product</button>
-            </form>
+          <h2>Lakbay Kape</h2>
+          <div className="tabs">
+            <button
+              className={`tab ${activeTab === 'Order Status' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Order Status')}
+            >
+              Order Status
+            </button>
+            <button
+              className={`tab ${activeTab === 'Product Status' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Product Status')}
+            >
+              Product Status
+            </button>
+            <button className="add_product_btn2" onClick={openModal} disabled={activeTab === 'Order Status'}>
+              Add Product
+            </button>
           </div>
+
+          {/* Render the appropriate table */}
+          {activeTab === 'Order Status' ? (
+            <div>
+              <table className="order_table">
+                <thead>
+                  <tr>
+                    <td><input type="checkbox" className="hidden_checkbox" /></td>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Store</th>
+                    <th>Instruction</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          ) : (
+            <table className="order_table">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Unit of Measure</th>
+                  <th>Price</th>
+                  <th>Stock Quantity</th>
+                  <th>Reorder Level</th>
+                  <th>Product Status</th>
+                  <th>Supplier ID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(products) && products.length > 0 ? (
+                  products.map((product) => (
+                    <tr key={product.productid}>
+                      <td>{product.productid}</td>
+                      <td>{product.productname}</td>
+                      <td>{product.category}</td>
+                      <td>{product.unitofmeasure}</td>
+                      <td>{product.price}</td>
+                      <td>{product.stockquantity}</td>
+                      <td>{product.reorderlevel}</td>
+                      <td>{product.productstatus}</td>
+                      <td>{product.supplierId}</td>
+                      <td>
+                        <button onClick={() => openEditModal(product)}>Edit</button>
+                        <button onClick={() => deleteProduct(product.productid)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="10">No products available.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 
-      {editModalOpen && (
+      {activeSection === 'Lakbay Kain' && (
+        <div>
+          <h2>Lakbay Kain</h2>
+          <div className="tabs">
+            <button
+              className={`tab ${activeTab === 'Order Status' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Order Status')}
+            >
+              Order Status
+            </button>
+            <button
+              className={`tab ${activeTab === 'Product Status' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Product Status')}
+            >
+              Product Status
+            </button>
+            <button className="add_product_btn2" onClick={openModal} disabled={activeTab === 'Order Status'}>
+              Add Product
+            </button>
+          </div>
+
+          {/* Render the appropriate table */}
+          {activeTab === 'Order Status' ? (
+            <div>
+              <table className="order_table">
+                <thead>
+                  <tr>
+                    <td><input type="checkbox" className="hidden_checkbox" /></td>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Store</th>
+                    <th>Instruction</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          ) : (
+            <table className="order_table">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Unit of Measure</th>
+                  <th>Price</th>
+                  <th>Stock Quantity</th>
+                  <th>Reorder Level</th>
+                  <th>Product Status</th>
+                  <th>Supplier ID</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(products) && products.length > 0 ? (
+                  products.map((product) => (
+                    <tr key={product.productid}>
+                      <td>{product.productid}</td>
+                      <td>{product.productname}</td>
+                      <td>{product.category}</td>
+                      <td>{product.unitofmeasure}</td>
+                      <td>{product.price}</td>
+                      <td>{product.stockquantity}</td>
+                      <td>{product.reorderlevel}</td>
+                      <td>{product.productstatus}</td>
+                      <td>{product.supplierId}</td>
+                      <td>
+                        <button onClick={() => openEditModal(product)}>Edit</button>
+                        <button onClick={() => deleteProduct(product.productid)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="10">No products available.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+
+   {/* Add Product Modal */}
+{modalOpen && (
+  <div className="modal">
+    <div className="modal-content">
+      <span className="close" onClick={closeModal}>&times;</span>
+      <h2>Add Product</h2>
+      
+      <form onSubmit={(e) => { e.preventDefault(); submitForm(); }}>
+
+        
+
+        <label>Product Name:</label>
+        <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
+        <br />
+
+
+        <label>Category:</label>
+        <input type="text" name="category" value={modalData.category} onChange={inputChange} required />
+        <br />
+
+
+        <label>Unit of Measure:</label>
+        <input type="text" name="unitOfMeasure" value={modalData.unitOfMeasure} onChange={inputChange} required />
+        <br />
+
+
+        <label>Price:</label>
+        <input type="number" name="price" value={modalData.price} onChange={inputChange} required />
+        <br />
+
+       
+        <label>Stock Quantity:</label>
+        <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required />
+        <br />
+
+   
+        <label>Reorder Level:</label>
+        <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required />
+        <br />
+
+ 
+        <label>Product Status:</label>
+        <select name="productStatus" value={modalData.productStatus} onChange={inputChange} required>
+          <option value="Available">Available</option>
+          <option value="Out of Stock">Out of Stock</option>
+        </select>
+        <br />
+
+      
+        <label>Supplier ID:</label>
+        <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} required />
+        <br />
+
+  
+        <button type="submit">Add Product</button>
+      </form>
+    </div>
+  </div>
+)}
+
+
+{editModalOpen && (
         <div className="modal">
           <div className="modal-content">
             <span className="close" onClick={closeModal}>&times;</span>
@@ -367,7 +471,6 @@ const Inventory = () => {
         </div>
       )}
     </div>
-  );
+);
 };
-
 export default Inventory;
