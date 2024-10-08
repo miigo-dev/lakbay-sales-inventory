@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import '../css/orders.css';
 
 const Orders = () => {
   const [activeLink, setActiveLink] = useState('all');
-  const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recentOrder, setRecentOrder] = useState(null);
@@ -15,30 +13,16 @@ const Orders = () => {
   const [change, setChange] = useState(0);
   const [isLakbayKape, setIsLakbayKape] = useState(false);
 
-  useEffect(() => {
-    fetchMenuItems();
-  }, [activeLink, isLakbayKape]);
-
-  const fetchMenuItems = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/get-inv');
-      const items = response.data;
-      let filteredItems = items.filter(item => 
-        activeLink === 'all' || item.category === activeLink
-      );
-
-      if (isLakbayKape) {
-        filteredItems = items.filter(item => item.category === 'coffee');
-      }
-
-      setMenuItems(filteredItems);
-    } catch (error) {
-      console.error('Error fetching menu items:', error);
-    }
-  };
+  const staticMenuItems = [
+    { productname: 'Latte', category: 'coffee', price: 3.5, stockquantity: 10 },
+    { productname: 'Cappuccino', category: 'coffee', price: 4.0, stockquantity: 8 },
+    { productname: 'Burger', category: 'meals', price: 6.0, stockquantity: 5 },
+    { productname: 'Fries', category: 'side Orders', price: 2.5, stockquantity: 12 },
+    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 15 }
+  ];
 
   const handleLinkClick = (link) => setActiveLink(link);
-  
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setQuantity(0);
@@ -96,14 +80,6 @@ const Orders = () => {
     }
 
     if (amount >= totalPrice) {
-      const updatedMenuItems = menuItems.map(item => {
-        const order = orders.find(o => o.item === item.productname);
-        return order 
-          ? { ...item, stockquantity: item.stockquantity - order.quantity } 
-          : item;
-      });
-
-      setMenuItems(updatedMenuItems);
       setRecentOrder(orders[orders.length - 1]);
       setChange(amount - totalPrice);
       setCustomAmount('');
@@ -115,7 +91,7 @@ const Orders = () => {
   };
 
   const handleCloseRecentOrderModal = () => {
-    setRecentOrder(null); 
+    setRecentOrder(null);
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
@@ -127,29 +103,23 @@ const Orders = () => {
           {isLakbayKape ? 'Show Lakbay Kain' : 'Show Lakbay Kape'}
         </button>
       </div>
-      <div className='search-container'>
-        <input className="search-input" placeholder="Search your Orders"/>
-        <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
-          <i className="fas fa-search search-icon"></i>
-          </button>
-      </div>
-            <ul className='navigation-bar'>
-              {['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
-                <li key={category}>
-                  <a
-                    href="#!"
-                    className={activeLink === category ? 'active' : ''}
-                    onClick={() => handleLinkClick(category)}
-                  >
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </a>
-              </li>
-          ))}
-        </ul>
-   
+      <ul className='navigation-bar'>
+        {['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
+          <li key={category}>
+            <a
+              href="#!"
+              className={activeLink === category ? 'active' : ''}
+              onClick={() => handleLinkClick(category)}
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </a>
+          </li>
+        ))}
+      </ul>
 
       <div className='order_container'>
-        {menuItems
+        {staticMenuItems
+          .filter(item => activeLink === 'all' || item.category === activeLink)
           .filter(item => item.stockquantity > 0)
           .map((item, index) => (
             <div key={index} className='order_item' onClick={() => handleItemClick(item)}>
@@ -185,57 +155,53 @@ const Orders = () => {
       {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
-            <h2 className='font-size'>Order Successful</h2>
-            <h5>_</h5>
-            <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
+            <h2>Order Successful</h2>
+            <h2>Change: {change.toFixed(2)}</h2>
             <p>Order: {recentOrder.item}</p>
             <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
             <p>Quantity: {recentOrder.quantity}</p>
             <p>Price: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
-            <h1>"</h1>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Complete</button>
           </div>
         </div>
       )}
 
-
       <div className="items-section">
-          <h4>Items:</h4>
-          {orders.length === 0 ? (
-            <p>No items added yet.</p>
-          ) : (
-            <ul>
-              {orders.map((order, index) => (
-                <li key={index} className="order-item">
-                  <div className="order-content">
-                    <span>
-                      {order.item}
-                      {order.size && ` - Size: ${order.size}`}
-                      {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
-                    </span>
-                    <button className="delete-button" onClick={() => deleteOrder(index)}>
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+        <h4>Items:</h4>
+        {orders.length === 0 ? (
+          <p>No items added yet.</p>
+        ) : (
+          <ul>
+            {orders.map((order, index) => (
+              <li key={index} className="order-item">
+                <div className="order-content">
+                  <span>
+                    {order.item}
+                    {order.size && ` - Size: ${order.size}`}
+                    {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
+                  </span>
+                  <button className="delete-button" onClick={() => deleteOrder(index)}>
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="total-section">
-            <h4>Total: {totalPrice.toFixed(2)}</h4>
-            <div className="custom-amount-section">
-              <input
-                type="number"
-                value={customAmount}
-                onChange={(e) => setCustomAmount(e.target.value)}
-                placeholder="Enter amount"
-                min={totalPrice + 0.00}
-              />
-              <button className='charge-button' onClick={handleCharge}>Charge
-              </button>
-            </div>
+          <h4>Total: {totalPrice.toFixed(2)}</h4>
+          <div className="custom-amount-section">
+            <input
+              type="number"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              placeholder="Enter amount"
+              min={totalPrice + 0.00}
+            />
+            <button className='charge-button' onClick={handleCharge}>Charge</button>
           </div>
-      </div> 
+        </div>
+      </div>
     </div>
   );
 };
