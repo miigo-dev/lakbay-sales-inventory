@@ -103,6 +103,12 @@ const Orders = () => {
           {isLakbayKape ? 'Show Lakbay Kain' : 'Show Lakbay Kape'}
         </button>
       </div>
+      <div className='search-container'>
+        <input className="search-input" placeholder="Search your Orders"/>
+        <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
+          <i className="fas fa-search search-icon"></i>
+          </button>
+      </div>
       <ul className='navigation-bar'>
         {['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
           <li key={category}>
@@ -116,6 +122,8 @@ const Orders = () => {
           </li>
         ))}
       </ul>
+
+      
 
       <div className='order_container'>
         {staticMenuItems
