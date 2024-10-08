@@ -103,7 +103,7 @@ const Orders = () => {
       <div className="toggle_header">
         <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
           <div className="display">
-            <label htmlFor="toggle">
+            <label className='label_type' htmlFor="toggle">
               <div className="circle">
               <span class="material-symbols-outlined food">restaurant</span>
               <span class="material-symbols-outlined coffee">local_cafe</span>
