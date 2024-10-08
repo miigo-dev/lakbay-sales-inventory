@@ -51,11 +51,17 @@ const Sales = () => {
         <div className='damage_container'>
             <div className="content-wrapper">
                 <div className="sales-timeframes">
-                    <h2>Sales</h2>
+
+                    <h2 className='text'>Sales</h2>
+
                     <div className="timeframe-options">
                         {['Today', 'Weekly', 'Monthly', 'Yearly'].map((frame) => (
-                            <button key={frame} onClick={() => setTimeFrame(frame)}>
-                                {frame} - Total: {totalSalesData[frame]}
+                            <button 
+                                key={frame} 
+                                onClick={() => setTimeFrame(frame)} 
+                                className={frame.toLowerCase()} // Add class based on frame
+                            >
+                                {frame}- ₱{totalSalesData[frame]}
                             </button>
                         ))}
                     </div>
@@ -72,27 +78,28 @@ const Sales = () => {
                             height={400}
                         />
                     </div>
-                    <p>Total Sales: {totalSales}</p>
                 </div>
             </div>
 
             <div className="top-sales">
-                <h2>Top Sales</h2>
-                <div className="top-sales-list">
-                    <div className="top-sales-item">
-                        <img src="path/to/image1.jpg" alt="Top Product 1" />
-                        <p>Product 1</p>
-                    </div>
-                    <div className="top-sales-item">
-                        <img src="path/to/image2.jpg" alt="Top Product 2" />
-                        <p>Product 2</p>
-                    </div>
-                    <div className="top-sales-item">
-                        <img src="path/to/image3.jpg" alt="Top Product 3" />
-                        <p>Product 3</p>
-                    </div>
-                </div>
-            </div>
+    <h2>Top Sales</h2>
+    <div className="top-sales-list">
+        <div className="top-sales-item">
+            <img src="path/to/image1.jpg" alt="Top Product 1" />
+            <p>Product 1</p>
+        </div>
+        <div className="top-sales-item">
+            <img src="path/to/image2.jpg" alt="Top Product 2" />
+            <p>Product 2</p>
+        </div>
+        <div className="top-sales-item">
+            <img src="path/to/image3.jpg" alt="Top Product 3" />
+            <p>Product 3</p>
+        </div>
+        {/* Add more items as needed */}
+    </div>
+</div>
+
         </div>
     );
 };
