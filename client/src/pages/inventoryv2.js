@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '../css/inventoryv2.css';
 import React from 'react';
 
@@ -6,8 +6,8 @@ const InventoryDashboard = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedSection, setSelectedSection] = useState('main'); 
+    const [selectedInventoryType, setSelectedInventoryType] = useState('products'); // New state for inventory type
     const [inventoryData, setInventoryData] = useState([{
-
         id: 1,
         productId: '#ILWL02012',
         productName: 'Macbook Pro M1 2020',
@@ -16,7 +16,8 @@ const InventoryDashboard = () => {
         supplierId: 120,
         reorderLevel: 120,
         productStatus: 100,
-        section: 'main' 
+        section: 'main',
+        type: 'products' // Added inventory type
     }]);
 
     const [currentProduct, setCurrentProduct] = useState({
@@ -28,12 +29,12 @@ const InventoryDashboard = () => {
         supplierId: '',
         reorderLevel: '',
         productStatus: '',
-        section: 'main' 
+        section: 'main',
+        type: 'products' // Default to products
     });
 
     // Handle modal open for Add or Edit
     const openModal = (product = null) => {
-
         if (product) {
             setCurrentProduct(product);
             setIsEditing(true);
@@ -47,7 +48,8 @@ const InventoryDashboard = () => {
                 supplierId: '',
                 reorderLevel: '',
                 productStatus: '',
-                section: 'main'
+                section: selectedSection,
+                type: selectedInventoryType // Set default type based on selection
             });
             setIsEditing(false);
         }
@@ -67,17 +69,22 @@ const InventoryDashboard = () => {
     };
 
     const handleSubmit = () => {
+        // Set the section and type of the current product based on selections
+        const newProduct = {
+            ...currentProduct,
+            section: selectedSection,
+            type: selectedInventoryType,
+            id: inventoryData.length + 1 // Increment ID
+        };
+
+        // Handle adding or editing based on the modal state
         if (isEditing) {
             setInventoryData((prevData) =>
                 prevData.map((item) =>
-                    item.id === currentProduct.id ? currentProduct : item
+                    item.id === currentProduct.id ? newProduct : item
                 )
             );
         } else {
-            const newProduct = {
-                ...currentProduct,
-                id: inventoryData.length + 1
-            };
             setInventoryData((prevData) => [...prevData, newProduct]);
         }
         closeModal();
@@ -90,7 +97,7 @@ const InventoryDashboard = () => {
         }
     };
 
-    const filteredInventory = inventoryData.filter(item => item.section === selectedSection);
+    const filteredInventory = inventoryData.filter(item => item.section === selectedSection && item.type === selectedInventoryType);
 
     return (
         <div className="dashboard_container">
@@ -120,6 +127,14 @@ const InventoryDashboard = () => {
                             <option value="lakbayKape">Lakbay Kape</option>
                         </select>
 
+                        <select
+                            className="inventory_type_dropdown" // Dropdown for inventory type
+                            value={selectedInventoryType}
+                            onChange={(e) => setSelectedInventoryType(e.target.value)}>
+                            <option value="products">Products</option>
+                            <option value="ingredients">Ingredients</option>
+                        </select>
+
                         <button className="btn export_btn">Export</button>
                         <button className="btn add-inventory_btn" onClick={() => openModal()}>
                             Add Inventory
@@ -132,13 +147,22 @@ const InventoryDashboard = () => {
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Product ID</th>
-                                <th>Product Name</th>
+                                {selectedInventoryType === 'products' ? (
+                                    <>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                    </>
+                                ) : (
+                                    <>
+                                        <th>Ingredient ID</th>
+                                        <th>Ingredient Name</th>
+                                    </>
+                                )}
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Supplier Id</th>
                                 <th>Reorder Level</th>
-                                <th>Product Status</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -146,16 +170,24 @@ const InventoryDashboard = () => {
                         <tbody>
                             {filteredInventory.length > 0 ? (
                                 filteredInventory.map((item, index) => (
-
                                     <tr key={item.id}>
                                         <td>{index + 1}</td>
-                                        <td>{item.productId}</td>
-                                        <td>{item.productName}</td>
+                                        {selectedInventoryType === 'products' ? (
+                                            <>
+                                                <td>{item.productId}</td>
+                                                <td>{item.productName}</td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td>{item.ingredient_id}</td>
+                                                <td>{item.ingredient_name}</td>
+                                            </>
+                                        )}
                                         <td>{item.quantity}</td>
                                         <td>{item.price}</td>
-                                        <td>{item.supplierId}</td>
-                                        <td>{item.reorderLevel}</td>
-                                        <td>{item.productStatus}</td>
+                                        <td>{item.supplierId || item.supplier_id}</td>
+                                        <td>{item.reorderLevel || item.reorder_level}</td>
+                                        <td>{item.productStatus || item.ingredient_status}</td>
                                         <td>
                                             <button className="btn edit_btn" onClick={() => openModal(item)}>
                                                 Edit
@@ -168,7 +200,7 @@ const InventoryDashboard = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="9">No inventory items found.</td>
+                                    <td colSpan="8">No inventory items found.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -183,33 +215,56 @@ const InventoryDashboard = () => {
                 </div>
             </div>
 
- 
             {modalOpen && (
                 <div className="modal">
                     <div className="modal-content">
                         <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
 
-                        <label htmlFor="productId">Product Name</label>
-                        <input
-                            type="text"
-                            name="productId"
-                            placeholder="Product Name"
-                            value={currentProduct.productId}
-                            onChange={handleInputChange}
-                        />
+                        {selectedInventoryType === 'products' ? (
+                            <>
+                                <label htmlFor="productId">Product ID</label>
+                                <input
+                                    type="text"
+                                    name="productId"
+                                    placeholder="Product ID"
+                                    value={currentProduct.productId}
+                                    onChange={handleInputChange}
+                                />
 
-                        <label htmlFor="productName">Product ID</label>
-                        <input
-                            type="text"
-                            name="productName"
-                            placeholder="Product ID"
-                            value={currentProduct.productName}
-                            onChange={handleInputChange}
-                        />
+                                <label htmlFor="productName">Product Name</label>
+                                <input
+                                    type="text"
+                                    name="productName"
+                                    placeholder="Product Name"
+                                    value={currentProduct.productName}
+                                    onChange={handleInputChange}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <label htmlFor="ingredient_id">Ingredient ID</label>
+                                <input
+                                    type="number"
+                                    name="ingredient_id"
+                                    placeholder="Ingredient ID"
+                                    value={currentProduct.ingredient_id}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="ingredient_name">Ingredient Name</label>
+                                <input
+                                    type="text"
+                                    name="ingredient_name"
+                                    placeholder="Ingredient Name"
+                                    value={currentProduct.ingredient_name}
+                                    onChange={handleInputChange}
+                                />
+                            </>
+                        )}
 
                         <label htmlFor="quantity">Quantity</label>
                         <input
-                            type="text"
+                            type="number"
                             name="quantity"
                             placeholder="Quantity"
                             value={currentProduct.quantity}
@@ -218,7 +273,8 @@ const InventoryDashboard = () => {
 
                         <label htmlFor="price">Price</label>
                         <input
-                            type="text"
+                            type="number"
+                            step="0.01"
                             name="price"
                             placeholder="Price"
                             value={currentProduct.price}
@@ -251,18 +307,21 @@ const InventoryDashboard = () => {
                             value={currentProduct.productStatus}
                             onChange={handleInputChange}
                         />
+                        
                         <label htmlFor="section">Inventory Section</label>
                         <select
                             name="section"
-                            value={currentProduct.section}
-                            onChange={handleInputChange}
+                            value={selectedSection}
+                            onChange={(e) => setSelectedSection(e.target.value)}
                         >
                             <option value="main">Main Inventory</option>
                             <option value="lakbayKain">Lakbay Kain</option>
                             <option value="lakbayKape">Lakbay Kape</option>
                         </select>
 
-                        <button onClick={handleSubmit}>{isEditing ? 'Save Changes' : 'Add Inventory'}</button>
+                        <button onClick={handleSubmit}>
+                            {isEditing ? 'Save Changes' : 'Add Inventory'}
+                        </button>
                         <button onClick={closeModal}>Cancel</button>
                     </div>
                 </div>
