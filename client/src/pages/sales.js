@@ -82,22 +82,24 @@ const Sales = () => {
             </div>
 
             <div className="top-sales">
-                <h2>Top Sales</h2>
-                <div className="top-sales-list">
-                    <div className="top-sales-item">
-                        <img src="path/to/image1.jpg" alt="Top Product 1" />
-                        <p>Product 1</p>
-                    </div>
-                    <div className="top-sales-item">
-                        <img src="path/to/image2.jpg" alt="Top Product 2" />
-                        <p>Product 2</p>
-                    </div>
-                    <div className="top-sales-item">
-                        <img src="path/to/image3.jpg" alt="Top Product 3" />
-                        <p>Product 3</p>
-                    </div>
-                </div>
-            </div>
+    <h2>Top Sales</h2>
+    <div className="top-sales-list">
+        <div className="top-sales-item">
+            <img src="path/to/image1.jpg" alt="Top Product 1" />
+            <p>Product 1</p>
+        </div>
+        <div className="top-sales-item">
+            <img src="path/to/image2.jpg" alt="Top Product 2" />
+            <p>Product 2</p>
+        </div>
+        <div className="top-sales-item">
+            <img src="path/to/image3.jpg" alt="Top Product 3" />
+            <p>Product 3</p>
+        </div>
+        {/* Add more items as needed */}
+    </div>
+</div>
+
         </div>
     );
 };
