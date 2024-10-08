@@ -236,21 +236,3 @@ CREATE TABLE products (
     reorder_level INT DEFAULT 10,
     product_status VARCHAR(50) DEFAULT 'Active'
 );
-
-CREATE TABLE product_inout (
-    inout_id SERIAL PRIMARY KEY,
-    product_id INT REFERENCES products(product_id),
-    quantity INT NOT NULL,
-    action_type VARCHAR(50) CHECK (action_type IN ('IN', 'OUT')), -- IN for restock, OUT for sales
-    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-    remarks TEXT
-);
-
-CREATE TABLE ingredient_inout (
-    inout_id SERIAL PRIMARY KEY,
-    ingredient_id INT REFERENCES ingredients(ingredient_id),
-    quantity INT NOT NULL,
-    action_type VARCHAR(50) CHECK (action_type IN ('IN', 'OUT')), -- IN for restock, OUT for usage or spoilage
-    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    remarks TEXT
-);
