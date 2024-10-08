@@ -220,6 +220,17 @@ const InventoryDashboard = () => {
                     <div className="modal-content">
                         <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
 
+                        <label htmlFor="section">Inventory Section</label>
+                        <select
+                            name="section"
+                            value={selectedSection}
+                            onChange={(e) => setSelectedSection(e.target.value)}
+                        >
+                            <option value="main">Main Inventory</option>
+                            <option value="lakbayKain">Lakbay Kain</option>
+                            <option value="lakbayKape">Lakbay Kape</option>
+                        </select>
+
                         {selectedInventoryType === 'products' ? (
                             <>
                                 <label htmlFor="productId">Product ID</label>
@@ -308,16 +319,7 @@ const InventoryDashboard = () => {
                             onChange={handleInputChange}
                         />
                         
-                        <label htmlFor="section">Inventory Section</label>
-                        <select
-                            name="section"
-                            value={selectedSection}
-                            onChange={(e) => setSelectedSection(e.target.value)}
-                        >
-                            <option value="main">Main Inventory</option>
-                            <option value="lakbayKain">Lakbay Kain</option>
-                            <option value="lakbayKape">Lakbay Kape</option>
-                        </select>
+                    
 
                         <button onClick={handleSubmit}>
                             {isEditing ? 'Save Changes' : 'Add Inventory'}

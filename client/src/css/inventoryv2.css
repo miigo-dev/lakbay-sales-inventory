@@ -178,7 +178,7 @@
 .modal-content label {
     display: block;
     margin-bottom: 5px;
-
+    font-weight: bold;
 }
 
 .modal-content input,
@@ -187,8 +187,17 @@
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 5px;
+    border: 1px solid #ddd;
 }
 
+.modal-content button {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+}
 
 .modal-content button:hover {
     background-color: #45a049; /* Darker green on hover */
