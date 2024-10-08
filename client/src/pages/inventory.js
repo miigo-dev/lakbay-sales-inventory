@@ -14,7 +14,7 @@ const Inventory = () => {
     stockQuantity: '',
     reorderLevel: '',
     productStatus: '',
-    supplierId: ''
+    supplierId: '',
   });
   const [editingProductId, setEditingProductId] = useState(null); // State for tracking which product is being edited
 
