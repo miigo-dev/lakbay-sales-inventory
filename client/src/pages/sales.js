@@ -1,4 +1,15 @@
 import '../css/sales.css';
+
+import T1 from '../assets/icons/t1.svg'
+import T2 from '../assets/icons/t2.svg'
+import T3 from '../assets/icons/t3.svg'
+import T4 from '../assets/icons/t4.svg'
+import T5 from '../assets/icons/t5.svg'
+import T6 from '../assets/icons/t6.svg'
+import T7 from '../assets/icons/t7.svg'
+import T8 from '../assets/icons/t8.svg'
+
+
 import { useState } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 
@@ -84,17 +95,37 @@ const Sales = () => {
             <div className="top-sales">
     <h2 className='Top'>Lakbay's Best Seller</h2>
     <div className="top-sales-list">
-        <div className="top-sales-item">
-            <img src="path/to/image1.jpg" alt="Top Product 1" />
-            <p>Product 1</p>
+        <div className="T1">
+            <img src={T1} alt="T1"/>
+            <p>Sakura Latte 1</p>
         </div>
-        <div className="top-sales-item">
-            <img src="path/to/image2.jpg" alt="Top Product 2" />
-            <p>Product 2</p>
+        <div className="T2">
+            <img src={T2} alt="T2"/>
+        <p>Matcha Latte</p>
         </div>
-        <div className="top-sales-item">
-            <img src="path/to/image3.jpg" alt="Top Product 3" />
-            <p>Product 3</p>
+        <div className="T3">
+            <img src={T3} alt="T3"/>
+            <p>Brewed Coffee</p>
+        </div>
+        <div className="T4">
+            <img src={T4} alt="T4"/>
+            <p>Beef Salpicao</p>
+        </div>
+        <div className="T5">
+            <img src={T5} alt="T5"/>
+            <p>Beef Bulgogi</p>
+        </div>
+        <div className="T6">
+            <img src={T6} alt="T6"/>
+            <p>Chicken Teriyaki</p>
+        </div>
+        <div className="T7">
+            <img src={T7} alt="T7"/>
+            <p>Beef Padkrapao</p>
+        </div>
+        <div className="T8">
+            <img src={T8} alt="T8"/>
+            <p>Chicken Buttered Garlic</p>
         </div>
         {/* Add more items as needed */}
     </div>

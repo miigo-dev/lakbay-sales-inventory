@@ -61,23 +61,35 @@
     border: none;
 }
 
-.inventory_table {
-    margin-top: 20px;
-}
-
 .inventory_table table {
     width: 100%;
     border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.inventorytable th, .inventory_table td {
+.inventory_table th, .inventory_table td {
+    padding: 12px 15px;
     text-align: left;
-    padding: 10px;
     border-bottom: 1px solid #ddd;
 }
 
 .inventory_table th {
-    background-color: #f5f7fa;
+    background-color: #f8f8f8;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.inventory_table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.inventory_table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.inventory_table td {
+    font-size: 14px;
 }
 
 .btn {

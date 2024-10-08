@@ -219,20 +219,43 @@ CREATE TABLE ingredients (
     ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
     ingredient_type VARCHAR(50),
-    quantity INT NOT NULL,
-    unit VARCHAR(50),
-    price DECIMAL(10, 2) NOT NULL,
+    ingredient_quantity INT NOT NULL,
+    ingredient_unit VARCHAR(50),
+    ingredient_price DECIMAL(10, 2) NOT NULL,
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
     ingredient_status VARCHAR(50) DEFAULT 'Active'
 );
 
+CREATE TABLE ingredient_type (
+    type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    product_quantity INT NOT NULL,
+    product_price DECIMAL(10, 2) NOT NULL,
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
     product_status VARCHAR(50) DEFAULT 'Active'
+);
+
+CREATE TABLE suppliers (
+    supplier_id SERIAL PRIMARY KEY,
+    supplier_name VARCHAR(100) NOT NULL,
+    contact_person VARCHAR(100),
+    phone_number VARCHAR(20),
+    email VARCHAR(100),
+    address VARCHAR(255)
+);
+
+CREATE TABLE order_summary (
+    order_id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    order_status VARCHAR(50) DEFAULT 'Pending',
+    order_total DECIMAL(10, 2),
 );
