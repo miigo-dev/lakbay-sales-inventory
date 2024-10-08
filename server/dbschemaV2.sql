@@ -216,13 +216,23 @@ ALTER TABLE products ADD COLUMN updatedby VARCHAR(255);
 -- new --
 
 CREATE TABLE ingredients (
-    ingredientid SERIAL PRIMARY KEY,
-    category VARCHAR(50),
+    ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
+    ingredient_type VARCHAR(50),
+    quantity INT NOT NULL,
     unit VARCHAR(50),
     price DECIMAL(10, 2) NOT NULL,
-    stockquantity INT NOT NULL,
-    reorderlevel INT DEFAULT 10,
-    productstatus VARCHAR(50) DEFAULT 'Active',
-    supplierid INT REFERENCES suppliers(supplierid)
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    reorder_level INT DEFAULT 10,
+    ingredient_status VARCHAR(50) DEFAULT 'Active'
+);
+
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    reorder_level INT DEFAULT 10,
+    product_status VARCHAR(50) DEFAULT 'Active'
 );

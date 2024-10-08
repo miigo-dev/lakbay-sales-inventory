@@ -7,6 +7,7 @@ const Orders = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recentOrder, setRecentOrder] = useState(null);
   const [quantity, setQuantity] = useState(0);
   const [size, setSize] = useState('');
   const [orders, setOrders] = useState([]);
@@ -103,14 +104,18 @@ const Orders = () => {
       });
 
       setMenuItems(updatedMenuItems);
+      setRecentOrder(orders[orders.length - 1]);
       setChange(amount - totalPrice);
-      alert(`Charged $${amount.toFixed(2)} successfully!`);
       setCustomAmount('');
       setOrders([]);
     } else {
-      alert(`Please enter an amount greater than the total price of $${totalPrice.toFixed(2)}.`);
+      alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
       setChange(0);
     }
+  };
+
+  const handleCloseRecentOrderModal = () => {
+    setRecentOrder(null); 
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
@@ -123,14 +128,13 @@ const Orders = () => {
         </button>
       </div>
       <div className='search-container'>
-      <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
+        <input className="search-input" placeholder="Search your Orders"/>
+        <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
           <i className="fas fa-search search-icon"></i>
           </button>
-        <input className="search-input" placeholder="Search your Orders"/>
       </div>
-        <div className='header_container'>     
             <ul className='navigation-bar'>
-              {['all', 'meals', 'drinks', 'sideorders', 'desserts'].map((category) => (
+              {['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
                 <li key={category}>
                   <a
                     href="#!"
@@ -139,10 +143,10 @@ const Orders = () => {
                   >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </a>
-                </li>
-              ))}
-            </ul>
-      </div>
+              </li>
+          ))}
+        </ul>
+   
 
       <div className='order_container'>
         {menuItems
@@ -178,43 +182,60 @@ const Orders = () => {
         </div>
       )}
 
-      <div className="items-section">
-        <h4>Items:</h4>
-        {orders.length === 0 ? (
-          <p>No items added yet.</p>
-        ) : (
-          <ul>
-            {orders.map((order, index) => (
-              <li key={index} className="order-item">
-                <div className="order-content">
-                  <span>
-                    {order.item}
-                    {order.size && ` - Size: ${order.size}`}
-                    {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
-                  </span>
-                  <button className="delete-button" onClick={() => deleteOrder(index)}>
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="total-section">
-          <h4>Total: {totalPrice.toFixed(2)}</h4>
-          <div className="custom-amount-section">
-            <input
-              type="number"
-              value={customAmount}
-              onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder="Enter amount"
-              min={totalPrice + 0.00}
-            />
-            <button onClick={handleCharge}>Charge</button>
-            {change > 0 && <label className="change-label">Change: {change.toFixed(2)}</label>}
+      {recentOrder && (
+        <div className="recent-order-modal">
+          <div className="recent-order-content">
+            <h2 className='font-size'>Order Successful</h2>
+            <h5>_</h5>
+            <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
+            <p>Order: {recentOrder.item}</p>
+            <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
+            <p>Quantity: {recentOrder.quantity}</p>
+            <p>Price: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
+            <h1>"</h1>
+            <button className="close-button" onClick={handleCloseRecentOrderModal}>Complete</button>
           </div>
         </div>
-      </div>
+      )}
+
+
+      <div className="items-section">
+          <h4>Items:</h4>
+          {orders.length === 0 ? (
+            <p>No items added yet.</p>
+          ) : (
+            <ul>
+              {orders.map((order, index) => (
+                <li key={index} className="order-item">
+                  <div className="order-content">
+                    <span>
+                      {order.item}
+                      {order.size && ` - Size: ${order.size}`}
+                      {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
+                    </span>
+                    <button className="delete-button" onClick={() => deleteOrder(index)}>
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        <div className="total-section">
+            <h4>Total: {totalPrice.toFixed(2)}</h4>
+            <div className="custom-amount-section">
+              <input
+                type="number"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder="Enter amount"
+                min={totalPrice + 0.00}
+              />
+              <button className='charge-button' onClick={handleCharge}>Charge
+              </button>
+            </div>
+          </div>
+      </div> 
     </div>
   );
 };
