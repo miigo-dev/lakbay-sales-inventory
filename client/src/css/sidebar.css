@@ -12,29 +12,38 @@
     font-size: large;
     display: flex;
     flex-direction: column;
-}
-.search-bar {
-    width: 100%;
+    transition: width 0.3s ease;
 }
 
-.search-bar input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+.sidebar.collapsed {
+    width: 70px; /* Width when collapsed */
 }
-.header_sidebar {
+
+.toggle-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 1rem;
+    outline: none;
+    transition: transform 0.3s;
+}
+
+.sidebar .header_sidebar {
     text-align: center;
     padding: 20px 0; 
     background-color: #ffffff; 
 }
 
-.logo {
+.sidebar .logo {
     width: 70px; 
     height: auto;
     margin-bottom: 1rem; 
+    transition: width 0.3s;
+}
+
+.sidebar .collapsed-logo {
+    width: 50px;
 }
 
 .sidebar a {
@@ -50,10 +59,19 @@
     overflow: hidden; 
 }
 
+.sidebar.collapsed a {
+    justify-content: center; /* Center icons when collapsed */
+}
+
 .sidebar a img {
     width: 20px; 
     height: 20px;
     margin-right: 0.7rem;
+    transition: margin-right 0.3s;
+}
+
+.sidebar.collapsed a img {
+    margin-right: 0; /* Remove margin when collapsed */
 }
 
 .sidebar a.active {
@@ -73,12 +91,21 @@
     padding: 20px;
 }
 
+.sidebar .collapsed .bot_sidebar {
+    display: flex;
+    justify-content: center;
+}
+
 .content {
     margin-left: 280px; 
     padding: 20px;
     background-color: #f1f1f1; 
     min-height: 100vh;
     transition: margin-left 0.3s; 
+}
+
+.sidebar.collapsed ~ .content {
+    margin-left: 90px; /* Adjust margin when sidebar is collapsed */
 }
 
 @media screen and (max-width: 700px) {

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { fetchProtectedInfo, onLogout } from '../api/auth'
 import { unauthenticateUser } from '../redux/slices/authSlice'
 
-import '../css/sidebarV2.css'
+import '../css/styles.css'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -37,7 +37,7 @@ const Dashboard = () => {
   return loading ? (
     <h1>Loading...</h1>
   ) : (
-    <div class='container'>
+    <div>
       <h1>Dashboard</h1>
       <h2>{protectedData}</h2>
 

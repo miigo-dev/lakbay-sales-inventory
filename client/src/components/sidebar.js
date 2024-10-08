@@ -1,5 +1,4 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../css/sidebar.css';
 
@@ -21,20 +20,29 @@ import reports_inactive from '../assets/icons/reports_inactive.png';
 import users_inactive from '../assets/icons/users_inactive.png';
 import settings_inactive from '../assets/icons/settings_inactive.png';
 
-const Sidebar = () => {
+const Sidebar = ({ onToggle }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+    onToggle(!isOpen); // Inform parent component about toggle state
+  };
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? '' : 'collapsed'}`}>
+      <button onClick={toggleSidebar} className="toggle-btn">
+        {isOpen ? '←' : '→'}
+      </button>
       <div className="header_sidebar">
-        <img src={logo} alt="Logo" className="logo" />
-        <h2>Lakbay Kape</h2>
+        <img src={logo} alt="Logo" className={`logo ${isOpen ? '' : 'collapsed-logo'}`} />
+        {isOpen && <h2>Lakbay Kape</h2>}
       </div>
 
       <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
             <img src={isActive ? dash_active : dash_inactive} alt="Dashboard icon" />
-            Dashboard
+            {isOpen && "Dashboard"}
           </>
         )}
       </NavLink>
@@ -42,7 +50,7 @@ const Sidebar = () => {
         {({ isActive }) => (
           <>
             <img src={isActive ? order_active : order_inactive} alt="Orders icon" />
-            Orders
+            {isOpen && "Orders"}
           </>
         )}
       </NavLink>
@@ -50,15 +58,15 @@ const Sidebar = () => {
         {({ isActive }) => (
           <>
             <img src={isActive ? inventory_active : inventory_inactive} alt="Inventory icon" />
-            Inventory
+            {isOpen && "Inventory"}
           </>
         )}
       </NavLink>
       <NavLink to="/sales" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
-            <img src={isActive ? settings_inactive : settings_inactive} alt="Sales icon" />
-            Sales
+            <img src={settings_inactive} alt="Sales icon" />
+            {isOpen && "Sales"}
           </>
         )}
       </NavLink>
@@ -66,7 +74,7 @@ const Sidebar = () => {
         {({ isActive }) => (
           <>
             <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
-            Reports
+            {isOpen && "Reports"}
           </>
         )}
       </NavLink>
@@ -74,7 +82,7 @@ const Sidebar = () => {
         {({ isActive }) => (
           <>
             <img src={isActive ? users_active : users_inactive} alt="Users icon" />
-            Users
+            {isOpen && "Users"}
           </>
         )}
       </NavLink>
@@ -83,21 +91,21 @@ const Sidebar = () => {
         <NavLink to="/settings" className={({ isActive }) => isActive ? 'active' : ''}>
           {({ isActive }) => (
             <>
-              <img src={isActive ? settings_inactive : settings_inactive} alt="Settings icon" />
-              Settings
+              <img src={settings_inactive} alt="Settings icon" />
+              {isOpen && "Settings"}
             </>
           )}
         </NavLink>
         <NavLink to="/logout" className={({ isActive }) => isActive ? 'active' : ''}>
           {({ isActive }) => (
             <>
-              <img src={isActive ? logout_icon : logout_icon} alt="Logout icon" />
-              Logout
+              <img src={logout_icon} alt="Logout icon" />
+              {isOpen && "Logout"}
             </>
           )}
         </NavLink>
-        </div>
       </div>
+    </div>
   );
 };
 

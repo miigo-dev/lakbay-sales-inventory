@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter,
   Navigate,
@@ -21,16 +21,17 @@ import Sidebar from './components/sidebar';
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!isAuth) {
     return <Navigate to='/login' />;
   }
 
   return (
-    <>
-      <Sidebar />
-      <Outlet />
-    </>
+    <div className={`app-container ${sidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+      <Sidebar onToggle={setSidebarOpen} />
+        <Outlet />
+    </div>
   );
 };
 
