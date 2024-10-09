@@ -139,7 +139,7 @@ const InventoryDashboard = () => {
                             className="inventory_type_dropdown" // Dropdown for inventory type
                             value={selectedInventoryType}
                             onChange={(e) => setSelectedInventoryType(e.target.value)}>
-                                <option value="products">ALL</option>
+                                <option value="products">All</option>
                             <option value="products">IN</option>
                             <option value="ingredients">OUT</option>
                         </select>
