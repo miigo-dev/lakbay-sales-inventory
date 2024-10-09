@@ -92,18 +92,15 @@ exports.addSupplier = async (req, res) => {
 
 exports.productIn = async (req, res) => {
     const { product_id, pmove_quantity, remarks } = req.body; // Removed product_quantity
-
     try {
         await db.query(
             'UPDATE products SET product_quantity = product_quantity + $1, updated_at = CURRENT_TIMESTAMP WHERE product_id = $2',
             [pmove_quantity, product_id] // Use pmove_quantity here
         );
-
         await db.query(
             'INSERT INTO product_movements (product_id, pmove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4)',
             [product_id, pmove_quantity, 'IN', remarks]
         );
-
         res.status(200).json({ message: 'Product stock updated successfully' });
     } catch (error) {
         console.error(error.message);
@@ -112,31 +109,23 @@ exports.productIn = async (req, res) => {
 };
 
 exports.productOut = async (req, res) => {
-    const { product_id, pmove_quantity, remarks } = req.body; // Use pmove_quantity instead of product_quantity
-
+    const { product_id, pmove_quantity, remarks } = req.body; 
     try {
-        // Check if sufficient stock is available
         const checkStock = await db.query(
             'SELECT product_quantity FROM products WHERE product_id = $1',
             [product_id]
         );
-
         if (checkStock.rows[0].product_quantity < pmove_quantity) {
             return res.status(400).json({ error: 'Insufficient stock' });
         }
-
-        // Update the product quantity
         await db.query(
             'UPDATE products SET product_quantity = product_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE product_id = $2',
-            [pmove_quantity, product_id] // Use pmove_quantity here
+            [pmove_quantity, product_id] 
         );
-
-        // Record the stock movement
         await db.query(
             'INSERT INTO product_movements (product_id, pmove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4)',
-            [product_id, pmove_quantity, 'OUT', remarks] // Use pmove_quantity here
+            [product_id, pmove_quantity, 'OUT', remarks]
         );
-
         res.status(200).json({ message: 'Product stock removed successfully' });
     } catch (error) {
         console.error(error.message);
@@ -145,21 +134,16 @@ exports.productOut = async (req, res) => {
 };
 
 exports.ingredientIn = async (req, res) => {
-    const { ingredient_id, imove_quantity, remarks } = req.body; // Correctly use imove_quantity
-
+    const { ingredient_id, imove_quantity, remarks } = req.body;
     try {
-        // Update the ingredient quantity
         await db.query(
             'UPDATE ingredients SET ingredient_quantity = ingredient_quantity + $1, updated_at = CURRENT_TIMESTAMP WHERE ingredient_id = $2',
-            [imove_quantity, ingredient_id] // Use imove_quantity here
+            [imove_quantity, ingredient_id] 
         );
-
-        // Record the stock movement
         await db.query(
             'INSERT INTO ingredient_movements (ingredient_id, imove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4)',
-            [ingredient_id, imove_quantity, 'IN', remarks] // Use imove_quantity here
+            [ingredient_id, imove_quantity, 'IN', remarks] 
         );
-
         res.status(200).json({ message: 'Ingredient stock updated successfully' });
     } catch (error) {
         console.error(error.message);
@@ -168,37 +152,49 @@ exports.ingredientIn = async (req, res) => {
 };
 
 exports.ingredientOut = async (req, res) => {
-    const { ingredient_id, imove_quantity, remarks } = req.body; // Correctly use imove_quantity
-
+    const { ingredient_id, imove_quantity, remarks } = req.body;
     try {
-        // Check if sufficient stock is available
         const checkStock = await db.query(
             'SELECT ingredient_quantity FROM ingredients WHERE ingredient_id = $1',
             [ingredient_id]
         );
-
         if (checkStock.rows[0].ingredient_product_quantity < imove_quantity) {
             return res.status(400).json({ error: 'Insufficient stock' });
         }
-
-        // Update the ingredient quantity
         await db.query(
             'UPDATE ingredients SET ingredient_quantity = ingredient_quantity - $1, updated_at = CURRENT_TIMESTAMP WHERE ingredient_id = $2',
-            [imove_quantity, ingredient_id] // Use imove_quantity here
+            [imove_quantity, ingredient_id] 
         );
-
-        // Record the stock movement
         await db.query(
             'INSERT INTO ingredient_movements (ingredient_id, imove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4)',
-            [ingredient_id, imove_quantity, 'OUT', remarks] // Use imove_quantity here
+            [ingredient_id, imove_quantity, 'OUT', remarks] 
         );
-
         res.status(200).json({ message: 'Ingredient stock removed successfully' });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getProducts = async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM products ORDER BY product_name');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+exports.getIngredients = async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM ingredients ORDER BY ingredient_name');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+}
 
 exports.getProductMovements = async (req, res) => {
     try {
@@ -213,6 +209,26 @@ exports.getProductMovements = async (req, res) => {
 exports.getIngredientMovements = async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM ingredient_movements ORDER BY movement_date DESC');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getProductCategories = async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM product_category');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getIngredientTypes = async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM ingredient_type');
         res.status(200).json(result.rows);
     } catch (error) {
         console.error(error.message);

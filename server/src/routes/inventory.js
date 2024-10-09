@@ -17,7 +17,13 @@ const { addProduct,
     productIn,
     ingredientIn,
     productOut,
-    ingredientOut } = require('../controllers/inventory');
+    ingredientOut,
+    getProducts,
+    getProductMovements,
+    getProductCategories,
+    getIngredients,
+    getIngredientMovements,
+    getIngredientTypes } = require('../controllers/inventory');
 const router = Router();
 
 router.post('/inventory/add-product', addProductValidation, validationMiddleware, addProduct)
@@ -29,5 +35,12 @@ router.post('/inventory/product-in', productInValidation, validationMiddleware, 
 router.post('/inventory/ingredient-in', ingredientInValidation, validationMiddleware, ingredientIn)
 router.post('/inventory/product-out', productOutValidation, validationMiddleware, productOut)
 router.post('/inventory/ingredient-out', ingredientOutValidation, validationMiddleware, ingredientOut)
+
+router.get('/inventory/products', getProducts)
+router.get('/inventory/ingredients', getIngredients)
+router.get('/inventory/product-movements', getProductMovements)
+router.get('/inventory/product-categories', getProductCategories)
+router.get('/inventory/ingredient-movements', getIngredientMovements)
+router.get('/inventory/ingredient-types', getIngredientTypes)
 
 module.exports = router;
