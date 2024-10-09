@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../css/orders.css';
 
-
 const Orders = () => {
   
   const [activeLink, setActiveLink] = useState('all');
@@ -14,26 +13,44 @@ const Orders = () => {
   const [customAmount, setCustomAmount] = useState('');
   const [change, setChange] = useState(0);
   const [isLakbayKape, setIsLakbayKape] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
-  const staticMenuItems = [
-    { productname: 'Latte', category: 'coffee', price: 3.5, stockquantity: 10 },
-    { productname: 'Cappuccino', category: 'coffee', price: 4.0, stockquantity: 8 },
+  const lakbayKainMenuItems = [
+    { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
     { productname: 'Burger', category: 'meals', price: 6.0, stockquantity: 5 },
     { productname: 'Fries', category: 'side Orders', price: 2.5, stockquantity: 12 },
-    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 15 }
+    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 12 }
   ];
 
-  const handleLinkClick = (link) => setActiveLink(link);
+  const lakbayKapeMenuItems = [
+    { productname: 'Espresso', category: 'coffee', price: 2.5, stockquantity: 15 },
+    { productname: 'Sakura Latte', category: 'non-Coffee', price: 4.5, stockquantity: 10 },
+    { productname: 'Matcha', category: 'frappes', price: 7.0, stockquantity: 6 },
+    { productname: 'Classic Vanilla', category: 'affogato Series', price: 3.0, stockquantity: 8 },
+  ];
 
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setQuantity(0);
-    setSize('');
-    setIsModalOpen(true);
+  const handleLinkClick = (link) => {
+    setActiveLink(link);
+    setSearchTerm(''); 
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const handleItemClick = (item) => {
+    if (item.stockquantity > 0) {  
+      setSelectedItem(item);
+      setQuantity(0);
+      setSize('');
+      setIsModalOpen(true);
+    }
+  };
+  const handleCloseRecentOrderModal = () => {
+    setRecentOrder(null);
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null); 
+  };
   const handleQuantityChange = (operation) => {
     setQuantity((prev) => {
       if (operation === 'increase' && prev < selectedItem.stockquantity) {
@@ -60,6 +77,8 @@ const Orders = () => {
           size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
           quantity,
           price: parseFloat(selectedItem.price),
+          category: selectedItem.category,
+          date: new Date().toLocaleString(),
         },
       ]);
       setIsModalOpen(false);
@@ -92,57 +111,109 @@ const Orders = () => {
     }
   };
 
-  const handleCloseRecentOrderModal = () => {
-    setRecentOrder(null);
-  };
-
   const toggleView = () => setIsLakbayKape((prev) => !prev);
+
+  const filteredMenuItems = (isLakbayKape ? lakbayKapeMenuItems : lakbayKainMenuItems)
+  .filter(item => 
+    (activeLink === 'all' || item.category === activeLink) && 
+    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const openTransactionModal = () => {
+    setIsTransactionModalOpen(true); 
+  };
 
   return (
     <div className='dashboard'>
-      <div className="toggle_header">
+     <div className="toggle_header">  
         <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
-          <div className="display">
-            <label className='label_type' htmlFor="toggle">
-              <div className="circle">
-              <span class="material-symbols-outlined food">restaurant</span>
-              <span class="material-symbols-outlined coffee">local_cafe</span>
-              </div>
-            </label>
-            <span className="toggle-text">
-              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-            </span>
-          </div>
+        <div className="display">
+          <label className='label_type' htmlFor="toggle">
+            <div className="circle">
+              <span className="material-symbols-outlined food">restaurant</span>
+              <span className="material-symbols-outlined coffee">local_cafe</span>
+            </div>
+          </label>
+          <span className="toggle-text">
+            {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+          </span>
+        </div>
+        <button className="transaction-button" onClick={(openTransactionModal)}>
+          <i className="material-symbols-outlined">receipt_long</i>
+        </button>
       </div>
       <div className='search-container'>
-        <input className="search-input" placeholder="Search your Orders"/>
+        <input 
+          className="search-input" 
+          placeholder="Search your Orders" 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} 
+        />
         <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
           <i className="fas fa-search search-icon"></i>
-          </button>
+        </button>
       </div>
-      <ul className='navigation-bar'>
-        {['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
-          <li key={category}>
-            <a
-              href="#!"
-              className={activeLink === category ? 'active' : ''}
-              onClick={() => handleLinkClick(category)}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <div className='order_container'>
-        {staticMenuItems
-          .filter(item => activeLink === 'all' || item.category === activeLink)
-          .filter(item => item.stockquantity > 0)
-          .map((item, index) => (
-            <div key={index} className='order_item' onClick={() => handleItemClick(item)}>
-              {item.productname}
+      <div id='order-content'>
+        <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
+          <ul className='navigation-bar'>
+            {isLakbayKape 
+              ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
+                <li key={category}>
+                  <a
+                   href="#!"
+                   className={activeLink === category ? 'active' : ''}
+                   onClick={() => handleLinkClick(category)}
+                  >
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                     </a>
+                    </li>
+                    ))
+                    : ['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
+                        <li key={category}>
+                          <a
+                            href="#!"
+                            className={activeLink === category ? 'active' : ''}
+                            onClick={() => handleLinkClick(category)}
+                          >
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                          </a>
+                      </li>
+                    ))
+                  }
+                </ul>
+                <div className='order_container'>
+                  {filteredMenuItems.map((item, index) => (
+                      <div 
+                        key={index} 
+                        className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`} // Apply out-of-stock class if stock is 0
+                        onClick={() => handleItemClick(item)} 
+                      >
+                        {item.productname}
+                        {item.stockquantity === 0}
+                      </div>
+                    ))}
+              </div>
             </div>
-          ))}
-      </div>
+          </div>
+          {isTransactionModalOpen && (
+              <div className="full-screen-modal">
+               <div className="modal-content">
+                 <h3>Transaction History:</h3>
+                 <table>
+                   <thead>
+                     <tr>
+                       <th>Date</th>
+                       <th>Order</th>
+                       <th>Amount</th>
+                       <th>Category</th>
+                       <th>Quantity</th>
+                     </tr>
+                   </thead>
+                 </table>
+                 <button onClick={() => setIsTransactionModalOpen(false)}>Close</button>
+               </div>
+             </div>
+          )}
 
       {isModalOpen && selectedItem && (
         <div className="modal">
@@ -167,16 +238,16 @@ const Orders = () => {
           </div>
         </div>
       )}
-
+      
       {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
-            <h2>Order Successful</h2>
+            <h2>Order Summary</h2>
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
             <p>Order: {recentOrder.item}</p>
             <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
             <p>Quantity: {recentOrder.quantity}</p>
-            <p>Price: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
+            <p>Amount: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Complete</button>
           </div>
         </div>
@@ -194,7 +265,7 @@ const Orders = () => {
                   <span>
                     {order.item}
                     {order.size && ` - Size: ${order.size}`}
-                    {` - Quantity: ${order.quantity} - Price: ${(order.price * order.quantity).toFixed(2)}`}
+                    {` - Quantity: ${order.quantity} - Amount: ${(order.price * order.quantity).toFixed(2)}`}
                   </span>
                   <button className="delete-button" onClick={() => deleteOrder(index)}>
                     <i className="fa-solid fa-trash"></i>
@@ -214,7 +285,7 @@ const Orders = () => {
               placeholder="Enter amount"
               min={totalPrice + 0.00}
             />
-            <button className='charge-button' onClick={handleCharge}>Charge</button>
+            <button className='font-size' onClick={handleCharge}>Charge</button>
           </div>
         </div>
       </div>
