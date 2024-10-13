@@ -3,15 +3,16 @@ const db = require('../db');
 exports.addProduct = async (req, res) => {
     const { 
         product_name, 
-        product_product_quantity, 
+        product_quantity, 
         product_price, 
         reorder_level,
-        category_id
+        category_id,
+        warehouse_id
     } = req.body;
     try {
         const result = await db.query(
-            'INSERT INTO products (product_name, product_product_quantity, product_price, reorder_level, category_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [product_name, product_product_quantity, product_price, reorder_level, category_id]
+            'INSERT INTO products (product_name, product_quantity, product_price, reorder_level, category_id, warehouse_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [product_name, product_quantity, product_price, reorder_level, category_id, warehouse_id]
         );
         res.status(201).json({ message: 'Product added successfully', product: result.rows[0] });
     } catch (error) {
@@ -170,66 +171,6 @@ exports.ingredientOut = async (req, res) => {
             [ingredient_id, imove_quantity, 'OUT', remarks] 
         );
         res.status(200).json({ message: 'Ingredient stock removed successfully' });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getProducts = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM products ORDER BY product_name');
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-}
-
-exports.getIngredients = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM ingredients ORDER BY ingredient_name');
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-}
-
-exports.getProductMovements = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM product_movements ORDER BY movement_date DESC');
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getIngredientMovements = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM ingredient_movements ORDER BY movement_date DESC');
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getProductCategories = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM product_category');
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getIngredientTypes = async (req, res) => {
-    try {
-        const result = await db.query('SELECT * FROM ingredient_type');
-        res.status(200).json(result.rows);
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ error: error.message });
