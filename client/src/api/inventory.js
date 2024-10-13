@@ -37,27 +37,3 @@ export async function ingredientIn(movementData) {
 export async function ingredientOut(movementData) {
   return await axios.post('http://localhost:8080/api/inventory/ingredient-out', movementData);
 }
-
-export async function fetchProducts() {
-  return await axios.get('http://localhost:8080/api/inventory/products');
-}
-
-export async function fetchIngredients() {
-  return await axios.get('http://localhost:8080/api/inventory/ingredients');
-}
-
-export async function fetchProductMovements() {
-  return await axios.get('http://localhost:8080/api/inventory/product-movements');
-}
-
-export async function fetchIngredientMovements() {
-  return await axios.get('http://localhost:8080/api/inventory/ingredient-movements');
-}
-
-export async function fetchProductCategories() {
-  return await axios.get('http://localhost:8080/api/inventory/product-categories');
-}
-
-export async function fetchIngredientTypes() {
-  return await axios.get('http://localhost:8080/api/inventory/ingredient-types');
-}
