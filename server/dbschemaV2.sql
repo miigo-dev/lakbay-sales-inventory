@@ -100,17 +100,6 @@ CREATE TABLE UserPermissions (
 
 -- new --
 
-CREATE TABLE suppliers (
-    supplier_id SERIAL PRIMARY KEY,
-    supplier_name VARCHAR(100) NOT NULL,
-    contact_person VARCHAR(100),
-    phone_number VARCHAR(20),
-    email VARCHAR(100),
-    address VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE ingredient_type (
     type_id SERIAL PRIMARY KEY,
     type_name VARCHAR(100) NOT NULL,
@@ -144,6 +133,7 @@ CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
     category_id INT REFERENCES category_type(category_id),
+    warehouse_id INT REFERENCES lakbay_warehouse(warehouse_id),
     product_quantity INT NOT NULL CHECK (product_quantity >= 0),
     product_price DECIMAL(10, 2) NOT NULL,
     reorder_level INT DEFAULT 10,
@@ -169,6 +159,22 @@ CREATE TABLE ingredient_movements (
     movement_type VARCHAR(10) CHECK (movement_type IN ('IN', 'OUT')),
     remarks TEXT,
     movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE lakbay_warehouse (
+    warehouse_id SERIAL PRIMARY KEY,
+    warehouse_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE suppliers (
+    supplier_id SERIAL PRIMARY KEY,
+    supplier_name VARCHAR(100) NOT NULL,
+    contact_person VARCHAR(100),
+    phone_number VARCHAR(20),
+    email VARCHAR(100),
+    address VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE orders (
