@@ -146,7 +146,7 @@ const InventoryDashboard = () => {
 
                         <button className="btn export_btn">Export</button>
                         <button className="btn add-inventory_btn" onClick={() => openModal()}>
-                            Add Inventory
+                            Add Item
                         </button>
                     </div>
                 </div>
@@ -199,10 +199,10 @@ const InventoryDashboard = () => {
                                         <td>{item.productStatus || item.ingredient_status}</td>
                                         <td>
                                             <button className="btn edit_btn" onClick={() => openModal(item)}>
-                                                Edit
+                                                In
                                             </button>
                                             <button className="btn delete_btn" onClick={() => handleDelete(item.id)}>
-                                                Delete
+                                                Out
                                             </button>
                                         </td>
                                     </tr>
@@ -331,7 +331,7 @@ const InventoryDashboard = () => {
                     
 
                         <button onClick={handleSubmit}>
-                            {isEditing ? 'Save Changes' : 'Add Inventory'}
+                            {isEditing ? 'Save Changes' : 'Add Item'}
                         </button>
                         <button onClick={closeModal}>Cancel</button>
                     </div>
