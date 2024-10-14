@@ -2,15 +2,75 @@
   * {
       font-family: 'Inter', sans-serif;
   }
-
+  .main-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between; 
+  }
   .dashboard {
-      font-family: 'Inter', sans-serif;
-      margin: 10px;
+    margin: 10px;
+    flex: 3;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .right-container {
+    margin: 10px;
+    flex: 1;
+    height: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  }
+  .right-container h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .right-container p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 10px;
+  }
+
+  .right-container .proceed-button {
+      width: 100%;
+      margin-top: 20px;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-      max-width: 100%;
+      background-color: #C2A790;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+
+  .right-container .proceed-button:hover {
+      background-color: #a68a6b;
+  }
+  .order-status {
+    margin-top: 20px;
+  }
+
+  .order-status table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .order-status th, .order-status td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .order-status th {
+    background-color: #f2f2f2;
   }
   .font-size{
       font-size: 18px;
@@ -95,16 +155,6 @@
     font-weight: bold;
   }
   
-  .header_container {
-      padding: 10px;
-      align-items: center;
-      display: flex;
-      border: 1px solid black;
-      flex-wrap: wrap;
-      justify-content: center;
-      transition: margin-left 0.3s ease, width 0.3s ease;
-  }
-
   .search-container {
       display: flex;
       align-items: center;
@@ -198,7 +248,7 @@
   }
 
   .navigation-bar {
-      padding: 20px;
+
       list-style: none;
       display: flex;
       gap:20px;
@@ -212,7 +262,7 @@
       position: relative;
       text-decoration: none;
       font-size: 20px;
-      padding: 20px 100px;
+      padding: 10px 100px;
       color: #000;
       border-radius: 5px;
       transition: background-color 0.3s ease, color 0.3s ease;
@@ -365,9 +415,9 @@
     
   .order-content {
     display: flex;
+    flex: wrap;
     justify-content: space-between; 
     align-items: center; 
-    padding: 10px 0; 
   }
   
   .delete-button {
@@ -612,8 +662,9 @@
   }
   
   tr:hover {
-    background-color: #f5f5f5; /* Highlight row on hover */
+    background-color: #f5f5f5; 
   }
+
   @media screen and (max-width: 768px) {
     .order_container {
         margin-left: 0;

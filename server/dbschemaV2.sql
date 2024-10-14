@@ -132,7 +132,7 @@ CREATE TABLE ingredients (
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
-    category_id INT REFERENCES category_type(category_id),
+    category_id INT REFERENCES product_category(category_id),
     warehouse_id INT REFERENCES lakbay_warehouse(warehouse_id),
     product_quantity INT NOT NULL CHECK (product_quantity >= 0),
     product_price DECIMAL(10, 2) NOT NULL,
