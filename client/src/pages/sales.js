@@ -97,35 +97,35 @@ const Sales = () => {
     <div className="top-sales-list">
         <div className="T1">
             <img src={T1} alt="T1"/>
-            <p>Sakura Latte 1</p>
+            <p className='txt'>Sakura Latte 1</p>
         </div>
         <div className="T2">
             <img src={T2} alt="T2"/>
-        <p>Matcha Latte</p>
+        <p className='txt'>Matcha Latte</p>
         </div>
         <div className="T3">
             <img src={T3} alt="T3"/>
-            <p>Brewed Coffee</p>
+            <p className='txt'>Brewed Coffee</p>
         </div>
         <div className="T4">
             <img src={T4} alt="T4"/>
-            <p>Beef Salpicao</p>
+            <p className='txt'>Beef Salpicao</p>
         </div>
         <div className="T5">
             <img src={T5} alt="T5"/>
-            <p>Beef Bulgogi</p>
+            <p className='txt'p>Beef Bulgogi</p>
         </div>
         <div className="T6">
             <img src={T6} alt="T6"/>
-            <p>Chicken Teriyaki</p>
+            <p className='txt'>Chicken Teriyaki</p>
         </div>
         <div className="T7">
             <img src={T7} alt="T7"/>
-            <p>Beef Padkrapao</p>
+            <p className='txt'>Beef Padkrapao</p>
         </div>
         <div className="T8">
             <img src={T8} alt="T8"/>
-            <p>Chicken Buttered Garlic</p>
+            <p className='txt'>Chicken Buttered</p>
         </div>
         {/* Add more items as needed */}
     </div>
