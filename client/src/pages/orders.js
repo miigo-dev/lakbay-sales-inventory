@@ -6,7 +6,7 @@ const Orders = () => {
   const [activeLink, setActiveLink] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [recentOrder, setRecentOrder] = useState(null);
+  const [recentOrder, setRecentOrder] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [size, setSize] = useState('');
   const [orders, setOrders] = useState([]);
@@ -15,6 +15,7 @@ const Orders = () => {
   const [isLakbayKape, setIsLakbayKape] = useState(false);
   const [searchTerm, setSearchTerm] = useState(''); 
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [orderNumber, setOrderNumber] = useState(1);
 
   const lakbayKainMenuItems = [
     { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
@@ -43,14 +44,33 @@ const Orders = () => {
       setIsModalOpen(true);
     }
   };
+  const [completedOrders, setCompletedOrders] = useState([]);
+
   const handleCloseRecentOrderModal = () => {
+    // Add the recent order to the completed orders
+    if (recentOrder) {
+      setCompletedOrders((prevCompletedOrders) => [
+        ...prevCompletedOrders,
+        {
+          orderNumber, // Maintain the current order number
+          amount: (recentOrder.price * recentOrder.quantity).toFixed(2),
+          status: 'Completed',
+        },
+      ]);
+    }
+  
+    // Reset the recent order to close the modal
     setRecentOrder(null);
+  };
+  const openTransactionModal = () => {
+    setIsTransactionModalOpen(true); 
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedItem(null); 
   };
+
   const handleQuantityChange = (operation) => {
     setQuantity((prev) => {
       if (operation === 'increase' && prev < selectedItem.stockquantity) {
@@ -101,10 +121,14 @@ const Orders = () => {
     }
 
     if (amount >= totalPrice) {
-      setRecentOrder(orders[orders.length - 1]);
+      setRecentOrder({
+        ...orders[orders.length - 1],
+        orderNumber, 
+      });
       setChange(amount - totalPrice);
       setCustomAmount('');
       setOrders([]);
+      setOrderNumber((prev) => (prev < 100 ? prev + 1 : 1));
     } else {
       alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
       setChange(0);
@@ -119,102 +143,165 @@ const Orders = () => {
     item.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const openTransactionModal = () => {
-    setIsTransactionModalOpen(true); 
-  };
-
   return (
-    <div className='dashboard'>
-     <div className="toggle_header">  
-        <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
-        <div className="display">
-          <label className='label_type' htmlFor="toggle">
-            <div className="circle">
-              <span className="material-symbols-outlined food">restaurant</span>
-              <span className="material-symbols-outlined coffee">local_cafe</span>
-            </div>
-          </label>
-          <span className="toggle-text">
-            {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-          </span>
-        </div>
-        <button className="transaction-button" onClick={(openTransactionModal)}>
-          <i className="material-symbols-outlined">receipt_long</i>
-        </button>
-      </div>
-      <div className='search-container'>
-        <input 
-          className="search-input" 
-          placeholder="Search your Orders" 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} 
-        />
-        <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
-          <i className="fas fa-search search-icon"></i>
-        </button>
-      </div>
-      <div id='order-content'>
-        <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
-          <ul className='navigation-bar'>
-            {isLakbayKape 
-              ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
-                <li key={category}>
-                  <a
-                   href="#!"
-                   className={activeLink === category ? 'active' : ''}
-                   onClick={() => handleLinkClick(category)}
-                  >
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                     </a>
-                    </li>
-                    ))
-                    : ['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
-                        <li key={category}>
-                          <a
-                            href="#!"
-                            className={activeLink === category ? 'active' : ''}
-                            onClick={() => handleLinkClick(category)}
-                          >
-                            {category.charAt(0).toUpperCase() + category.slice(1)}
-                          </a>
-                      </li>
-                    ))
-                  }
-                </ul>
-                <div className='order_container'>
-                  {filteredMenuItems.map((item, index) => (
-                      <div 
-                        key={index} 
-                        className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`} // Apply out-of-stock class if stock is 0
-                        onClick={() => handleItemClick(item)} 
-                      >
-                        {item.productname}
-                        {item.stockquantity === 0}
-                      </div>
-                    ))}
+    <div className="main-container">
+      <div className='dashboard'>
+        <div className="toggle_header">  
+          <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
+          <div className="display">
+            <label className='label_type' htmlFor="toggle">
+              <div className="circle">
+                <span className="material-symbols-outlined food">restaurant</span>
+                <span className="material-symbols-outlined coffee">local_cafe</span>
               </div>
+            </label>
+            <span className="toggle-text">
+              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+            </span>
+          </div>
+          <button className="transaction-button" onClick={openTransactionModal}>
+            <i className="material-symbols-outlined">receipt_long</i>
+          </button>
+        </div>
+        
+        <div className='search-container'>
+          <input 
+            className="search-input" 
+            placeholder="Search your Orders" 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
+          <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
+            <i className="fas fa-search search-icon"></i>
+          </button>
+        </div>
+        
+        <div id='order-content'>
+          <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
+            <ul className='navigation-bar'>
+              {isLakbayKape 
+                ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
+                  <li key={category}>
+                    <a
+                      href="#!"
+                      className={activeLink === category ? 'active' : ''}
+                      onClick={() => handleLinkClick(category)}
+                    >
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </a>
+                  </li>
+                ))
+                : ['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
+                  <li key={category}>
+                    <a
+                      href="#!"
+                      className={activeLink === category ? 'active' : ''}
+                      onClick={() => handleLinkClick(category)}
+                    >
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+  
+            <div className='order_container'>
+              {filteredMenuItems.map((item, index) => (
+                <div 
+                  key={index} 
+                  className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
+                  onClick={() => handleItemClick(item)} 
+                >
+                  {item.productname}
+                </div>
+              ))}
             </div>
           </div>
-          {isTransactionModalOpen && (
-              <div className="full-screen-modal">
-               <div className="modal-content">
-                 <h3>Transaction History:</h3>
-                 <table>
-                   <thead>
-                     <tr>
-                       <th>Date</th>
-                       <th>Order</th>
-                       <th>Amount</th>
-                       <th>Category</th>
-                       <th>Quantity</th>
-                     </tr>
-                   </thead>
-                 </table>
-                 <button onClick={() => setIsTransactionModalOpen(false)}>Close</button>
-               </div>
-             </div>
+        </div>
+  
+        <div className="items-section">
+          <h4>Items:</h4>
+          {orders.length === 0 ? (
+            <p>No items added yet.</p>
+          ) : (
+            <ul>
+              {orders.map((order, index) => (
+                <li key={index} className="order-item">
+                  <div className="order-content">
+                    <span>
+                      {order.item}
+                      {order.size && ` - Size: ${order.size}`}
+                      {` - Quantity: ${order.quantity} - Amount: ${(order.price * order.quantity).toFixed(2)}`}
+                    </span>
+                    <button className="delete-button" onClick={() => deleteOrder(index)}>
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
-
+  
+          <div className="total-section">
+            <h4>Total: {totalPrice.toFixed(2)}</h4>
+            <div className="custom-amount-section">
+              <input
+                type="number"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder="Enter amount"
+                min={totalPrice + 0.00}
+              />
+              <button className='font-size' onClick={handleCharge}>Charge</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div className="right-container">
+      <div className="order-status">
+  <h4>Order Status</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {completedOrders.map((order, index) => (
+        <tr key={index}>
+          <td>{order.orderNumber}</td>
+          <td>{order.amount}</td>
+          <td>{order.status}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+      </div>
+  
+      {isTransactionModalOpen && (
+        <div className="full-screen-modal">
+          <div className="modal-content">
+            <h3>Transaction History:</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Order</th>
+                  <th>Amount</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+            </table>
+            <button onClick={() => setIsTransactionModalOpen(false)}>Close</button>
+          </div>
+        </div>
+      )}
+  
       {isModalOpen && selectedItem && (
         <div className="modal">
           <div className="modal_content">
@@ -234,64 +321,27 @@ const Orders = () => {
               <span>{quantity}</span>
               <button onClick={() => handleQuantityChange('increase')}>+</button>
             </div>
-            <button onClick={addOrder} className="proceed-button">Proceed</button>
+            <button onClick={addOrder} className="proceed-button">Add Order</button>
           </div>
         </div>
       )}
-      
+  
       {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
             <h2>Order Summary</h2>
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
+            <p>Order Number: {orderNumber}</p>
             <p>Order: {recentOrder.item}</p>
             <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
             <p>Quantity: {recentOrder.quantity}</p>
             <p>Amount: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
-            <button className="close-button" onClick={handleCloseRecentOrderModal}>Complete</button>
+            <button className="close-button" onClick={handleCloseRecentOrderModal}>Close</button>
           </div>
         </div>
       )}
-
-      <div className="items-section">
-        <h4>Items:</h4>
-        {orders.length === 0 ? (
-          <p>No items added yet.</p>
-        ) : (
-          <ul>
-            {orders.map((order, index) => (
-              <li key={index} className="order-item">
-                <div className="order-content">
-                  <span>
-                    {order.item}
-                    {order.size && ` - Size: ${order.size}`}
-                    {` - Quantity: ${order.quantity} - Amount: ${(order.price * order.quantity).toFixed(2)}`}
-                  </span>
-                  <button className="delete-button" onClick={() => deleteOrder(index)}>
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="total-section">
-          <h4>Total: {totalPrice.toFixed(2)}</h4>
-          <div className="custom-amount-section">
-            <input
-              type="number"
-              value={customAmount}
-              onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder="Enter amount"
-              min={totalPrice + 0.00}
-            />
-            <button className='font-size' onClick={handleCharge}>Charge</button>
-          </div>
-        </div>
-      </div>
     </div>
   );
+  
 };
-
-
 export default Orders;
