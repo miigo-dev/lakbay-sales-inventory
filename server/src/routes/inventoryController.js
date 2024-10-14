@@ -1,0 +1,1 @@
+const inventoryService = require('../services/inventoryService');
