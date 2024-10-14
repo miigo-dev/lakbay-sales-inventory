@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import {
   BrowserRouter,
   Navigate,
@@ -6,13 +8,12 @@ import {
   Route,
   Outlet
 } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 import Dashboard from './pages/dashboard';
 import Login from './pages/login';
 import Register from './pages/register';
 import Orders from './pages/orders';
-import Inventory from './pages/inventoryv2';
+import Inventory from './pages/inventory';
 import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';

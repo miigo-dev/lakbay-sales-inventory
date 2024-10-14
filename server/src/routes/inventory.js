@@ -1,25 +1,34 @@
-const {
-    validateAddInventoryItem,
-    validateUpdateInventoryItem,
-    validate,
-} = require('../validators/inventory');
 const { Router } = require('express');
+const { validationMiddleware } = require('../middlewares/validations-middleware');
+const { addProductValidation, 
+    addIngredientValidation, 
+    addIngredientTypeValidation,
+    addProductCategoryValidation,
+    addSupplierValidation,
+    productInValidation,
+    ingredientInValidation,
+    productOutValidation,
+    ingredientOutValidation } = require('../validators/inventory');
+const { addProduct, 
+    addIngredient, 
+    addIngredientType,
+    addProductCategory,
+    addSupplier,
+    productIn,
+    ingredientIn,
+    productOut,
+    ingredientOut
+    } = require('../controllers/inventory');
 const router = Router();
-const inventoryController = require('../controllers/inventory');
 
-// Get all inventory items
-router.get('/get-inv', inventoryController.getInventory);
-
-// Get a single inventory item by ID
-router.get('/inventory/:id', inventoryController.getInventoryById);
-
-// Add a new inventory item with validation
-router.post('/add-inv', validateAddInventoryItem, validate, inventoryController.addInventoryItem);
-
-// Update an existing inventory item with validation/'
-router.put('/inventory/:id', validateUpdateInventoryItem, validate, inventoryController.updateInventoryItem); // Updated path to include '/inventory'
-
-// Delete an inventory item
-router.delete('/inventory/:id', inventoryController.deleteInventoryItem);
+router.post('/inventory/add-product', addProductValidation, validationMiddleware, addProduct)
+router.post('/inventory/add-ingredient', addIngredientValidation, validationMiddleware, addIngredient)
+router.post('/inventory/add-ingredient-type', addIngredientTypeValidation, validationMiddleware, addIngredientType)
+router.post('/inventory/add-product-category', addProductCategoryValidation, validationMiddleware, addProductCategory)
+router.post('/inventory/add-supplier', addSupplierValidation, validationMiddleware, addSupplier)
+router.post('/inventory/product-in', productInValidation, validationMiddleware, productIn)
+router.post('/inventory/ingredient-in', ingredientInValidation, validationMiddleware, ingredientIn)
+router.post('/inventory/product-out', productOutValidation, validationMiddleware, productOut)
+router.post('/inventory/ingredient-out', ingredientOutValidation, validationMiddleware, ingredientOut)
 
 module.exports = router;
