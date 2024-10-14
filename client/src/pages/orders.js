@@ -21,7 +21,7 @@ const Orders = () => {
     { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
     { productname: 'Burger', category: 'meals', price: 6.0, stockquantity: 5 },
     { productname: 'Fries', category: 'side Orders', price: 2.5, stockquantity: 12 },
-    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 12 }
+    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 12}
   ];
 
   const lakbayKapeMenuItems = [
@@ -148,18 +148,18 @@ const Orders = () => {
       <div className='dashboard'>
         <div className="toggle_header">  
           <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
-          <div className="display">
-            <label className='label_type' htmlFor="toggle">
-              <div className="circle">
-                <span className="material-symbols-outlined food">restaurant</span>
-                <span className="material-symbols-outlined coffee">local_cafe</span>
-              </div>
-            </label>
-            <span className="toggle-text">
-              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-            </span>
-          </div>
-          <button className="transaction-button" onClick={openTransactionModal}>
+            <div className="display">
+              <label className='label_type' htmlFor="toggle">
+                <div className="circle">
+                  <span className="material-symbols-outlined food">restaurant</span>
+                  <span className="material-symbols-outlined coffee">local_cafe</span>
+                </div>
+              </label>
+              <span className="toggle-text">
+                {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+              </span>
+            </div>
+          <button className="transaction-button" onClick={(openTransactionModal)}>
             <i className="material-symbols-outlined">receipt_long</i>
           </button>
         </div>
