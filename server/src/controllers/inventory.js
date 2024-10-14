@@ -176,3 +176,13 @@ exports.ingredientOut = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getProducts = async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM products');
+        res.status(200).json({ products: result.rows });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: error.message });
+    }
+}

@@ -8,7 +8,7 @@ const { addProductValidation,
     productInValidation,
     ingredientInValidation,
     productOutValidation,
-    ingredientOutValidation } = require('../validators');
+    ingredientOutValidation } = require('../validators/inventory');
 const { addProduct, 
     addIngredient, 
     addIngredientType,
@@ -17,8 +17,9 @@ const { addProduct,
     productIn,
     ingredientIn,
     productOut,
-    ingredientOut
-    } = require('../controllers');
+    ingredientOut,
+    getProducts
+    } = require('../controllers/inventory');
 const router = Router();
 
 router.post('/products', addProductValidation, validationMiddleware, addProduct)
@@ -32,5 +33,7 @@ router.post('/ingredients', ingredientOutValidation, validationMiddleware, ingre
 router.post('/ingredients', addIngredientTypeValidation, validationMiddleware, addIngredientType)
 
 router.post('/add-supplier', addSupplierValidation, validationMiddleware, addSupplier)
+
+router.get('/get-products', getProducts)
 
 module.exports = router;
