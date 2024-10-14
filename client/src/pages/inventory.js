@@ -1,12 +1,13 @@
+import { DataGrid } from '@mui/x-data-grid';
 import { useState } from 'react';
 import '../css/inventory.css';
-import React from 'react';
 
 const Inventory = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedSection, setSelectedSection] = useState('main'); 
-    const [selectedInventoryType, setSelectedInventoryType] = useState('products'); // New state for inventory type
+    const [selectedInventoryType, setSelectedInventoryType] = useState('products');
+    const [selectedInventoryStatus, setSelectedInventoryStatus] = useState('all'); // New state for "In/Out/All" dropdown
     const [inventoryData, setInventoryData] = useState([{
         id: 1,
         productId: '#ILWL02012',
@@ -15,9 +16,9 @@ const Inventory = () => {
         price: 'Warehouse 1',
         supplierId: 120,
         reorderLevel: 120,
-        productStatus: 100,
+        productStatus: 'in', // Status like "in" or "out"
         section: 'main',
-        type: 'products' // Added inventory type
+        type: 'products'
     }]);
 
     const [currentProduct, setCurrentProduct] = useState({
@@ -28,12 +29,11 @@ const Inventory = () => {
         price: '',
         supplierId: '',
         reorderLevel: '',
-        productStatus: '',
+        productStatus: 'in', // Default status
         section: 'main',
-        type: 'products' // Default to products
+        type: 'products'
     });
 
-    // Handle modal open for Add or Edit
     const openModal = (product = null) => {
         if (product) {
             setCurrentProduct(product);
@@ -47,9 +47,9 @@ const Inventory = () => {
                 price: '',
                 supplierId: '',
                 reorderLevel: '',
-                productStatus: '',
+                productStatus: 'in', // Set default to "in"
                 section: selectedSection,
-                type: selectedInventoryType // Set default type based on selection
+                type: selectedInventoryType
             });
             setIsEditing(false);
         }
@@ -69,15 +69,13 @@ const Inventory = () => {
     };
 
     const handleSubmit = () => {
-        // Set the section and type of the current product based on selections
         const newProduct = {
             ...currentProduct,
             section: selectedSection,
             type: selectedInventoryType,
-            id: inventoryData.length + 1 // Increment ID
+            id: inventoryData.length + 1
         };
 
-        // Handle adding or editing based on the modal state
         if (isEditing) {
             setInventoryData((prevData) =>
                 prevData.map((item) =>
@@ -97,19 +95,20 @@ const Inventory = () => {
         }
     };
 
-    const filteredInventory = inventoryData.filter(item => item.section === selectedSection && item.type === selectedInventoryType);
+    const filteredInventory = inventoryData.filter(item => 
+        item.section === selectedSection && 
+        item.type === selectedInventoryType &&
+        (selectedInventoryStatus === 'all' || item.productStatus === selectedInventoryStatus)
+    );
 
     return (
         <div className="dashboard_container">
-
             <header className="dashboard_header">
                 <input type="text" placeholder="Search anything here" className="search_bar" />
-
                 <div className="profile_section">
                     <span className="username">Miguel Luayon</span>
                     <img src="/path-to-avatar.jpg" alt="Profile" className="profile_pic" />
                 </div>
-                
             </header>
 
             <div className="dashboard_content">
@@ -128,7 +127,7 @@ const Inventory = () => {
                         </select>
 
                         <select
-                            className="inventory_type_dropdown" // Dropdown for inventory type
+                            className="inventory_type_dropdown"
                             value={selectedInventoryType}
                             onChange={(e) => setSelectedInventoryType(e.target.value)}>
                             <option value="products">Products</option>
@@ -136,12 +135,12 @@ const Inventory = () => {
                         </select>
 
                         <select
-                            className="inventory_type_dropdown" // Dropdown for inventory type
-                            value={selectedInventoryType}
-                            onChange={(e) => setSelectedInventoryType(e.target.value)}>
-                                <option value="products">All</option>
-                            <option value="products">IN</option>
-                            <option value="ingredients">OUT</option>
+                            className="inventory_status_dropdown" // Dropdown for "In/Out/All" selection
+                            value={selectedInventoryStatus}
+                            onChange={(e) => setSelectedInventoryStatus(e.target.value)}>
+                            <option value="all">All</option>
+                            <option value="in">In</option>
+                            <option value="out">Out</option>
                         </select>
 
                         <button className="btn export_btn">Export</button>
@@ -152,75 +151,38 @@ const Inventory = () => {
                 </div>
 
                 <div className="inventory_table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                {selectedInventoryType === 'products' ? (
-                                    <>
-                                        <th>Product ID</th>
-                                        <th>Product Name</th>
-                                    </>
-                                ) : (
-                                    <>
-                                        <th>Ingredient ID</th>
-                                        <th>Ingredient Name</th>
-                                    </>
-                                )}
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Supplier Id</th>
-                                <th>Reorder Level</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {filteredInventory.length > 0 ? (
-                                filteredInventory.map((item, index) => (
-                                    <tr key={item.id}>
-                                        <td>{index + 1}</td>
-                                        {selectedInventoryType === 'products' ? (
-                                            <>
-                                                <td>{item.productId}</td>
-                                                <td>{item.productName}</td>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <td>{item.ingredient_id}</td>
-                                                <td>{item.ingredient_name}</td>
-                                            </>
-                                        )}
-                                        <td>{item.quantity}</td>
-                                        <td>{item.price}</td>
-                                        <td>{item.supplierId || item.supplier_id}</td>
-                                        <td>{item.reorderLevel || item.reorder_level}</td>
-                                        <td>{item.productStatus || item.ingredient_status}</td>
-                                        <td>
-                                            <button className="btn edit_btn" onClick={() => openModal(item)}>
-                                                In
-                                            </button>
-                                            <button className="btn delete_btn" onClick={() => handleDelete(item.id)}>
-                                                Out
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="8">No inventory items found.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-
+                    <DataGrid
+                        rows={filteredInventory}
+                        columns={[
+                            { field: 'id', headerName: 'No', width: 90 },
+                            selectedInventoryType === 'products'? { field: 'productId', headerName: 'Product ID', width: 180 }: { field: 'ingredientId', headerName: 'Ingredient ID', width: 180 },
+                            selectedInventoryType === 'products'? { field: 'productName', headerName: 'Product Name', width: 180 }: { field: 'ingredientName', headerName: 'Ingredient Name', width: 180 },
+                            
+                            { field: 'quantity', headerName: 'Quantity', width: 120 },
+                            { field: 'price', headerName: 'Price', width: 120 },
+                            { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
+                            { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
+                            { field: 'productStatus', headerName: 'Status', width: 120 },
+                            {
+                                field: 'action',
+                                headerName: 'Action',
+                                width: 180,
+                                renderCell: (params) => (
+                                    <div>
+                                        <button className="btn edit_btn" onClick={() => openModal(params.row)}>In</button>
+                                        <button className="btn delete_btn" onClick={() => handleDelete(params.row.id)}>Out</button>
+                                    </div>
+                                )
+                            }
+                        ]}
+                        pageSize={10}
+                        rowsPerPageOptions={[10, 20, 50]}
+                        checkboxSelection
+                    />
                 </div>
 
                 <div className="pagination">
-                    <span>Showing 1 to 10 of {filteredInventory.length} entries</span>
-                    <button className="btn pagination_btn">1</button>
-                    <button className="btn pagination_btn">2</button>
+                    <span>Showing 1 to {filteredInventory.length} of {filteredInventory.length} entries</span>
                 </div>
             </div>
 
@@ -262,21 +224,21 @@ const Inventory = () => {
                             </>
                         ) : (
                             <>
-                                <label htmlFor="ingredient_id">Ingredient ID</label>
+                                <label htmlFor="ingredientId">Ingredient ID</label>
                                 <input
                                     type="number"
-                                    name="ingredient_id"
+                                    name="ingredientId"
                                     placeholder="Ingredient ID"
-                                    value={currentProduct.ingredient_id}
+                                    value={currentProduct.ingredientId}
                                     onChange={handleInputChange}
                                 />
 
-                                <label htmlFor="ingredient_name">Ingredient Name</label>
+                                <label htmlFor="ingredientName">Ingredient Name</label>
                                 <input
                                     type="text"
-                                    name="ingredient_name"
+                                    name="ingredientName"
                                     placeholder="Ingredient Name"
-                                    value={currentProduct.ingredient_name}
+                                    value={currentProduct.ingredientName}
                                     onChange={handleInputChange}
                                 />
                             </>
@@ -301,39 +263,20 @@ const Inventory = () => {
                             onChange={handleInputChange}
                         />
 
-                        <label htmlFor="supplierId">Supplier ID</label>
-                        <input
-                            type="number"
-                            name="supplierId"
-                            placeholder="Supplier ID"
-                            value={currentProduct.supplierId}
-                            onChange={handleInputChange}
-                        />
-
-                        <label htmlFor="reorderLevel">Reorder Level</label>
-                        <input
-                            type="number"
-                            name="reorderLevel"
-                            placeholder="Reorder Level"
-                            value={currentProduct.reorderLevel}
-                            onChange={handleInputChange}
-                        />
-
-                        <label htmlFor="productStatus">Product Status</label>
-                        <input
-                            type="text"
+                        <label htmlFor="productStatus">Status</label>
+                        <select
                             name="productStatus"
-                            placeholder="Product Status"
                             value={currentProduct.productStatus}
                             onChange={handleInputChange}
-                        />
-                        
-                    
+                        >
+                            <option value="in">In</option>
+                            <option value="out">Out</option>
+                        </select>
 
-                        <button onClick={handleSubmit}>
+                        <button className="btn save_btn" onClick={handleSubmit}>
                             {isEditing ? 'Save Changes' : 'Add Item'}
                         </button>
-                        <button onClick={closeModal}>Cancel</button>
+                        <button className="btn cancel_btn" onClick={closeModal}>Cancel</button>
                     </div>
                 </div>
             )}
