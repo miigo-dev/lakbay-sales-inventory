@@ -39,3 +39,13 @@ exports.updateWarehouse = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+exports.deleteWarehouse = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await warehouseService.deleteWarehouse(id);
+        res.status(200).json({ message: 'Warehouse deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
