@@ -1,20 +1,31 @@
 import '../css/sales.css';
 
-import T1 from '../assets/icons/t1.svg'
-import T2 from '../assets/icons/t2.svg'
-import T3 from '../assets/icons/t3.svg'
-import T4 from '../assets/icons/t4.svg'
-import T5 from '../assets/icons/t5.svg'
-import T6 from '../assets/icons/t6.svg'
-import T7 from '../assets/icons/t7.svg'
-import T8 from '../assets/icons/t8.svg'
+import T1 from '../assets/icons/t1.svg';
+import T2 from '../assets/icons/t2.svg';
+import T3 from '../assets/icons/t3.svg';
+import T4 from '../assets/icons/t4.svg';
+import T5 from '../assets/icons/t5.svg';
+import T6 from '../assets/icons/t6.svg';
+import T7 from '../assets/icons/t7.svg';
+import T8 from '../assets/icons/t8.svg';
 
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 const Sales = () => {
     const [timeFrame, setTimeFrame] = useState('Today');
+    const [isLakbayKape, setIsLakbayKape] = useState(false);
+    
+    const [salesTotals, setSalesTotals] = useState({
+        Today: 0,
+        Weekly: 0,
+        Monthly: 0,
+        Yearly: 0,
+    });
+
+    const toggleView = () => {
+        setIsLakbayKape(prev => !prev);
+    };
 
     const getSalesData = (frame) => {
         switch (frame) {
@@ -47,32 +58,89 @@ const Sales = () => {
         return data.reduce((total, value) => total + value, 0);
     };
 
-    const salesData = getSalesData(timeFrame);
-    const totalSales = calculateTotalSales(salesData.data);
+    useEffect(() => {
+        // Calculate totals when the component mounts or timeFrame changes
+        setSalesTotals({
+            Today: calculateTotalSales(getSalesData('Today').data),
+            Weekly: calculateTotalSales(getSalesData('Weekly').data),
+            Monthly: calculateTotalSales(getSalesData('Monthly').data),
+            Yearly: calculateTotalSales(getSalesData('Yearly').data),
+        });
+    }, []);
 
-    // Pre-calculate totals for each time frame
-    const totalSalesData = {
-        Today: calculateTotalSales(getSalesData('Today').data),
-        Weekly: calculateTotalSales(getSalesData('Weekly').data),
-        Monthly: calculateTotalSales(getSalesData('Monthly').data),
-        Yearly: calculateTotalSales(getSalesData('Yearly').data),
+    const getTopSalesItems = (frame, isKape) => {
+        const items = {
+            Today: isKape ? [
+                { img: T3, name: 'Brewed Coffee' },
+                { img: T2, name: 'Matcha Latte' },
+                { img: T1, name: 'Sakura Latte 1' },
+            ] : [
+                { img: T4, name: 'Beef Salpicao' },
+                { img: T5, name: 'Beef Bulgogi' },
+                { img: T6, name: 'Chicken Teriyaki' },
+            ],
+            Weekly: isKape ? [
+                { img: T2, name: 'Matcha Latte' },
+                { img: T1, name: 'Sakura Latte 1' },
+                { img: T3, name: 'Brewed Coffee' },
+            ] : [
+                { img: T4, name: 'Beef Salpicao' },
+                { img: T5, name: 'Beef Bulgogi' },
+                { img: T7, name: 'Beef Padkrapao' },
+            ],
+            Monthly: isKape ? [
+                { img: T1, name: 'Sakura Latte 1' },
+                { img: T2, name: 'Matcha Latte' },
+                { img: T3, name: 'Brewed Coffee' },
+            ] : [
+                { img: T6, name: 'Chicken Teriyaki' },
+                { img: T4, name: 'Beef Salpicao' },
+                { img: T8, name: 'Chicken Buttered' },
+            ],
+            Yearly: isKape ? [
+                { img: T3, name: 'Brewed Coffee' },
+                { img: T1, name: 'Sakura Latte 1' },
+                { img: T2, name: 'Matcha Latte' },
+            ] : [
+                { img: T5, name: 'Beef Bulgogi' },
+                { img: T6, name: 'Chicken Teriyaki' },
+                { img: T4, name: 'Beef Salpicao' },
+            ],
+        };
+
+        return items[frame];
     };
+
+    const salesData = getSalesData(timeFrame);
+    const totalSales = salesData.data.reduce((total, value) => total + value, 0);
 
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
                 <div className="sales-timeframes">
-
-                    <h2 className='text'>Sales</h2>
+                    <div className="toggle_header">   
+                        <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
+                        <div className="display">
+                            <label className='label_type' htmlFor="toggle">
+                                <div className="circle">
+                                    <span className="material-symbols-outlined food">restaurant</span>
+                                    <span className="material-symbols-outlined coffee">local_cafe</span>
+                                </div>
+                            </label>
+                            <span className="toggle-text">
+                                {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+                            </span>
+                        </div>
+                    </div>
 
                     <div className="timeframe-options">
                         {['Today', 'Weekly', 'Monthly', 'Yearly'].map((frame) => (
                             <button 
                                 key={frame} 
                                 onClick={() => setTimeFrame(frame)} 
-                                className={frame.toLowerCase()} // Add class based on frame
+                                className={frame.toLowerCase()}
                             >
-                                {frame}- ₱{totalSalesData[frame]}
+                                {`${frame} - ₱${salesTotals[frame]}`}
                             </button>
                         ))}
                     </div>
@@ -93,45 +161,16 @@ const Sales = () => {
             </div>
 
             <div className="top-sales">
-    <h2 className='Top'>Lakbay's Best Seller</h2>
-    <div className="top-sales-list">
-        <div className="T1">
-            <img src={T1} alt="T1"/>
-            <p className='txt'>Sakura Latte 1</p>
-        </div>
-        <div className="T2">
-            <img src={T2} alt="T2"/>
-        <p className='txt'>Matcha Latte</p>
-        </div>
-        <div className="T3">
-            <img src={T3} alt="T3"/>
-            <p className='txt'>Brewed Coffee</p>
-        </div>
-        <div className="T4">
-            <img src={T4} alt="T4"/>
-            <p className='txt'>Beef Salpicao</p>
-        </div>
-        <div className="T5">
-            <img src={T5} alt="T5"/>
-            <p className='txt'p>Beef Bulgogi</p>
-        </div>
-        <div className="T6">
-            <img src={T6} alt="T6"/>
-            <p className='txt'>Chicken Teriyaki</p>
-        </div>
-        <div className="T7">
-            <img src={T7} alt="T7"/>
-            <p className='txt'>Beef Padkrapao</p>
-        </div>
-        <div className="T8">
-            <img src={T8} alt="T8"/>
-            <p className='txt'>Chicken Buttered</p>
-        </div>
-        {/* Add more items as needed */}
-    </div>
-</div>
-
-
+                <h2 className='Top'>Lakbay's Best Seller</h2>
+                <div className="top-sales-list">
+                    {getTopSalesItems(timeFrame, isLakbayKape).map((item, index) => (
+                        <div key={index} className={`T${index + 1}`}>
+                            <img src={item.img} alt={`Top Item ${index + 1}`} />
+                            <p className='txt'>{item.name}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
