@@ -114,6 +114,11 @@ CREATE TABLE product_category (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE lakbay_warehouse (
+    warehouse_id SERIAL PRIMARY KEY,
+    warehouse_name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE ingredients (
     ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
@@ -159,11 +164,6 @@ CREATE TABLE ingredient_movements (
     movement_type VARCHAR(10) CHECK (movement_type IN ('IN', 'OUT')),
     remarks TEXT,
     movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE lakbay_warehouse (
-    warehouse_id SERIAL PRIMARY KEY,
-    warehouse_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE suppliers (
