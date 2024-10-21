@@ -169,8 +169,8 @@ const Inventory = () => {
                                 width: 180,
                                 renderCell: (params) => (
                                     <div>
-                                        <button className="btn edit_btn" onClick={() => openModal(params.row)}>In</button>
-                                        <button className="btn delete_btn" onClick={() => handleDelete(params.row.id)}>Out</button>
+                                        <button className="btn in_btn" onClick={() => openModal(params.row)}>In</button>
+                                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>Out</button>
                                     </div>
                                 )
                             }
