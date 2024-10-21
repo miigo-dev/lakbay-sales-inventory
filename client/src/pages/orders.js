@@ -16,6 +16,7 @@ const Orders = () => {
   const [searchTerm, setSearchTerm] = useState(''); 
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState(1);
+  const [completedOrders, setCompletedOrders] = useState([]);
 
   const lakbayKainMenuItems = [
     { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
@@ -44,24 +45,21 @@ const Orders = () => {
       setIsModalOpen(true);
     }
   };
-  const [completedOrders, setCompletedOrders] = useState([]);
 
   const handleCloseRecentOrderModal = () => {
-    // Add the recent order to the completed orders
     if (recentOrder) {
       setCompletedOrders((prevCompletedOrders) => [
         ...prevCompletedOrders,
         {
-          orderNumber, // Maintain the current order number
+          orderNumber,
           amount: (recentOrder.price * recentOrder.quantity).toFixed(2),
           status: 'Completed',
         },
       ]);
     }
-  
-    // Reset the recent order to close the modal
     setRecentOrder(null);
   };
+
   const openTransactionModal = () => {
     setIsTransactionModalOpen(true); 
   };
@@ -142,6 +140,19 @@ const Orders = () => {
     (activeLink === 'all' || item.category === activeLink) && 
     item.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCompleteOrder = (orderNumber) => {
+    const orderToComplete = completedOrders.find(order => order.orderNumber === orderNumber);
+    if (orderToComplete) {
+      setCompletedOrders((prevCompletedOrders) =>
+        prevCompletedOrders.map(order =>
+          order.orderNumber === orderNumber
+            ? { ...order, status: 'Completed' }
+            : order
+        )
+      );
+    }
+  };
 
   return (
     <div className="main-container">
@@ -258,44 +269,52 @@ const Orders = () => {
         </div>
       </div>
   
-      <div className="right-container">
-      <div className="order-status">
-  <h4>Order Status</h4>
-  <table>
-    <thead>
-      <tr>
-        <th>Order #</th>
-        <th>Amount</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {completedOrders.map((order, index) => (
-        <tr key={index}>
-          <td>{order.orderNumber}</td>
-          <td>{order.amount}</td>
-          <td>{order.status}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-      </div>
+        <div className="right-container">
+          <div className="order-status">
+            <h4>Order Status</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+              <tbody>
+                {completedOrders.map((order, index) => (
+                  <tr key={index}>
+                    <td>{order.orderNumber}</td>
+                    <td>{order.amount}</td>
+                    <td>{order.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
   
       {isTransactionModalOpen && (
         <div className="full-screen-modal">
           <div className="modal-content">
-            <h3>Transaction History:</h3>
+            <h3>Recent History:</h3>
             <table>
               <thead>
                 <tr>
                   <th>Date</th>
                   <th>Order</th>
                   <th>Amount</th>
-                  <th>Category</th>
-                  <th>Quantity</th>
                 </tr>
               </thead>
+              <tbody>
+                {completedOrders.map((order, index) => (
+                  <tr key={index}>
+                    <td>{new Date().toLocaleDateString()}</td>    
+                    <td>{order.orderNumber}</td>
+                    <td>{order.amount}</td>
+
+                  </tr>
+                ))}
+              </tbody>
             </table>
             <button onClick={() => setIsTransactionModalOpen(false)}>Close</button>
           </div>
@@ -329,7 +348,6 @@ const Orders = () => {
       {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
-            <h2>Order Summary</h2>
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
             <p>Order Number: {orderNumber}</p>
             <p>Order: {recentOrder.item}</p>

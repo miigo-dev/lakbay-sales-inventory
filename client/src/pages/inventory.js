@@ -1,5 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../css/inventory.css';
 
 const Inventory = () => {
@@ -33,6 +34,31 @@ const Inventory = () => {
         section: 'main',
         type: 'products'
     });
+
+    useEffect(() => {
+        const fetchInventoryData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/products/');
+                const products = response.data.map(product => ({
+                    id: product.product_id, // This will match the id expected by DataGrid
+                    productId: `#ILWL${String(product.product_id).padStart(5, '0')}`, // Create a custom Product ID format if needed
+                    productName: product.product_name,
+                    quantity: product.product_quantity,
+                    price: product.product_price,
+                    supplierId: product.warehouse_id, // Assuming supplierId can be derived from warehouse_id, adjust as needed
+                    reorderLevel: product.reorder_level,
+                    productStatus: product.product_status.toLowerCase(), // Convert status to 'in' or 'out' if needed
+                    section: 'main', // or derive based on the product if necessary
+                    type: 'products' // Hardcoding as 'products' since this API is for products
+                }));
+                setInventoryData(products);
+            } catch (error) {
+                console.error('Error fetching inventory data:', error);
+            }
+        };
+
+        fetchInventoryData();
+    }, []);
 
     const openModal = (product = null) => {
         if (product) {
