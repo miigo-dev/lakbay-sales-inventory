@@ -70,19 +70,36 @@
   }
 
   .order-status table {
-    width: 100%;
-    border-collapse: collapse;
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   .order-status th, .order-status td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
   }
 
   .order-status th {
-    background-color: #f2f2f2;
+      background-color: #f0e9e9;
+      font-weight: bold;
+      font-size: 16px;
   }
+
+  .order-status tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+  }
+
+  .order-status tbody tr:hover {
+      background-color: #f1f1f1;
+  }
+
+  .order-status td {
+      font-size: 14px;
+  }
+
   .font-size{
       font-size: 18px;
       font-weight: bold;
@@ -91,42 +108,40 @@
   .font-size{
     font-size: 18px;
     font-weight: bold;
-}
-.toggle_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; 
-  padding: 20px;
-}
+  }
+  .toggle_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 20px;
+  }
 
-.input_type{
-  display: none;
-}
-.display {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: black;
-}
+  .input_type{
+    display: none;
+  }
 
-.label_type {
-  width: 100px;
-  background-color: #000;
-  height: 50px;
-  border-radius: 999px;
-  background: #F3F3F3;
-  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.05) inset;
-  cursor: pointer;
-  position: relative;
-}
+  .display {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
 
-.circle {
+  .label_type {
+    width: 100px;
+    height: 50px;
+    border-radius: 999px;
+    background: #f7f6f6 !important;
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.05) inset;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .circle {
   width: 45px;
   height: 45px;
-  border-radius: 50%; 
-  background: white;
-  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05),
-              -10px -10px 30px rgba(0, 0, 0, 0.05) inset;
+  border-radius: 50%;
+  background: white; 
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05), -10px -10px 30px rgba(0, 0, 0, 0.05) inset;
   position: absolute;
   top: 50%;
   left: 5px;
@@ -134,46 +149,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: left 0.3s ease-in-out; 
-}
+  transition: left 0.3s ease-in-out;
+  }
 
-.material-symbols-outlined {
-    font-size: 24px;
-    padding: 7px;
-    position: absolute;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-.food {
-    color: #8B4513;
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out; 
-}
+  .material-symbols-outlined {
+      font-size: 24px;
+      padding: 7px;
+      position: absolute;
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  .food {
+      color: #8B4513;
+      opacity: 1;
+      transition: opacity 0.3s ease-in-out; 
+  }
 
-.coffee {
-    color: #8B4513;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out; 
-}
+  .coffee {
+      color: #8B4513;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out; 
+  }
 
-input:checked + .display label .circle {
-    left: calc(100% - 50px); 
-}
+  input:checked + .display label .circle {
+      left: calc(100% - 50px); 
+  }
 
-input:checked + .display label .circle .food {
-    opacity: 0; 
-    transform: translateY(0%); 
-}
+  input:checked + .display label .circle .food {
+      opacity: 0; 
+      transform: translateY(0%); 
+  }
 
-input:checked + .display label .circle .coffee {
-    opacity: 1; 
-    transform: translateY(0%);
-}
+  input:checked + .display label .circle .coffee {
+      opacity: 1; 
+      transform: translateY(0%);
+  }
 
-.toggle-text {
-  margin-left: 15px;
-  font-size: 20px;
-  font-weight: bold;
-}
+  .toggle-text {
+    margin-left: 15px;
+    font-size: 20px;
+    font-weight: bold;
+  }
   
   .search-container {
       display: flex;
@@ -517,6 +532,7 @@ input:checked + .display label .circle .coffee {
   .recent-order-content .total-price {
     font-weight: bold;
     color: #28a745;
+    font-size: 30px;
     margin-top: 10px;
   }
   
