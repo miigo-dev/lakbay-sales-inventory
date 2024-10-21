@@ -1,103 +1,3 @@
-CREATE TABLE Roles (
-    RoleID SERIAL PRIMARY KEY,
-    RoleName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE Users (
-    UserID SERIAL PRIMARY KEY,
-    FirstName VARCHAR(100),
-    LastName VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    Username VARCHAR(255) NOT NULL,
-    Password VARCHAR(255) NOT NULL,
-    RoleID INT REFERENCES Roles(RoleID),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Suppliers (
-    SupplierID SERIAL PRIMARY KEY,
-    SupplierName VARCHAR(100) NOT NULL,
-    ContactPerson VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    Email VARCHAR(100),
-    Address VARCHAR(255)
-);
-
-CREATE TABLE Products (
-    ProductID SERIAL PRIMARY KEY,
-    ProductName VARCHAR(100) NOT NULL,
-    Category VARCHAR(50),
-    UnitOfMeasure VARCHAR(50),
-    Price DECIMAL(10, 2) NOT NULL,
-    StockQuantity INT NOT NULL,
-    ReorderLevel INT DEFAULT 10,
-    ProductStatus VARCHAR(50) DEFAULT 'Active',
-    SupplierID INT REFERENCES Suppliers(SupplierID)
-);
-
-CREATE TABLE ProductIn (
-    ProductInID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    QuantityAdded INT NOT NULL,
-    SupplierID INT REFERENCES Suppliers(SupplierID),
-    ReceivedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Remarks TEXT
-);
-
-CREATE TABLE ProductOut (
-    ProductOutID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    QuantityRemoved INT NOT NULL,
-    RemovalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Reason VARCHAR(100),
-    Remarks TEXT
-);
-
-CREATE TABLE Orders (
-    OrderID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    Quantity INT NOT NULL,
-    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    OrderStatus VARCHAR(50) DEFAULT 'Pending',
-    OrderTotal DECIMAL(10, 2),
-    UserID INT REFERENCES Users(UserID)
-);
-
-CREATE TABLE Sales (
-    SaleID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    Quantity INT NOT NULL,
-    SaleDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    SaleStatus VARCHAR(50) DEFAULT 'Completed',
-    UserID INT REFERENCES Users(UserID)
-);
-
-CREATE TABLE Logs (
-    LogID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    Action VARCHAR(255),
-    ActionType VARCHAR(50),
-    TableAffected VARCHAR(100),
-    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Permissions (
-    PermissionID SERIAL PRIMARY KEY,
-    PermissionName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE RolePermissions (
-    RolePermissionID SERIAL PRIMARY KEY,
-    RoleID INT REFERENCES Roles(RoleID),
-    PermissionID INT REFERENCES Permissions(PermissionID)
-);
-
-CREATE TABLE UserPermissions (
-    UserPermissionID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    PermissionID INT REFERENCES Permissions(PermissionID)
-);
-
 -- new --
 
 CREATE TABLE ingredient_type (
@@ -112,6 +12,11 @@ CREATE TABLE product_category (
     category_name VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE lakbay_warehouse (
+    warehouse_id SERIAL PRIMARY KEY,
+    warehouse_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE ingredients (
@@ -159,11 +64,6 @@ CREATE TABLE ingredient_movements (
     movement_type VARCHAR(10) CHECK (movement_type IN ('IN', 'OUT')),
     remarks TEXT,
     movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE lakbay_warehouse (
-    warehouse_id SERIAL PRIMARY KEY,
-    warehouse_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE suppliers (
