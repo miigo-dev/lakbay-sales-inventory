@@ -175,6 +175,12 @@
     margin-bottom: 15px;
 }
 
+.modal-content p{
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+
 .modal-content label {
     display: block;
     margin-bottom: 5px;
@@ -193,14 +199,16 @@
 .modal-content button {
     padding: 10px;
     border-radius: 5px;
+    margin-right: 10px;
+    margin-top: 10px;
     cursor: pointer;
     border: none;
-    background-color: #4CAF50;
+    background-color: #C2A790;
     color: white;
 }
 
 .modal-content button:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #a68a6b; /* Darker green on hover */
 }
 
 .actions {
@@ -231,7 +239,7 @@
 .btn {
     padding: 7px 15px;
     font-size: 14px;
-    background-color: #007bff;
+    background-color: #1dd05b;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -240,8 +248,17 @@
 }
 
 .btn:hover {
-    background-color: #00346b;
+    background-color: #18b34e;
     color: white;
+    
+}
+
+.out_btn {
+    background-color: #f3554f;
+}
+
+.out_btn:hover {
+    background-color: #d02923;
 }
 
 .in_btn, .out_btn {
@@ -253,17 +270,17 @@
 }
 
 .export_btn {
-    background-color: #937f6f;
+    background-color: #C2A790;
 }
 
 .export_btn:hover {
-    background-color: #bda391;
+    background-color: #a68a6b;
 }
 
 .add-inventory_btn {
-    background-color: #937f6f;
+    background-color: #C2A790;
 }
 
 .add-inventory_btn:hover {
-    background-color: #bda391;
+    background-color: #a68a6b;
 }
