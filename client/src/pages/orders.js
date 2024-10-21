@@ -47,16 +47,6 @@ const Orders = () => {
   };
 
   const handleCloseRecentOrderModal = () => {
-    if (recentOrder) {
-      setCompletedOrders((prevCompletedOrders) => [
-        ...prevCompletedOrders,
-        {
-          orderNumber,
-          amount: (recentOrder.price * recentOrder.quantity).toFixed(2),
-          status: 'Completed',
-        },
-      ]);
-    }
     setRecentOrder(null);
   };
 
@@ -119,6 +109,15 @@ const Orders = () => {
     }
 
     if (amount >= totalPrice) {
+      // Add orders to completedOrders with 'Pending' status
+      const newOrders = orders.map((order) => ({
+        orderNumber,
+        amount: `$${(order.price * order.quantity).toFixed(2)}`,
+        status: 'Pending', // Initial status
+      }));
+
+      setCompletedOrders([...completedOrders, ...newOrders]);
+
       setRecentOrder({
         ...orders[orders.length - 1],
         orderNumber, 
@@ -133,6 +132,12 @@ const Orders = () => {
     }
   };
 
+  const completeOrder = (index) => {
+    const updatedOrders = [...completedOrders];
+    updatedOrders[index].status = 'Completed';
+    setCompletedOrders(updatedOrders);
+  };
+
   const toggleView = () => setIsLakbayKape((prev) => !prev);
 
   const filteredMenuItems = (isLakbayKape ? lakbayKapeMenuItems : lakbayKainMenuItems)
@@ -140,19 +145,6 @@ const Orders = () => {
     (activeLink === 'all' || item.category === activeLink) && 
     item.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleCompleteOrder = (orderNumber) => {
-    const orderToComplete = completedOrders.find(order => order.orderNumber === orderNumber);
-    if (orderToComplete) {
-      setCompletedOrders((prevCompletedOrders) =>
-        prevCompletedOrders.map(order =>
-          order.orderNumber === orderNumber
-            ? { ...order, status: 'Completed' }
-            : order
-        )
-      );
-    }
-  };
 
   return (
     <div className="main-container">
@@ -269,29 +261,40 @@ const Orders = () => {
         </div>
       </div>
   
-        <div className="right-container">
-          <div className="order-status">
-            <h4>Order Status</h4>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-              <tbody>
-                {completedOrders.map((order, index) => (
-                  <tr key={index}>
-                    <td>{order.orderNumber}</td>
-                    <td>{order.amount}</td>
-                    <td>{order.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="right-container">
+        <div className="order-status">
+          <h4>Order Status</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+            <tbody>
+              {completedOrders.map((order, index) => (
+                <tr key={index}>
+                  <td>{order.orderNumber}</td>
+                  <td>{order.amount}</td>
+                  <td>{order.status}</td>
+                  <td>
+                    {order.status === 'Pending' && (
+                      <button
+                        className="complete-button"
+                        onClick={() => completeOrder(index)}
+                      >
+                        Complete
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
   
       {isTransactionModalOpen && (
         <div className="full-screen-modal">
@@ -311,7 +314,6 @@ const Orders = () => {
                     <td>{new Date().toLocaleDateString()}</td>    
                     <td>{order.orderNumber}</td>
                     <td>{order.amount}</td>
-
                   </tr>
                 ))}
               </tbody>
