@@ -1,15 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
   * {
       font-family: 'Inter', sans-serif;
   }
+
   .main-container {
     display: flex;
     width: 100%;
-    justify-content: space-between; 
+    justify-content: space-between;
   }
+
   .dashboard {
     margin: 10px;
-    flex: 3;
+    margin-right: 90px;
+    flex-grow: 1;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 15px;
@@ -26,78 +30,60 @@
     flex-wrap: wrap;
     justify-content: center;
     transition: margin-left 0.3s ease, width 0.3s ease;
-}
+  }
 
   .right-container {
-    margin: 10px;
-    flex: 1;
-    height: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    width: 50px; /* Initial collapsed width */
+    transition: width 0.4s ease;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    height: 100vh;
+    background-color: #fff;
+    border-left: 1px solid #ddd;
   }
-  .right-container h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
+  
+  .right-container.expanded {
+    width:  450px;
   }
-
-  .right-container p {
-      font-size: 18px;
-      color: #555;
-      margin-bottom: 10px;
-  }
-
-  .right-container .proceed-button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #C2A790;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-  }
-
-  .right-container .proceed-button:hover {
-      background-color: #a68a6b;
-  }
+  
   .order-status {
-    margin-top: 20px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .orders-table {
+    padding: 10px;
+    background-color: #fafafa;
+  }
+  
+  .btn {
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  .complete-button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .complete-button:hover {
+    background-color: darkgreen;
   }
 
-  .order-status table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  .order-status h4 {
+    cursor: pointer;
+    color: black; 
+    transition: color 0.3s;
   }
-
-  .order-status th, .order-status td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-  }
-
-  .order-status th {
-      background-color: #f0e9e9;
-      font-weight: bold;
-      font-size: 16px;
-  }
-
-  .order-status tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-  }
-
-  .order-status tbody tr:hover {
-      background-color: #f1f1f1;
-  }
-
-  .order-status td {
-      font-size: 14px;
+  
+  .order-status h4:hover {
+    color: #000000; 
   }
 
   .font-size{

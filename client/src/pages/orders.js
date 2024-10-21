@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
 
 const Orders = () => {
-  
   const [activeLink, setActiveLink] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +17,8 @@ const Orders = () => {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState(1);
   const [completedOrders, setCompletedOrders] = useState([]);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false); 
 
   const lakbayKainMenuItems = [
     { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
@@ -107,35 +109,49 @@ const Orders = () => {
       alert("Please add items to your order before charging.");
       return;
     }
-
+  
     if (amount >= totalPrice) {
-      // Add orders to completedOrders with 'Pending' status
-      const newOrders = orders.map((order) => ({
+      const totalOrderAmount = orders.reduce((total, order) => total + order.price * order.quantity, 0);
+      const newOrder = {
         orderNumber,
-        amount: `$${(order.price * order.quantity).toFixed(2)}`,
-        status: 'Pending', // Initial status
-      }));
-
-      setCompletedOrders([...completedOrders, ...newOrders]);
-
+        amount: totalOrderAmount.toFixed(2),
+        status: 'Pending',
+      };
+      setCompletedOrders([...completedOrders, newOrder]);
+      setOrderHistory([...orderHistory, newOrder]); 
       setRecentOrder({
-        ...orders[orders.length - 1],
-        orderNumber, 
+        orderNumber,
+        amount: totalOrderAmount,
+        items: orders.map(order => ({
+          item: order.item,
+          quantity: order.quantity,
+          size: order.size,
+        })),
       });
       setChange(amount - totalPrice);
       setCustomAmount('');
-      setOrders([]);
-      setOrderNumber((prev) => (prev < 100 ? prev + 1 : 1));
+      setOrders([]); 
+      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1)); 
     } else {
       alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
       setChange(0);
     }
   };
-
+  
   const completeOrder = (index) => {
-    const updatedOrders = [...completedOrders];
-    updatedOrders[index].status = 'Completed';
-    setCompletedOrders(updatedOrders);
+    const completedOrder = completedOrders[index];
+    setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
+    setOrderHistory((prevHistory) =>
+      prevHistory.map((order) =>
+        order.orderNumber === completedOrder.orderNumber
+          ? { ...order, status: 'Completed' }
+          : order
+      )
+    );
+  };
+
+  const toggleExpandCollapse = () => {
+    setIsExpanded((prev) => !prev); 
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
@@ -261,41 +277,47 @@ const Orders = () => {
         </div>
       </div>
   
-      <div className="right-container">
+      <div className={`right-container ${isExpanded ? 'expanded' : ''}`}>
         <div className="order-status">
-          <h4>Order Status</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Order #</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-            <tbody>
-              {completedOrders.map((order, index) => (
-                <tr key={index}>
-                  <td>{order.orderNumber}</td>
-                  <td>{order.amount}</td>
-                  <td>{order.status}</td>
-                  <td>
-                    {order.status === 'Pending' && (
-                      <button
-                        className="complete-button"
-                        onClick={() => completeOrder(index)}
-                      >
-                        Complete
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h4 onClick={toggleExpandCollapse} style={{ cursor: 'pointer' }}>
+            {isExpanded ? '→' : '←'}
+          </h4>
+          {isExpanded && (
+            <div className="orders-table">
+              <DataGrid
+                rows={completedOrders.map((order, index) => ({
+                  id: index,
+                  orderNumber: order.orderNumber,
+                  amount: order.amount,
+                  status: order.status,
+                }))}
+                columns={[
+                  { field: 'orderNumber', headerName: 'Order No.', width: 100 },
+                  { field: 'amount', headerName: 'Amount', width: 100 },
+                  { field: 'status', headerName: 'Status', width: 100 },
+                  {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 100,
+                    renderCell: (params) => (
+                      <div>
+                        {params.row.status === 'Pending' && (
+                          <button
+                            className="btn complete-button"
+                            onClick={() => completeOrder(params.id)}
+                          >
+                            Complete
+                          </button>
+                        )}
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+          )}
         </div>
       </div>
-  
       {isTransactionModalOpen && (
         <div className="full-screen-modal">
           <div className="modal-content">
@@ -306,14 +328,16 @@ const Orders = () => {
                   <th>Date</th>
                   <th>Order</th>
                   <th>Amount</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {completedOrders.map((order, index) => (
+                {orderHistory.map((order, index) => (
                   <tr key={index}>
                     <td>{new Date().toLocaleDateString()}</td>    
                     <td>{order.orderNumber}</td>
                     <td>{order.amount}</td>
+                    <td>{order.status}</td>
                   </tr>
                 ))}
               </tbody>
