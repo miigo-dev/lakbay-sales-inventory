@@ -217,6 +217,12 @@ const Inventory = () => {
                     <div className="modal-content">
                         <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
 
+                        <p> 
+                            You are {isEditing ? 'editing' : 'adding'} {' '}
+                            {selectedInventoryType === 'products' ? 'Product' : 'Ingredient'}.
+                        </p>
+
+                    
                         <label htmlFor="section">Inventory Section</label>
                         <select
                             name="section"
