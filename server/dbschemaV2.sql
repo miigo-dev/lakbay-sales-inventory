@@ -1,35 +1,47 @@
 -- new --
 
-CREATE TABLE ingredient_type (
-    type_id SERIAL PRIMARY KEY,
-    type_name VARCHAR(100) NOT NULL,
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE product_category (
-    category_id SERIAL PRIMARY KEY,
-    category_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE suppliers (
+    supplier_id SERIAL PRIMARY KEY,
+    supplier_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone_number VARCHAR(20),
+    address VARCHAR(255)
 );
 
-CREATE TABLE lakbay_warehouse (
+CREATE TABLE warehouses (
     warehouse_id SERIAL PRIMARY KEY,
     warehouse_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ingredient_types (
+    type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE product_categories (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE ingredients (
     ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
-    type_id INT REFERENCES ingredient_type(type_id),
     ingredient_quantity INT NOT NULL CHECK (ingredient_quantity >= 0),
     ingredient_unit VARCHAR(50),
     ingredient_price DECIMAL(10, 2) NOT NULL,
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
     ingredient_status VARCHAR(50) DEFAULT 'Active',
-    remarks VARCHAR(255),
+    type_id INT REFERENCES ingredient_types(type_id),
+    warehouse_id INT REFERENCES warehouses(warehouse_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -37,44 +49,32 @@ CREATE TABLE ingredients (
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
-    category_id INT REFERENCES product_category(category_id),
-    warehouse_id INT REFERENCES lakbay_warehouse(warehouse_id),
     product_quantity INT NOT NULL CHECK (product_quantity >= 0),
     product_price DECIMAL(10, 2) NOT NULL,
     reorder_level INT DEFAULT 10,
     product_status VARCHAR(50) DEFAULT 'Active',
-    remarks VARCHAR(255),
+    category_id INT REFERENCES product_categories(category_id),
+    warehouse_id INT REFERENCES warehouses(warehouse_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE product_movements (
-    pmovement_id SERIAL PRIMARY KEY,
+    pmove_id SERIAL PRIMARY KEY,
     product_id INT REFERENCES products(product_id),
     pmove_quantity INT NOT NULL,
-    movement_type VARCHAR(10) CHECK (movement_type IN ('IN', 'OUT')),
+    pmove_type VARCHAR(10) CHECK (pmove_type IN ('IN', 'OUT')),
     remarks TEXT,
-    movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    pmove_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE ingredient_movements (
-    imovement_id SERIAL PRIMARY KEY,
+    imove_id SERIAL PRIMARY KEY,
     ingredient_id INT REFERENCES ingredients(ingredient_id),
     imove_quantity INT NOT NULL,
-    movement_type VARCHAR(10) CHECK (movement_type IN ('IN', 'OUT')),
+    imove_type VARCHAR(10) CHECK (imove_type IN ('IN', 'OUT')),
     remarks TEXT,
-    movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE suppliers (
-    supplier_id SERIAL PRIMARY KEY,
-    supplier_name VARCHAR(100) NOT NULL,
-    contact_person VARCHAR(100),
-    phone_number VARCHAR(20),
-    email VARCHAR(100),
-    address VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    imove_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE orders (
@@ -119,16 +119,6 @@ $$ LANGUAGE plpgsql;
 
 -- trigger for each table --
 
-CREATE TRIGGER update_suppliers_timestamp
-BEFORE UPDATE ON suppliers
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp();
-
-CREATE TRIGGER update_ingredient_type_timestamp
-BEFORE UPDATE ON ingredient_type
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp();
-
 CREATE TRIGGER update_ingredients_timestamp
 BEFORE UPDATE ON ingredients
 FOR EACH ROW
@@ -136,6 +126,16 @@ EXECUTE FUNCTION update_timestamp();
 
 CREATE TRIGGER update_products_timestamp
 BEFORE UPDATE ON products
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_product_movement_timestamp
+BEFORE UPDATE ON product_movements
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_ingredient_movement_timestamp
+BEFORE UPDATE ON ingredient_movements
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 

@@ -19,9 +19,10 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/productRoute');
 const warehouseRoutes = require('./routes/warehouseRoute');
 const movementRoutes = require('./routes/movementRoute');
+const ingredientRoutes = require('./routes/ingredientRoutes');
 
 // initialize route
-app.use('/api', authRoutes, productRoutes, warehouseRoutes, movementRoutes);
+app.use('/api', authRoutes, productRoutes, warehouseRoutes, movementRoutes, ingredientRoutes);
 
 const appStart = () => {
     try {

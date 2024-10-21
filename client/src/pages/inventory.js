@@ -37,29 +37,39 @@ const Inventory = () => {
 
     useEffect(() => {
         const fetchInventoryData = async () => {
+            const endpoint = selectedInventoryType === 'products'
+                ? 'http://localhost:8080/api/products/'
+                : 'http://localhost:8080/api/ingredients/';
+            
             try {
-                const response = await axios.get('http://localhost:8080/api/products/');
-                const products = response.data.map(product => ({
-                    id: product.product_id, // This will match the id expected by DataGrid
-                    productId: `#ILWL${String(product.product_id).padStart(5, '0')}`, // Create a custom Product ID format if needed
-                    productName: product.product_name,
-                    quantity: product.product_quantity,
-                    price: product.product_price,
-                    supplierId: product.warehouse_id, // Assuming supplierId can be derived from warehouse_id, adjust as needed
-                    reorderLevel: product.reorder_level,
-                    productStatus: product.product_status.toLowerCase(), // Convert status to 'in' or 'out' if needed
-                    section: 'main', // or derive based on the product if necessary
-                    type: 'products' // Hardcoding as 'products' since this API is for products
+                const response = await axios.get(endpoint);
+                const data = response.data.map(item => ({
+                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
+                    productId: selectedInventoryType === 'products' ? `#ILWL${String(item.product_id).padStart(5, '0')}` : '',
+                    productName: selectedInventoryType === 'products' ? item.product_name : item.ingredient_name,
+                    quantity: selectedInventoryType === 'products' ? item.product_quantity : item.ingredient_quantity,
+                    price: selectedInventoryType === 'products' ? item.product_price : item.ingredient_price,
+                    supplierId: selectedInventoryType === 'products' ? item.warehouse_id : item.supplier_id,
+                    reorderLevel: item.reorder_level, // No need to check type here, same for both
+                    productStatus: selectedInventoryType === 'products' ? item.product_status : item.ingredient_status,
+                    section: 'main',
+                    type: selectedInventoryType
                 }));
-                setInventoryData(products);
+                setInventoryData(data);
             } catch (error) {
                 console.error('Error fetching inventory data:', error);
             }
         };
 
         fetchInventoryData();
-    }, []);
+    }, [selectedInventoryType]);
 
+    const filteredInventory = inventoryData.filter(item => 
+        item.section === selectedSection && 
+        item.type === selectedInventoryType &&
+        (selectedInventoryStatus === 'all' || item.productStatus === selectedInventoryStatus)
+    );
+    
     const openModal = (product = null) => {
         if (product) {
             setCurrentProduct(product);
@@ -120,12 +130,6 @@ const Inventory = () => {
             setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
         }
     };
-
-    const filteredInventory = inventoryData.filter(item => 
-        item.section === selectedSection && 
-        item.type === selectedInventoryType &&
-        (selectedInventoryStatus === 'all' || item.productStatus === selectedInventoryStatus)
-    );
 
     return (
         <div className="dashboard_container">
