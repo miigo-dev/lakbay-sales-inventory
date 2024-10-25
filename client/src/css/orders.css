@@ -33,7 +33,7 @@
   }
 
   .right-container {
-    width: 50px; /* Initial collapsed width */
+    width: 80px; 
     transition: width 0.4s ease;
     overflow: hidden;
     position: absolute;

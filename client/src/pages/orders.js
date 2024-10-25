@@ -280,7 +280,7 @@ const Orders = () => {
       <div className={`right-container ${isExpanded ? 'expanded' : ''}`}>
         <div className="order-status">
           <h4 onClick={toggleExpandCollapse} style={{ cursor: 'pointer' }}>
-            {isExpanded ? '→' : '←'}
+            {isExpanded ? <i class="fa-brands fa-jedi-order"></i> : <i class="fa-brands fa-jedi-order"></i>}
           </h4>
           {isExpanded && (
             <div className="orders-table">
