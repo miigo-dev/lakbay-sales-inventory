@@ -1,5 +1,4 @@
 import '../css/sales.css';
-
 import T1 from '../assets/icons/t1.svg';
 import T2 from '../assets/icons/t2.svg';
 import T3 from '../assets/icons/t3.svg';
@@ -8,13 +7,14 @@ import T5 from '../assets/icons/t5.svg';
 import T6 from '../assets/icons/t6.svg';
 import T7 from '../assets/icons/t7.svg';
 import T8 from '../assets/icons/t8.svg';
-
 import { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { DataGrid } from '@mui/x-data-grid';
 
 const Sales = () => {
     const [timeFrame, setTimeFrame] = useState('Today');
     const [isLakbayKape, setIsLakbayKape] = useState(false);
+    const [showAllData, setShowAllData] = useState(false); // New state for showing all data
     
     const [salesTotals, setSalesTotals] = useState({
         Today: 0,
@@ -59,7 +59,6 @@ const Sales = () => {
     };
 
     useEffect(() => {
-        // Calculate totals when the component mounts or timeFrame changes
         setSalesTotals({
             Today: calculateTotalSales(getSalesData('Today').data),
             Weekly: calculateTotalSales(getSalesData('Weekly').data),
@@ -114,6 +113,22 @@ const Sales = () => {
     const salesData = getSalesData(timeFrame);
     const totalSales = salesData.data.reduce((total, value) => total + value, 0);
 
+    const salesGridData = [
+        { id: 1, period: 'Today', amount: salesTotals.Today },
+        { id: 2, period: 'Weekly', amount: salesTotals.Weekly },
+        { id: 3, period: 'Monthly', amount: salesTotals.Monthly },
+        { id: 4, period: 'Yearly', amount: salesTotals.Yearly },
+    ];
+
+    // Determine which sales grid data to display based on the state
+    const displayedSalesGridData = showAllData ? salesGridData : salesGridData.filter(item => item.period === timeFrame);
+
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 90 },
+        { field: 'period', headerName: 'Period', width: 150 },
+        { field: 'amount', headerName: 'Sales Amount (₱)', width: 180 },
+    ];
+
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
@@ -160,6 +175,20 @@ const Sales = () => {
                 </div>
             </div>
 
+            <div className="sales-table">
+                <h2 className='Sales-Total'>Sales Totals</h2>
+                <button onClick={() => setShowAllData(prev => !prev)} className='show-all'>
+                    {showAllData ? 'Show Current Period Data' : 'Show All Data'}
+                </button>
+                <DataGrid
+                    rows={displayedSalesGridData}  // Use the displayed data
+                    columns={columns}
+                    pageSize={4}
+                    rowsPerPageOptions={[4]}
+                    disableSelectionOnClick
+                />
+            </div>
+                
             <div className="top-sales">
                 <h2 className='Top'>Lakbay's Best Seller</h2>
                 <div className="top-sales-list">
