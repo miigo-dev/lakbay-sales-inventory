@@ -40,7 +40,7 @@ const Orders = () => {
     const fetchMenuItems = async () => {
       try {
         // Fetch products and warehouses concurrently
-        const [productResponse, warehouseResponse] = await Promise.all([
+        const [productResponse] = await Promise.all([
           axios.get('http://localhost:8080/api/products/'),
           axios.get('http://localhost:8080/api/warehouses/')
         ]);
@@ -113,7 +113,7 @@ const Orders = () => {
 
   const addOrder = () => {
     if (quantity > 0) {
-      if (selectedItem.category.toLowerCase() === 'drinks' && !size) {
+      if (selectedItem.category === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
@@ -121,7 +121,7 @@ const Orders = () => {
         ...prevOrders,
         {
           item: selectedItem.productname,
-          size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
+          size: selectedItem.category === 'meals' ? '' : size,
           quantity,
           price: parseFloat(selectedItem.price),
           category: selectedItem.category,
@@ -195,7 +195,7 @@ const Orders = () => {
 
   const displayedItems = filteredMenuItems.filter(item =>
     (activeLink === 'all' || item.category === activeLink) &&
-    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
+    item.productname.includes(searchTerm)
   );
 
   return (
