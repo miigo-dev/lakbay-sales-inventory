@@ -14,32 +14,50 @@ const Orders = () => {
   const [customAmount, setCustomAmount] = useState('');
   const [change, setChange] = useState(0);
   const [isLakbayKape, setIsLakbayKape] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState('');
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState(1);
   const [completedOrders, setCompletedOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
+  const [filteredMenuItems, setFilteredMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const categoryMap = {
+    1: 'meals',
+    2: 'drinks',
+    3: 'side Orders',
+    4: 'desserts',
+    5: 'coffee',
+    6: 'non-Coffee',
+    7: 'frappes',
+    8: 'affogato Series'
+  };
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/products/');
-        // Assuming response data has a structure matching the columns in the database
-        const fetchedItems = response.data.map(item => ({
+        // Fetch products and warehouses concurrently
+        const [productResponse, warehouseResponse] = await Promise.all([
+          axios.get('http://localhost:8080/api/products/'),
+          axios.get('http://localhost:8080/api/warehouses/')
+        ]);
+
+        const fetchedItems = productResponse.data.map(item => ({
           productname: item.product_name,
-          category: item.category_id, // Adjust mapping if category is a string or join logic is needed
+          category: categoryMap[item.category_id] || 'unknown',
           price: parseFloat(item.product_price),
-          stockquantity: item.product_quantity
+          stockquantity: item.product_quantity,
+          warehouse_id: item.warehouse_id // Store the warehouse ID for filtering
         }));
+
         setMenuItems(fetchedItems);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Failed to load products");
+        console.error("Error fetching data:", err);
+        setError("Failed to load products or warehouses");
         setLoading(false);
       }
     };
@@ -47,13 +65,19 @@ const Orders = () => {
     fetchMenuItems();
   }, []);
 
+  useEffect(() => {
+    // Filter products based on the selected warehouse (1 for Lakbay Kape, 2 for Lakbay Kain)
+    const warehouseId = isLakbayKape ? 1 : 2;
+    setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
+  }, [menuItems, isLakbayKape]);
+
   const handleLinkClick = (link) => {
     setActiveLink(link);
-    setSearchTerm(''); 
+    setSearchTerm('');
   };
 
   const handleItemClick = (item) => {
-    if (item.stockquantity > 0) {  
+    if (item.stockquantity > 0) {
       setSelectedItem(item);
       setQuantity(0);
       setSize('');
@@ -66,12 +90,12 @@ const Orders = () => {
   };
 
   const openTransactionModal = () => {
-    setIsTransactionModalOpen(true); 
+    setIsTransactionModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedItem(null); 
+    setSelectedItem(null);
   };
 
   const handleQuantityChange = (operation) => {
@@ -89,7 +113,7 @@ const Orders = () => {
 
   const addOrder = () => {
     if (quantity > 0) {
-      if (selectedItem.category === 'drinks' && !size) {
+      if (selectedItem.category.toLowerCase() === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
@@ -97,7 +121,7 @@ const Orders = () => {
         ...prevOrders,
         {
           item: selectedItem.productname,
-          size: selectedItem.category === 'meals' ? '' : size,
+          size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
           quantity,
           price: parseFloat(selectedItem.price),
           category: selectedItem.category,
@@ -131,7 +155,7 @@ const Orders = () => {
         status: 'Pending',
       };
       setCompletedOrders([...completedOrders, newOrder]);
-      setOrderHistory([...orderHistory, newOrder]); 
+      setOrderHistory([...orderHistory, newOrder]);
       setRecentOrder({
         orderNumber,
         amount: totalOrderAmount,
@@ -164,53 +188,53 @@ const Orders = () => {
   };
 
   const toggleExpandCollapse = () => {
-    setIsExpanded((prev) => !prev); 
+    setIsExpanded((prev) => !prev);
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
 
-  const filteredMenuItems = menuItems.filter(item => 
+  const displayedItems = filteredMenuItems.filter(item =>
     (activeLink === 'all' || item.category === activeLink) &&
-    item.productname.includes(searchTerm)
+    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="main-container">
       <div className='dashboard'>
-        <div className="toggle_header">  
+        <div className="toggle_header">
           <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
-            <div className="display">
-              <label className='label_type' htmlFor="toggle">
-                <div className="circle">
-                  <span className="material-symbols-outlined food">restaurant</span>
-                  <span className="material-symbols-outlined coffee">local_cafe</span>
-                </div>
-              </label>
-              <span className="toggle-text">
-                {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-              </span>
-            </div>
-          <button className="transaction-button" onClick={(openTransactionModal)}>
+          <div className="display">
+            <label className='label_type' htmlFor="toggle">
+              <div className="circle">
+                <span className="material-symbols-outlined food">restaurant</span>
+                <span className="material-symbols-outlined coffee">local_cafe</span>
+              </div>
+            </label>
+            <span className="toggle-text">
+              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+            </span>
+          </div>
+          <button className="transaction-button" onClick={openTransactionModal}>
             <i className="material-symbols-outlined">receipt_long</i>
           </button>
         </div>
-        
+
         <div className='search-container'>
-          <input 
-            className="search-input" 
-            placeholder="Search your Orders" 
+          <input
+            className="search-input"
+            placeholder="Search your Orders"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} 
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
             <i className="fas fa-search search-icon"></i>
           </button>
         </div>
-        
+
         <div id='order-content'>
           <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
             <ul className='navigation-bar'>
-              {isLakbayKape 
+              {isLakbayKape
                 ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
                   <li key={category}>
                     <a
@@ -235,13 +259,13 @@ const Orders = () => {
                 ))
               }
             </ul>
-  
+
             <div className='order_container'>
-              {filteredMenuItems.map((item, index) => (
-                <div 
-                  key={index} 
+              {displayedItems.map((item, index) => (
+                <div
+                  key={index}
                   className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
-                  onClick={() => handleItemClick(item)} 
+                  onClick={() => handleItemClick(item)}
                 >
                   {item.productname}
                 </div>
