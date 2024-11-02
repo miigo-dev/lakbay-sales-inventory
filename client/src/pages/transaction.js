@@ -1,4 +1,4 @@
-const Transactionhis = () => {
+const Transaction = () => {
     return (
       <div>
           <h1>Transaction History</h1>
@@ -6,4 +6,4 @@ const Transactionhis = () => {
     )
   }
   
-  export default Transactionhis
+  export default Transaction

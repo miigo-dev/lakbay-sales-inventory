@@ -411,15 +411,14 @@ const Orders = () => {
         <div className="recent-order-modal">
           <div className="recent-order-content">
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
-            <p>Order Number: {orderNumber}</p>
-            <p>Order: {recentOrder.item}</p>
-            <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
-            <p>Quantity: {recentOrder.quantity}</p>
-            <p>Amount: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
+            <p>Order Number: {recentOrder.orderNumber}</p>
+            <p>Items: {recentOrder.items.map((orderItem) => orderItem.item).join(', ')}</p>
+            <p>Amount: {recentOrder.amount.toFixed(2)}</p>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Close</button>
           </div>
         </div>
       )}
+      
     </div>
   );
   

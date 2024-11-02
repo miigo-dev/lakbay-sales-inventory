@@ -34,7 +34,7 @@ const Sidebar = ({ onToggle }) => {
     setIsOrdersOpen(false);
   };
   const toggleOrdersDropdown = () => {
-    setIsOrdersOpen(prevState => !prevState);
+    setIsOrdersOpen(!isOrdersOpen);
   };
   const handleNavLinkClick = (link) => {
     if (link !== 'orders') {
@@ -60,8 +60,9 @@ const Sidebar = ({ onToggle }) => {
           </>
         )}
       </NavLink> 
+      <div className="orders-section">
         <div onClick={toggleOrdersDropdown}>
-          <NavLink to="/orders" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => handleNavLinkClick('orders')}>
+          <NavLink to="/orders" className={({ isActive }) => isActive ? 'active' : ''} >
             {({ isActive }) => (
               <>
                 <img src={isActive ? order_active : order_inactive} alt="Orders icon" />
@@ -71,7 +72,7 @@ const Sidebar = ({ onToggle }) => {
           </NavLink>
         </div>
         <div className={`dropdown-child ${isOrdersOpen ? 'open' : ''}`}>
-          <NavLink to="/transactionhis" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => handleNavLinkClick('orders')}>
+          <NavLink to="/orders/transaction" className={({ isActive }) => isActive ? 'active' : ''} >
             {({ isActive }) => (
               <>
                 <img src={isActive ? transaction_history_active : transaction_history_inactive} alt="Transaction icon" />
@@ -80,6 +81,7 @@ const Sidebar = ({ onToggle }) => {
             )}
           </NavLink>
         </div>
+      </div>
       <NavLink to="/inventory" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => handleNavLinkClick('inventory')}>
         {({ isActive }) => (
           <>

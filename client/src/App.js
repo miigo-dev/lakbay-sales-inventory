@@ -13,6 +13,7 @@ import Dashboard from './pages/dashboard';
 import Login from './pages/login';
 import Register from './pages/register';
 import Orders from './pages/orders';
+import Transaction from './pages/transaction';
 import Inventory from './pages/inventory';
 import Sales from './pages/sales';
 import Reports from './pages/reports';
@@ -21,7 +22,7 @@ import Settings from './pages/settings';
 import Sidebar from './components/sidebar';
 
 const PrivateRoutes = () => {
-  const { isAuth } = useSelector((state) => state.auth);
+  const { isAuth } = useSelector((state) => state .auth);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!isAuth) {
@@ -49,6 +50,7 @@ const App = () => {
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/orders' element={<Orders />} />
+          <Route path='/orders/transaction' element={<Transaction />} />
           <Route path='/inventory' element={<Inventory />} />
           <Route path='/sales' element={<Sales />} />
           <Route path='/reports' element={<Reports />} />
