@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
 
@@ -18,21 +19,33 @@ const Orders = () => {
   const [orderNumber, setOrderNumber] = useState(1);
   const [completedOrders, setCompletedOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false); 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const lakbayKainMenuItems = [
-    { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
-    { productname: 'Burger', category: 'meals', price: 6.0, stockquantity: 5 },
-    { productname: 'Fries', category: 'side Orders', price: 2.5, stockquantity: 12 },
-    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 12}
-  ];
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/products/');
+        // Assuming response data has a structure matching the columns in the database
+        const fetchedItems = response.data.map(item => ({
+          productname: item.product_name,
+          category: item.category_id, // Adjust mapping if category is a string or join logic is needed
+          price: parseFloat(item.product_price),
+          stockquantity: item.product_quantity
+        }));
+        setMenuItems(fetchedItems);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Failed to load products");
+        setLoading(false);
+      }
+    };
 
-  const lakbayKapeMenuItems = [
-    { productname: 'Espresso', category: 'coffee', price: 2.5, stockquantity: 15 },
-    { productname: 'Sakura Latte', category: 'non-Coffee', price: 4.5, stockquantity: 10 },
-    { productname: 'Matcha', category: 'frappes', price: 7.0, stockquantity: 6 },
-    { productname: 'Classic Vanilla', category: 'affogato Series', price: 3.0, stockquantity: 8 },
-  ];
+    fetchMenuItems();
+  }, []);
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
@@ -76,7 +89,7 @@ const Orders = () => {
 
   const addOrder = () => {
     if (quantity > 0) {
-      if (selectedItem.category.toLowerCase() === 'drinks' && !size) {
+      if (selectedItem.category === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
@@ -84,7 +97,7 @@ const Orders = () => {
         ...prevOrders,
         {
           item: selectedItem.productname,
-          size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
+          size: selectedItem.category === 'meals' ? '' : size,
           quantity,
           price: parseFloat(selectedItem.price),
           category: selectedItem.category,
@@ -109,7 +122,7 @@ const Orders = () => {
       alert("Please add items to your order before charging.");
       return;
     }
-  
+
     if (amount >= totalPrice) {
       const totalOrderAmount = orders.reduce((total, order) => total + order.price * order.quantity, 0);
       const newOrder = {
@@ -130,14 +143,14 @@ const Orders = () => {
       });
       setChange(amount - totalPrice);
       setCustomAmount('');
-      setOrders([]); 
-      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1)); 
+      setOrders([]);
+      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1));
     } else {
       alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
       setChange(0);
     }
   };
-  
+
   const completeOrder = (index) => {
     const completedOrder = completedOrders[index];
     setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
@@ -156,10 +169,9 @@ const Orders = () => {
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
 
-  const filteredMenuItems = (isLakbayKape ? lakbayKapeMenuItems : lakbayKainMenuItems)
-  .filter(item => 
-    (activeLink === 'all' || item.category === activeLink) && 
-    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMenuItems = menuItems.filter(item => 
+    (activeLink === 'all' || item.category === activeLink) &&
+    item.productname.includes(searchTerm)
   );
 
   return (
@@ -352,7 +364,7 @@ const Orders = () => {
           <div className="modal_content">
             <button className="close_button" onClick={closeModal}>&times;</button>
             <h2>{selectedItem.productname}</h2>
-            {(selectedItem.category.toLowerCase() === 'drinks' || selectedItem.category.toLowerCase() === 'coffee') && (
+            {(selectedItem.category === 'drinks' || selectedItem.category === 'coffee') && (
               <div className="size-options">
                 {['Small', 'Medium', 'Large'].map((sizeOption) => (
                   <button key={sizeOption} onClick={() => handleSizeSelection(sizeOption)} className={size === sizeOption ? 'active' : ''}>
