@@ -410,12 +410,6 @@ const Inventory = () => {
                     <div className="modal-content">
                         <h2>Inventory of {currentProductName}</h2>
 
-                        <div className="transaction_filter">
-                            <button onClick={() => viewFilter('all')} className={transactionFilter === 'all' ? 'active' : ''}>All</button>
-                            <button onClick={() => viewFilter('in')} className={transactionFilter === 'in' ? 'active' : ''}>In</button>
-                            <button onClick={() => viewFilter('out')} className={transactionFilter === 'out' ? 'active' : ''}>Out</button>
-                        </div>
-
                         <table>
                             <thead>
                                 <tr>
