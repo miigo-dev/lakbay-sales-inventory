@@ -22,6 +22,7 @@ const Orders = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [filteredMenuItems, setFilteredMenuItems] = useState([]);
+  const [discount, setDiscount] = useState(0); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -66,11 +67,19 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    // Filter products based on the selected warehouse (1 for Lakbay Kape, 2 for Lakbay Kain)
     const warehouseId = isLakbayKape ? 1 : 2;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
+  const calculateTotalPrice = () => {
+    const total = orders.reduce((total, order) => total + order.price * order.quantity, 0);
+    return total - (total * discount / 100); 
+  };
 
+  const applyDiscount = (type) => {
+    if (type === 'SNR' || type === 'PWD') {
+      setDiscount(20); 
+    }
+  };
   const handleLinkClick = (link) => {
     setActiveLink(link);
     setSearchTerm('');
@@ -146,7 +155,8 @@ const Orders = () => {
       alert("Please add items to your order before charging.");
       return;
     }
-
+    
+    const totalOrderAmount = calculateTotalPrice();
     if (amount >= totalPrice) {
       const totalOrderAmount = orders.reduce((total, order) => total + order.price * order.quantity, 0);
       const newOrder = {
@@ -296,18 +306,27 @@ const Orders = () => {
               ))}
             </ul>
           )}
-  
+          <div className="discount-buttons">
+            <button className="discount-button1" onClick={() => applyDiscount('SNR')}>
+              SNR
+            </button>
+            <button className="discount-button2" onClick={() => applyDiscount('PWD')}>
+              PWD
+            </button>
+          </div>
           <div className="total-section">
-            <h4>Total: {totalPrice.toFixed(2)}</h4>
+            <h4>Total: {calculateTotalPrice().toFixed(2)}</h4>
             <div className="custom-amount-section">
               <input
                 type="number"
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="Enter amount"
-                min={totalPrice + 0.00}
+                min={calculateTotalPrice()}
               />
-              <button className='font-size' onClick={handleCharge}>Charge</button>
+              <button className="font-size" onClick={handleCharge}>
+                Charge
+              </button>
             </div>
           </div>
         </div>

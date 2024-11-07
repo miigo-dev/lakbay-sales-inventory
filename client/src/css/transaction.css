@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+.transaction-container {
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+.transaction-container .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.transaction-container h3 {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter input[type='date'] {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.orders-table {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.MuiDataGrid-root .MuiDataGrid-row:hover {
+  background-color: #f1f1f1;
+}
+
+.MuiDataGrid-columnHeaders {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  text-align: center;
+}
