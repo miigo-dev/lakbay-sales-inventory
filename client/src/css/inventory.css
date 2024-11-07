@@ -167,15 +167,18 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 600px; /* Increased width */
+    max-width: 90%; /* Ensure it doesn't exceed the viewport */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-height: 80%; /* Added max-height for better control */
+    overflow-y: auto; /* Enable scrolling if content exceeds max-height */
 }
 
 .modal-content h2 {
     margin-bottom: 15px;
 }
 
-.modal-content p{
+.modal-content p {
     font-size: 20px;
     margin-bottom: 15px;
 }
@@ -283,4 +286,42 @@
 
 .add-inventory_btn:hover {
     background-color: #a68a6b;
+}
+
+.viewbtn_modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7); 
+    z-index: 1000; 
+}
+
+.viewbtn_content {
+    background: white; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+    width: 80%; 
+    max-width: 800px; 
+    padding: 20px; 
+    overflow-y: auto; 
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.close-icon:hover {
+    color: #999;
 }
