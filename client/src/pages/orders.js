@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
 
@@ -13,34 +14,70 @@ const Orders = () => {
   const [customAmount, setCustomAmount] = useState('');
   const [change, setChange] = useState(0);
   const [isLakbayKape, setIsLakbayKape] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState('');
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState(1);
   const [completedOrders, setCompletedOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false); 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
+  const [filteredMenuItems, setFilteredMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const lakbayKainMenuItems = [
-    { productname: 'Royal', category: 'drinks', price: 4.0, stockquantity: 8 },
-    { productname: 'Burger', category: 'meals', price: 6.0, stockquantity: 5 },
-    { productname: 'Fries', category: 'side Orders', price: 2.5, stockquantity: 12 },
-    { productname: 'Ice Cream', category: 'desserts', price: 2.0, stockquantity: 12}
-  ];
+  const categoryMap = {
+    1: 'meals',
+    2: 'drinks',
+    3: 'side Orders',
+    4: 'desserts',
+    5: 'coffee',
+    6: 'non-Coffee',
+    7: 'frappes',
+    8: 'affogato Series'
+  };
 
-  const lakbayKapeMenuItems = [
-    { productname: 'Espresso', category: 'coffee', price: 2.5, stockquantity: 15 },
-    { productname: 'Sakura Latte', category: 'non-Coffee', price: 4.5, stockquantity: 10 },
-    { productname: 'Matcha', category: 'frappes', price: 7.0, stockquantity: 6 },
-    { productname: 'Classic Vanilla', category: 'affogato Series', price: 3.0, stockquantity: 8 },
-  ];
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        // Fetch products and warehouses concurrently
+        const [productResponse] = await Promise.all([
+          axios.get('http://localhost:8080/api/products/'),
+          axios.get('http://localhost:8080/api/warehouses/')
+        ]);
+
+        const fetchedItems = productResponse.data.map(item => ({
+          productname: item.product_name,
+          category: categoryMap[item.category_id] || 'unknown',
+          price: parseFloat(item.product_price),
+          stockquantity: item.product_quantity,
+          warehouse_id: item.warehouse_id // Store the warehouse ID for filtering
+        }));
+
+        setMenuItems(fetchedItems);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load products or warehouses");
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
+
+  useEffect(() => {
+    // Filter products based on the selected warehouse (1 for Lakbay Kape, 2 for Lakbay Kain)
+    const warehouseId = isLakbayKape ? 1 : 2;
+    setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
+  }, [menuItems, isLakbayKape]);
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
-    setSearchTerm(''); 
+    setSearchTerm('');
   };
 
   const handleItemClick = (item) => {
-    if (item.stockquantity > 0) {  
+    if (item.stockquantity > 0) {
       setSelectedItem(item);
       setQuantity(0);
       setSize('');
@@ -53,12 +90,12 @@ const Orders = () => {
   };
 
   const openTransactionModal = () => {
-    setIsTransactionModalOpen(true); 
+    setIsTransactionModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedItem(null); 
+    setSelectedItem(null);
   };
 
   const handleQuantityChange = (operation) => {
@@ -76,7 +113,7 @@ const Orders = () => {
 
   const addOrder = () => {
     if (quantity > 0) {
-      if (selectedItem.category.toLowerCase() === 'drinks' && !size) {
+      if (selectedItem.category === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
@@ -84,7 +121,7 @@ const Orders = () => {
         ...prevOrders,
         {
           item: selectedItem.productname,
-          size: selectedItem.category.toLowerCase() === 'meals' ? '' : size,
+          size: selectedItem.category === 'meals' ? '' : size,
           quantity,
           price: parseFloat(selectedItem.price),
           category: selectedItem.category,
@@ -109,7 +146,7 @@ const Orders = () => {
       alert("Please add items to your order before charging.");
       return;
     }
-  
+
     if (amount >= totalPrice) {
       const totalOrderAmount = orders.reduce((total, order) => total + order.price * order.quantity, 0);
       const newOrder = {
@@ -118,7 +155,7 @@ const Orders = () => {
         status: 'Pending',
       };
       setCompletedOrders([...completedOrders, newOrder]);
-      setOrderHistory([...orderHistory, newOrder]); 
+      setOrderHistory([...orderHistory, newOrder]);
       setRecentOrder({
         orderNumber,
         amount: totalOrderAmount,
@@ -130,14 +167,14 @@ const Orders = () => {
       });
       setChange(amount - totalPrice);
       setCustomAmount('');
-      setOrders([]); 
-      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1)); 
+      setOrders([]);
+      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1));
     } else {
       alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
       setChange(0);
     }
   };
-  
+
   const completeOrder = (index) => {
     const completedOrder = completedOrders[index];
     setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
@@ -151,54 +188,53 @@ const Orders = () => {
   };
 
   const toggleExpandCollapse = () => {
-    setIsExpanded((prev) => !prev); 
+    setIsExpanded((prev) => !prev);
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
 
-  const filteredMenuItems = (isLakbayKape ? lakbayKapeMenuItems : lakbayKainMenuItems)
-  .filter(item => 
-    (activeLink === 'all' || item.category === activeLink) && 
-    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
+  const displayedItems = filteredMenuItems.filter(item =>
+    (activeLink === 'all' || item.category === activeLink) &&
+    item.productname.includes(searchTerm)
   );
 
   return (
     <div className="main-container">
       <div className='dashboard'>
-        <div className="toggle_header">  
+        <div className="toggle_header">
           <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
-            <div className="display">
-              <label className='label_type' htmlFor="toggle">
-                <div className="circle">
-                  <span className="material-symbols-outlined food">restaurant</span>
-                  <span className="material-symbols-outlined coffee">local_cafe</span>
-                </div>
-              </label>
-              <span className="toggle-text">
-                {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
-              </span>
-            </div>
-          <button className="transaction-button" onClick={(openTransactionModal)}>
+          <div className="display">
+            <label className='label_type' htmlFor="toggle">
+              <div className="circle">
+                <span className="material-symbols-outlined food">restaurant</span>
+                <span className="material-symbols-outlined coffee">local_cafe</span>
+              </div>
+            </label>
+            <span className="toggle-text">
+              {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+            </span>
+          </div>
+          <button className="transaction-button" onClick={openTransactionModal}>
             <i className="material-symbols-outlined">receipt_long</i>
           </button>
         </div>
-        
+
         <div className='search-container'>
-          <input 
-            className="search-input" 
-            placeholder="Search your Orders" 
+          <input
+            className="search-input"
+            placeholder="Search your Orders"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} 
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
             <i className="fas fa-search search-icon"></i>
           </button>
         </div>
-        
+
         <div id='order-content'>
           <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
             <ul className='navigation-bar'>
-              {isLakbayKape 
+              {isLakbayKape
                 ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
                   <li key={category}>
                     <a
@@ -223,13 +259,13 @@ const Orders = () => {
                 ))
               }
             </ul>
-  
+
             <div className='order_container'>
-              {filteredMenuItems.map((item, index) => (
-                <div 
-                  key={index} 
+              {displayedItems.map((item, index) => (
+                <div
+                  key={index}
                   className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
-                  onClick={() => handleItemClick(item)} 
+                  onClick={() => handleItemClick(item)}
                 >
                   {item.productname}
                 </div>
@@ -352,7 +388,7 @@ const Orders = () => {
           <div className="modal_content">
             <button className="close_button" onClick={closeModal}>&times;</button>
             <h2>{selectedItem.productname}</h2>
-            {(selectedItem.category.toLowerCase() === 'drinks' || selectedItem.category.toLowerCase() === 'coffee') && (
+            {(selectedItem.category === 'drinks' || selectedItem.category === 'coffee') && (
               <div className="size-options">
                 {['Small', 'Medium', 'Large'].map((sizeOption) => (
                   <button key={sizeOption} onClick={() => handleSizeSelection(sizeOption)} className={size === sizeOption ? 'active' : ''}>
@@ -375,15 +411,14 @@ const Orders = () => {
         <div className="recent-order-modal">
           <div className="recent-order-content">
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
-            <p>Order Number: {orderNumber}</p>
-            <p>Order: {recentOrder.item}</p>
-            <p>{recentOrder.size && `Size: ${recentOrder.size}`}</p>
-            <p>Quantity: {recentOrder.quantity}</p>
-            <p>Amount: {(recentOrder.price * recentOrder.quantity).toFixed(2)}</p>
+            <p>Order Number: {recentOrder.orderNumber}</p>
+            <p>Items: {recentOrder.items.map((orderItem) => orderItem.item).join(', ')}</p>
+            <p>Amount: {recentOrder.amount.toFixed(2)}</p>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Close</button>
           </div>
         </div>
       )}
+      
     </div>
   );
   

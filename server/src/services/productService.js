@@ -30,6 +30,26 @@ exports.updateProduct = async () => {
 }
 
 exports.deleteProduct = async (id) => {
-    const { rows } = await db.query('DELETE FROM products WHERE product_id = $1 RETURNING *', [id]);
-    return rows[0];
-}
+    try {
+        await db.query('BEGIN'); // Start transaction
+
+        // Delete the product and return the deleted row
+        const { rows } = await db.query('DELETE FROM products WHERE product_id = $1 RETURNING *', [id]);
+        if (!rows[0]) {
+            throw new Error('Product not found');
+        }
+
+        // Find the maximum product_id to reset the sequence correctly
+        const maxIdResult = await db.query('SELECT MAX(product_id) FROM products');
+        const maxId = maxIdResult.rows[0].max || 0;
+
+        // Update the sequence value for product_id
+        await db.query('SELECT setval(\'products_product_id_seq\', $1)', [maxId]);
+
+        await db.query('COMMIT'); // Commit transaction
+        return rows[0];
+    } catch (error) {
+        await db.query('ROLLBACK'); // Rollback transaction in case of error
+        throw new Error('Error deleting product: ' + error.message);
+    }
+};
