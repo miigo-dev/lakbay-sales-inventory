@@ -1,5 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import '../css/inventory.css';
 
 const Inventory = () => {
@@ -41,6 +41,9 @@ const Inventory = () => {
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [quantityAdjustment, setQuantityAdjustment] = useState(0);
     const [remarks, setRemarks] = useState('');
+    const [suppliers, setSuppliers] = useState([]);
+    const [supplierId, setSupplierId] = useState('');
+    const [adjustmentType, setAdjustmentType] = useState('');
     
 
     const openModal = (product = null) => {
@@ -80,14 +83,15 @@ const Inventory = () => {
     };
 
     const handleSubmit = () => {
+        const nameKey = selectedInventoryType === 'products' ? 'productName' : 'ingredientName';
         const newProduct = {
             ...currentProduct,
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
-            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment) // Update quantity here
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment)
         };
-
+    
         if (isEditing) {
             setInventoryData((prevData) =>
                 prevData.map((item) =>
@@ -100,19 +104,20 @@ const Inventory = () => {
 
         const transactionEntry = {
             date: new Date().toLocaleDateString(),
-            productName: selectedInventoryType === 'products' ? newProduct.productName : newProduct.ingredientName,
+            [nameKey]: newProduct[nameKey], // Dynamically use product or ingredient name
             quantity: quantityAdjustment,
             price: newProduct.price,
             status: currentProduct.productStatus,
-            productId: newProduct.productId,
-            remarks // Include remarks in the transaction entry
+            productId: newProduct.productId || newProduct.ingredientId, // Use appropriate ID
+            remarks,
+            supplierId: supplierId
         };
-
+    
         setSelectedProduct((prevTransactions) => [
             ...prevTransactions,
             transactionEntry
         ]);
-
+    
         closeModal();
     };
 
@@ -123,19 +128,21 @@ const Inventory = () => {
         }
     };
 
-    const handleViewTransactions = (product) => {
+    const handleViewTransactions = (item) => {
+        const nameKey = selectedInventoryType === 'products' ? 'productName' : 'ingredientName';
         const transactions = selectedProduct.filter(
-            (transaction) => transaction.productName === product.productName
+            (transaction) => transaction[nameKey] === item[nameKey]
         );
-        setCurrentProductName(product.productName);
+        setCurrentProductName(item[nameKey]);
         setFilteredView(transactions);
         setTransactionFilter('all');
         setViewModalOpen(true);
     };
 
     
-    const openQuantityModal = () => {
-        setQuantityModalOpen(true); // Open quantity adjustment modal
+    const openQuantityModal = (type) => {
+        setAdjustmentType(type); // Set adjustment type to "in" or "out"
+        setQuantityModalOpen(true);
     };
 
     const closeQuantityModal = () => {
@@ -157,40 +164,53 @@ const Inventory = () => {
         (selectedInventoryStatus === 'all' || item.productStatus === selectedInventoryStatus)
     );
 
-    const handleQuantityAdjustmentSubmit = () => {
-        if (quantityAdjustment && remarks) {
-            setInventoryData((prevData) =>
-                prevData.map((item) =>
-                    item.productName === currentProductName
-                        ? { ...item, quantity: item.quantity + parseInt(quantityAdjustment) }
-                        : item
-                )
-            );
-
-            // Log the adjustment as a transaction
-            setSelectedProduct((prevTransactions) => [
-                ...prevTransactions,
-                {
-                    date: new Date().toLocaleDateString(),
-                    productName: currentProductName,
-                    quantity: quantityAdjustment,
-                    price: '',
-                    status: 'in',
-                    remarks
-                }
-            ]);
-
-            // Reset and close the quantity adjustment modal
-            setQuantityAdjustment('');
-            setRemarks('');
-            closeQuantityModal();
-        } else {
-            alert('Please enter quantity and remarks.');
+    useEffect(() => {
+        if (currentProduct.supplierId && !suppliers.includes(currentProduct.supplierId)) {
+            setSuppliers(prevSuppliers => [...prevSuppliers, currentProduct.supplierId]);
         }
-    };
-
-
+    }, [currentProduct.supplierId]);
     
+    const handleQuantityAdjustmentSubmit = () => {
+        const adjustmentValue = parseInt(quantityAdjustment);
+    
+        
+        if ((adjustmentType === 'in' && adjustmentValue <= 0) || 
+            (adjustmentType === 'out' && adjustmentValue >= 0)) {
+            alert(`Please enter a valid quantity. 
+            For "In", you can only add, 
+            and for "Out", you can only deduct.`);
+            return;
+        }
+    
+        setInventoryData((prevData) =>
+            prevData.map((item) =>
+                item.productName === currentProductName
+                    ? { ...item, quantity: item.quantity + adjustmentValue }
+                    : item
+            )
+        );
+    
+        // Log the adjustment as a transaction
+        setSelectedProduct((prevTransactions) => [
+            ...prevTransactions,
+            {
+                date: new Date().toLocaleDateString(),
+                productName: currentProductName,
+                quantity: adjustmentValue,
+                price: '',
+                status: adjustmentType,
+                remarks,
+                supplierId: supplierId
+            }
+        ]);
+    
+        // Reset and close the quantity adjustment modal
+        setQuantityAdjustment('');
+        setRemarks('');
+        closeQuantityModal();
+    };
+    
+
 
     return (
         <div className="dashboard_container">
@@ -405,38 +425,45 @@ const Inventory = () => {
                 </div>
             )}
 
-                {viewModalOpen && (
+            {viewModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
-                        <h2>Inventory of {currentProductName}</h2>
+                        <h2>{selectedInventoryType === 'products' ? 'Inventory of Product' : 'Inventory of Ingredient'}: {currentProductName}</h2>
+
+                        <div className="viewModal_in_out_btn">
+                            <button onClick={() => openQuantityModal('in')} className="btn_in_btn">In</button>
+                            <button onClick={() => openQuantityModal('out')} className="btn_out_btn">Out</button>
+                        </div>
 
                         <table>
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Product Name</th>
+                                    <th>{selectedInventoryType === 'products' ? 'Product Name' : 'Ingredient Name'}</th>
                                     <th>Quantity</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
+                                    <th>Supplier Id</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredView.map((transaction, index) => (
                                     <tr key={index}>
                                         <td>{transaction.date}</td>
-                                        <td>{transaction.productName}</td>
+                                        <td>{selectedInventoryType === 'products' ? transaction.productName : transaction.ingredientName}</td>
                                         <td>{transaction.quantity}</td>
                                         <td>{transaction.status}</td>
                                         <td>{transaction.remarks}</td>
+                                        <td>{transaction.supplierId}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
 
-                        <button onClick={openQuantityModal} className="btn in_btn">In</button>
                         <button onClick={() => setViewModalOpen(false)} className="close-btn">Close</button>
                     </div>
                 </div>
+
             )}
 
             {/* Quantity Adjustment Modal */}
@@ -462,6 +489,18 @@ const Inventory = () => {
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                         />
+
+                    <label htmlFor="supplierId">Supplier ID</label>
+                                <select
+                                    name="supplierId"
+                                    value={supplierId}  // Bind to a state for supplierId (or current supplier from modal)
+                                    onChange={(e) => setSupplierId(e.target.value)}  // Update the selected supplierId
+                                >
+                                    <option value="">Select Supplier</option>
+                                    {suppliers.map((supplier, index) => (
+                                        <option key={index} value={supplier}>{supplier}</option>
+                                    ))}
+                                </select>
 
                         <button onClick={handleQuantityAdjustmentSubmit} className="submit-btn">Submit Adjustment</button>
                         <button onClick={closeQuantityModal} className="close-btn">Close</button>
