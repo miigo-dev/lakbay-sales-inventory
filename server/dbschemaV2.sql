@@ -98,6 +98,24 @@ CREATE TABLE order_summary (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE sales (
+    sale_id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    discount DECIMAL(10, 2) DEFAULT 0,
+    total DECIMAL(10, 2),
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE discounts (
+    discount_id SERIAL PRIMARY KEY,
+    discount_name VARCHAR(100) NOT NULL,
+    discount_value DECIMAL(10, 2) NOT NULL,
+    discount_type VARCHAR(50) CHECK (discount_type IN ('Percentage', 'Fixed')),
+    start_date DATE,
+    end_date DATE
+);
+
 -- date-fns readable format --
 const result = await db.query('SELECT * FROM products WHERE ...');
 const product = result.rows[0];

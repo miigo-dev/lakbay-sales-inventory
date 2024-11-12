@@ -16,7 +16,7 @@
 }
 
 .sidebar.collapsed {
-    width: 70px; /* Width when collapsed */
+    width: 70px; 
 }
 
 .dropdown-child {
@@ -31,6 +31,8 @@
     max-height: 100%; 
     width: 100%;
 }
+
+
 .toggle-btn {
     background-color: transparent;
     border: none;
