@@ -18,21 +18,20 @@ const Transaction = () => {
   const filteredOrders = completedOrders.filter(order => order.date === selectedDate);
 
   return (
-    <div className="transaction-container">
-      <div className="header">
-        <h3>Transaction</h3>
-        <div className="date-filter">
-          <label htmlFor="date-picker">Date: </label>
-          <input
-            type="date"
-            id="date-picker"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
+    <div className="dashboard">
+      <div className="transaction-container">
+        <div className="header">
+          <h3>Transaction</h3>
+          <div className="date-filter">
+            <label htmlFor="date-picker">Date: </label>
+            <input
+              type="date"
+              id="date-picker"
+              value={selectedDate}
+              onChange={handleDateChange}
+            />
+          </div>
         </div>
-      </div>
-
-      <div className="orders-table">
         <DataGrid
           rows={filteredOrders}
           columns={[
