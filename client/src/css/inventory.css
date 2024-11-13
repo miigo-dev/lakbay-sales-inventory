@@ -266,9 +266,9 @@
 
 .in_btn, .out_btn {
     display: inline-block;
-    width: 55px; /* Make both buttons the same width */
+    width: 55px; 
     padding: 5px;
-    margin: 0 5px; /* Add margin for spacing between buttons */
+    margin: 0 5px; 
     font-size: 16px;
 }
 
@@ -324,4 +324,9 @@
 
 .close-icon:hover {
     color: #999;
+}
+
+.viewModal_in_out_btn {
+    display: flex;
+    gap: 1px; 
 }
