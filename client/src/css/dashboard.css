@@ -1,0 +1,21 @@
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-item {
+  width: 48%;  /* Make each chart take up 48% of the width */
+}
+.dashboard-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.bar-graph-container, .pie-graph-container {
+  width: 48%;
+}
+
+.bar-graph, .pie-graph {
+  margin-top: 20px;
+}

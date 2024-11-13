@@ -175,3 +175,19 @@
     color: #53545C;
     font-weight: bold;
 }
+/* Add this to your sales.css file */
+
+.pie-chart-container {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.pie-chart-container h2 {
+    margin-bottom: 20px;
+}
