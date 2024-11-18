@@ -6,7 +6,7 @@
 
   .main-container {
     display: flex;
-    width: 100%;
+    max-width: 100%;
     justify-content: space-between;
   }
 
@@ -745,6 +745,14 @@
 
   .discount-button2:focus {
       outline: none;
+  }
+  .discount-button1.active{
+    background-color: #4960ca;
+    color: white;
+  }
+  .discount-button2.active {
+    background-color: #d17524;
+    color: white;
   }
 
   @media screen and (max-width: 768px) {

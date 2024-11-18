@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
+import { applyInitialState } from '@mui/x-data-grid/internals';
 
 const Orders = () => {
   const [activeLink, setActiveLink] = useState('all');
@@ -23,6 +24,8 @@ const Orders = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [filteredMenuItems, setFilteredMenuItems] = useState([]);
   const [discount, setDiscount] = useState(0); 
+  const [snrActive, setSNRActive] = useState(false);
+  const [pwdActive, setPWDActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -40,7 +43,6 @@ const Orders = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        // Fetch products and warehouses concurrently
         const [productResponse] = await Promise.all([
           axios.get('http://localhost:8080/api/products/'),
           axios.get('http://localhost:8080/api/warehouses/')
@@ -51,7 +53,7 @@ const Orders = () => {
           category: categoryMap[item.category_id] || 'unknown',
           price: parseFloat(item.product_price),
           stockquantity: item.product_quantity,
-          warehouse_id: item.warehouse_id // Store the warehouse ID for filtering
+          warehouse_id: item.warehouse_id 
         }));
 
         setMenuItems(fetchedItems);
@@ -76,10 +78,15 @@ const Orders = () => {
   };
 
   const applyDiscount = (type) => {
-    if (type === 'SNR' || type === 'PWD') {
-      setDiscount(20); 
+    if (type === 'SNR') {
+      setSNRActive(true);  
+      setPWDActive(false);  
+    } else if (type === 'PWD') {
+      setPWDActive(true);  
+      setSNRActive(false);  
     }
   };
+
   const handleLinkClick = (link) => {
     setActiveLink(link);
     setSearchTerm('');
@@ -307,10 +314,16 @@ const Orders = () => {
             </ul>
           )}
           <div className="discount-buttons">
-            <button className="discount-button1" onClick={() => applyDiscount('SNR')}>
+            <button
+              className={`discount-button1 ${snrActive ? 'active' : ''}`} 
+              onClick={() => applyDiscount('SNR')}
+            >
               SNR
             </button>
-            <button className="discount-button2" onClick={() => applyDiscount('PWD')}>
+            <button
+              className={`discount-button2 ${pwdActive ? 'active' : ''}`} 
+              onClick={() => applyDiscount('PWD')}
+            >
               PWD
             </button>
           </div>
@@ -324,9 +337,7 @@ const Orders = () => {
                 placeholder="Enter amount"
                 min={calculateTotalPrice()}
               />
-              <button className="font-size" onClick={handleCharge}>
-                Charge
-              </button>
+              <button className="font-size" onClick={handleCharge}>Charge</button>
             </div>
           </div>
         </div>
