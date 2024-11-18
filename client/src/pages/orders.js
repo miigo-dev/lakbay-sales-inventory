@@ -79,13 +79,23 @@ const Orders = () => {
 
   const applyDiscount = (type) => {
     if (type === 'SNR') {
-      setSNRActive(true);  
-      setPWDActive(false);  
-      setDiscount(20);
+      if (snrActive) {
+        setSNRActive(false);
+        setDiscount(0);
+      } else {
+        setSNRActive(true);
+        setPWDActive(false);
+        setDiscount(20);
+      }
     } else if (type === 'PWD') {
-      setPWDActive(true);  
-      setSNRActive(false);
-      setDiscount(20);  
+      if (pwdActive) {
+        setPWDActive(false);
+        setDiscount(0);
+      } else {
+        setPWDActive(true);
+        setSNRActive(false);
+        setDiscount(20);
+      }
     }
   };
 
@@ -295,26 +305,28 @@ const Orders = () => {
   
         <div className="items-section">
           <h4>Items:</h4>
-          {orders.length === 0 ? (
-            <p>No items added yet.</p>
-          ) : (
-            <ul>
-              {orders.map((order, index) => (
-                <li key={index} className="order-item">
-                  <div className="order-content">
-                    <span>
-                      {order.item}
-                      {order.size && ` - Size: ${order.size}`}
-                      {` - Quantity: ${order.quantity} - Amount: ${(order.price * order.quantity).toFixed(2)}`}
-                    </span>
-                    <button className="delete-button" onClick={() => deleteOrder(index)}>
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="scrollable-container">
+            {orders.length === 0 ? (
+              <p>No items added yet.</p>
+            ) : (
+              <ul>
+                {orders.map((order, index) => (
+                  <li key={index} className="order-item">
+                    <div className="order-content">
+                      <span>
+                        {order.item}
+                        {order.size && ` - Size: ${order.size}`}
+                        {` - Quantity: ${order.quantity} - Amount: ${(order.price * order.quantity).toFixed(2)}`}
+                      </span>
+                      <button className="delete-button" onClick={() => deleteOrder(index)}>
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="discount-buttons">
             <button
               className={`discount-button1 ${snrActive ? 'active' : ''}`} 
@@ -386,6 +398,7 @@ const Orders = () => {
           )}
         </div>
       </div>
+      
       {isTransactionModalOpen && (
         <div className="full-screen-modal">
           <div className="modal-content">
