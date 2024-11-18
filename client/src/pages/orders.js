@@ -81,9 +81,11 @@ const Orders = () => {
     if (type === 'SNR') {
       setSNRActive(true);  
       setPWDActive(false);  
+      setDiscount(20);
     } else if (type === 'PWD') {
       setPWDActive(true);  
-      setSNRActive(false);  
+      setSNRActive(false);
+      setDiscount(20);  
     }
   };
 
