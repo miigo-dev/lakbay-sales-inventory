@@ -4,8 +4,8 @@ import { fetchProtectedInfo, onLogout } from '../api/auth'
 import { unauthenticateUser } from '../redux/slices/authSlice'
 import { Bar, Pie } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
-
-import '../css/styles.css'
+import '../css/dashboard.css';
+import '../css/styles.css';
 
 // Register Chart.js components
 ChartJS.register(
@@ -134,11 +134,31 @@ const Dashboard = () => {
       <h2>{protectedData}</h2>
 
       {/* Time Range Selector */}
-      <div>
-        <button onClick={() => setTimeRange('weekly')}>Weekly</button>
-        <button onClick={() => setTimeRange('daily')}>Daily</button>
-        <button onClick={() => setTimeRange('monthly')}>Monthly</button>
-        <button onClick={() => setTimeRange('yearly')}>Yearly</button>
+      <div className="time-range-buttons">
+        <button
+          onClick={() => setTimeRange('weekly')}
+          className={timeRange === 'weekly' ? 'active' : ''}
+        >
+          Weekly
+        </button>
+        <button
+          onClick={() => setTimeRange('daily')}
+          className={timeRange === 'daily' ? 'active' : ''}
+        >
+          Daily
+        </button>
+        <button
+          onClick={() => setTimeRange('monthly')}
+          className={timeRange === 'monthly' ? 'active' : ''}
+        >
+          Monthly
+        </button>
+        <button
+          onClick={() => setTimeRange('yearly')}
+          className={timeRange === 'yearly' ? 'active' : ''}
+        >
+          Yearly
+        </button>
       </div>
 
       {/* Bar Chart */}

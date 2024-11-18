@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
 .chart-container {
   display: flex;
   justify-content: space-between;
 }
 
 .chart-item {
-  width: 48%;  /* Make each chart take up 48% of the width */
+  width: 48%; 
 }
 .dashboard-container {
   display: flex;
@@ -19,3 +21,39 @@
 .bar-graph, .pie-graph {
   margin-top: 20px;
 }
+
+.time-range-buttons {
+  padding: 5px;
+  gap: 20px;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.time-range-buttons button {
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+.time-range-buttons button:hover {
+  background-color: #007bff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.time-range-buttons button:active {
+  background-color: #0056b3;
+  transform: scale(0.95);
+}
+
+.time-range-buttons button.active {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #0056b3;
+}
+
