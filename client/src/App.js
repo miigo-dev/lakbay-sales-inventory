@@ -20,6 +20,7 @@ import Reports from './pages/reports';
 import Users from './pages/users';
 import Settings from './pages/settings';
 import Sidebar from './components/sidebar';
+import Header from './components/header';
 
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state .auth);
@@ -32,7 +33,12 @@ const PrivateRoutes = () => {
   return (
     <div className={`app-container ${sidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
       <Sidebar onToggle={setSidebarOpen} />
-        <Outlet />
+      <div className="main-content">
+        <Header /> {/* Static Header */}
+        <div className="outlet-container">
+          <Outlet /> {/* Dynamic Content */}
+        </div>
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
-import { applyInitialState } from '@mui/x-data-grid/internals';
+import order_status from '../assets/icons/orders.svg';
 
 const Orders = () => {
   const [activeLink, setActiveLink] = useState('all');
@@ -229,7 +229,7 @@ const Orders = () => {
 
   return (
     <div className="main-container">
-      <div className='dashboard'>
+      <div className='order_dashboard'>
         <div className="toggle_header">
           <input type="checkbox" className='input_type' id="toggle" onChange={toggleView} />
           <div className="display">
@@ -360,7 +360,11 @@ const Orders = () => {
       <div className={`right-container ${isExpanded ? 'expanded' : ''}`}>
         <div className="order-status">
           <h4 onClick={toggleExpandCollapse} style={{ cursor: 'pointer' }}>
-            {isExpanded ? <i class="fa-brands fa-jedi-order"></i> : <i class="fa-brands fa-jedi-order"></i>}
+            {isExpanded ? (
+              <img src={order_status} alt="Expanded Icon" style={{ width: '1.25em', height: '1.25em' }}  />
+            ) : (
+              <img src={order_status} alt="Collapsed Icon" style={{ width: '1.25em', height: '1.25em' }} />
+            )}
           </h4>
           {isExpanded && (
             <div className="orders-table">

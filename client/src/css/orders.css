@@ -12,14 +12,13 @@
     justify-content: space-between;
   }
 
-  .dashboard {
-    margin: 10px;
-    margin-right: 90px;
+  .order_dashboard {
+    margin-right:10px;
     flex-grow: 1;
-    padding: 10px;
+    padding: 2px;
     border: 1px solid #ccc;
     border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);
     max-width: 100%;
     max-height: 100%;
   }
@@ -39,6 +38,7 @@
     transition: width 0.4s ease;
     overflow: hidden;
     position: absolute;
+    border-top: 1px solid rgba(0,0,0,0.2);
     right: 0;
     height: 100vh;
     background-color: #fff;
