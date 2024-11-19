@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import '../css/sidebar.css';
 
 import logo from '../assets/icons/lakbay_logo50px.png';
+import logo_icon from '../assets/icons/LKK.svg';
 import logout_icon from '../assets/icons/logout_icon_dark.png';
 
 import dash_active from '../assets/icons/dashboard_active.png';
@@ -48,7 +49,7 @@ const Sidebar = ({ onToggle }) => {
         {isOpen ? '←' : '→'}
       </button>
       <div className="header_sidebar">
-        <img src={logo} alt="Logo" className={`logo ${isOpen ? '' : 'collapsed-logo'}`} />
+        <img src={logo_icon} alt="Logo" className={`logo ${isOpen ? '' : 'collapsed-logo'}`} />
         {isOpen && <h2>Lakbay Kape</h2>}
       </div>
 
