@@ -39,8 +39,9 @@ const Transaction = () => {
             { field: 'orderNumber', headerName: 'Order No.', width: 100 },
             { field: 'amount', headerName: 'Amount', width: 100 },
           ]}
-          autoHeight
+          autoHeights
           pageSize={5}
+          pagination={true}
           disableSelectionOnClick
         />
       </div>
