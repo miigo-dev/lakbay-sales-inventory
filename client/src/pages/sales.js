@@ -180,6 +180,7 @@ const Sales = () => {
                 <button onClick={() => setShowAllData(prev => !prev)} className='show-all'>
                     {showAllData ? 'Show Current Period Data' : 'Show All Data'}
                 </button>
+                <h1></h1>
                 <DataGrid
                     rows={displayedSalesGridData}  // Use the displayed data
                     columns={columns}

@@ -13,6 +13,7 @@ const Inventory = () => {
     const [selectedInventoryStatus, setSelectedInventoryStatus] = useState('all');
     const [filteredView, setFilteredView] = useState([]);
     const [transactionFilter, setTransactionFilter] = useState('all');
+
     const [inventoryData, setInventoryData] = useState([{
         id: 1,
         productId: '#ILWL02012',
@@ -25,6 +26,7 @@ const Inventory = () => {
         section: 'main',
         type: 'products'
     }]);
+    
     const [currentProduct, setCurrentProduct] = useState({
         id: null,
         productId: '',
@@ -216,10 +218,6 @@ const Inventory = () => {
         <div className="dashboard_container">
             <header className="dashboard_header">
                 <input type="text" placeholder="Search anything here" className="search_bar" />
-                <div className="profile_section">
-                    <span className="username">Miguel Luayon</span>
-                    <img src="/path-to-avatar.jpg" alt="Profile" className="profile_pic" />
-                </div>
             </header>
 
             <div className="dashboard_content">
