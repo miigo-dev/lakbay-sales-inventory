@@ -2,9 +2,7 @@
 .container {
     font-family: 'Inter', sans-serif;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+
     max-width: 100%;
 }
 

@@ -114,8 +114,8 @@ const Reports = () => {
             </div>
 
             {activeTab === 'Lakbay Kain' ? (
-                <div>
-                    {lakbayKain.length === 0 ? (
+                <div>          
+                    {lakbayKain.length === 0 ? (   
                         <p>No Damage Report Added Yet</p>
                     ) : (
                         <table className="kain_table">

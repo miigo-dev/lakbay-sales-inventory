@@ -1,11 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
 .damage_container {
     font-family: 'Inter', sans-serif;
-    margin-right: 50px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    padding: 30px;
     max-width: 100%;
+    background-color: white;
     
 }
 
