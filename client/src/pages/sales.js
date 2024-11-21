@@ -7,7 +7,7 @@ import T5 from '../assets/icons/t5.svg';
 import T6 from '../assets/icons/t6.svg';
 import T7 from '../assets/icons/t7.svg';
 import T8 from '../assets/icons/t8.svg';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -129,6 +129,43 @@ const Sales = () => {
         { field: 'amount', headerName: 'Sales Amount (₱)', width: 180 },
     ];
 
+    const productSalesData = {
+        Today: [
+            { name: 'Brewed Coffee', sales: 25, img: '/icons/brewed_coffee.svg' },
+            { name: 'Matcha Latte', sales: 15, img: '/icons/matcha_latte.svg' },
+            { name: 'Sakura Latte', sales: 20, img: '/icons/sakura_latte.svg' }
+        ],
+        Weekly: [
+            { name: 'Brewed Coffee', sales: 100, img: '/icons/brewed_coffee.svg' },
+            { name: 'Matcha Latte', sales: 120, img: '/icons/matcha_latte.svg' },
+            { name: 'Sakura Latte', sales: 90, img: '/icons/sakura_latte.svg' }
+        ],
+        Monthly: [
+            { name: 'Brewed Coffee', sales: 400, img: '/icons/brewed_coffee.svg' },
+            { name: 'Matcha Latte', sales: 350, img: '/icons/matcha_latte.svg' },
+            { name: 'Sakura Latte', sales: 300, img: '/icons/sakura_latte.svg' },
+        ],
+        Yearly: [
+            { name: 'Brewed Coffee', sales: 400, img: '/icons/brewed_coffee.svg' },
+            { name: 'Matcha Latte', sales: 350, img: '/icons/matcha_latte.svg' },
+            { name: 'Sakura Latte', sales: 300, img: '/icons/sakura_latte.svg' }
+        ]
+    };
+
+    const getBestSellers = (frame) => {
+        const sales = productSalesData[frame];
+        return sales.sort((a, b) => b.sales - a.sales).slice(0, 5); // Top 3 products
+    };
+
+    // Memoized best sellers for current timeframe
+    const bestSellers = useMemo(() => getBestSellers(timeFrame), [timeFrame]);
+
+    // Columns for the best seller data grid
+    const bestSellerColumns = [
+        { field: 'name', headerName: 'Product', width: 150 },
+        { field: 'sales', headerName: 'Sales', width: 100 },
+    ];
+
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
@@ -201,6 +238,18 @@ const Sales = () => {
                     ))}
                 </div>
             </div>
+            {/* Best Sellers Grid */}
+            <div className="best-seller-table">
+                    <h2>Top Best Sellers</h2>
+                    <DataGrid
+                        rows={bestSellers.map((item, idx) => ({ id: idx + 1, ...item }))} 
+                        columns={bestSellerColumns} 
+                        pageSize={3}
+                        rowsPerPageOptions={[3, 5, 10]} 
+                        pagination // Enable pagination
+                        disableSelectionOnClick 
+                    />
+                </div>
         </div>
     );
 };
