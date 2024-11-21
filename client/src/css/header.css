@@ -8,6 +8,7 @@
     height: 60px;
     background-color: #ffffff;
     display: flex;
+    border-bottom: 1px solid rgba(90, 84, 84, 0.301);
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
