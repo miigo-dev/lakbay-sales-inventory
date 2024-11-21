@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 /* Global font styling */
 * {
@@ -8,164 +8,174 @@
   box-sizing: border-box;
 }
 
-/* Global styling for body and text elements */
+/* Body and text elements */
 body, p, span, div, .toggle-text, .txt {
-  font-family: 'Inter', sans-serif;
-  font-weight: 400; /* Normal weight for body text */
-  color: #53545C; /* Soft dark color for readability */
-  font-size: 16px; /* Default font size for text */
+  color: #53545C;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-/* Header styles */
 h1, h2, h3 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600; /* Semi-bold for headers */
+  font-weight: 600;
 }
 
 h4, h5, h6 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500; /* Medium weight for subheadings */
+  font-weight: 500;
 }
 
-/* Container and Layout */
-.chart-container {
+/* Layout Containers */
+.chart-container, .dashboard-container, .order-summaries {
   display: flex;
   justify-content: space-between;
-}
-
-.chart-item {
-  width: 48%; 
-}
-
-.dashboard-container {
-  justify-content: space-between;
-  padding-right: 15px;
-  padding-left: 15px;
   flex-wrap: wrap;
-  display: flex;
+  gap: 2%;
 }
 
-.pie-chart-container {
+.chart-item, .order-kain-sum, .order-kape-sum {
+  flex: 1;
+  min-width: 280px;
+  box-sizing: border-box;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Graph Containers */
+.pie-chart-container, .bar-graph-container, .line-graph-container {
   width: 100%;
-  text-align: center;
-  padding: 20px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.pie-chart-container h2 {
-  margin-bottom: 20px;
+.pie-chart-container h2, .line-graph-container h2 {
+  margin-bottom: 1rem;
 }
 
-.bar-graph-container {
-  display: flex;
-  width: 80%;
-
-  justify-content: space-between;
-  gap: 15px;
-}
-
-.recent-trans-text {
-  padding-top: 20px;
-}
-
-.bar-graph {
+/* Recent Transactions Table */
+.recent-transactions {
   width: 100%;
-  height: 100%;
+  margin-top: 1rem;
+  overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
 }
 
-.time-range-selector {
-  margin-bottom: 20px;
-  border-radius: 8px;
+.recent-transactions table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Prevent the table from collapsing too much on small screens */
 }
 
-.time-range-selector label {
-  margin-right: 10px;
-  font-weight: bold;
+.recent-transactions th, .recent-transactions td {
+  padding: 1rem;
+  font-size: 1rem;
+  text-align: left;
+  color: #53545C;
+  word-wrap: break-word; /* Prevent long words from breaking the layout */
 }
 
-.time-range-selector select {
-  padding: 5px 10px;
-  font-size: 14px;
+.recent-transactions th {
+  background-color: #F8F8F8;
 }
 
-/* Buttons and Time Range Controls */
+.recent-transactions tr:nth-child(even) {
+  background-color: #FAFAFA;
+}
+
+.recent-transactions tr:hover {
+  background-color: #F0F0F0;
+}
+
+/* Responsive design tweaks */
+@media (max-width: 1024px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.875rem; /* Slightly smaller text for medium screens */
+    padding: 0.75rem; /* Adjust padding for better fit */
+  }
+
+  .recent-transactions {
+    overflow-x: scroll; /* Ensure horizontal scrolling works even at 1024px */
+  }
+
+  .recent-transactions table {
+    min-width: 400px; /* Reduce minimum width for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.75rem; /* Further reduce font size for small screens */
+    padding: 0.5rem; /* Adjust padding to fit smaller screens */
+  }
+
+  .recent-transactions table {
+    min-width: 320px; /* Further reduce table width for mobile screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.7rem; /* Make text smaller on very small screens */
+    padding: 0.4rem; /* Even smaller padding */
+  }
+
+  .recent-transactions table {
+    min-width: 280px; /* Allow for tight space on small mobile devices */
+  }
+}
+
+/* Time Range Buttons */
 .time-range-buttons {
-  padding: 5px;
-  gap: 20px;
+  display: flex;
+  gap: 1.25rem;
   justify-content: center;
-  margin: 30px 0;
+  margin: 1.5rem 0;
 }
 
 .time-range-buttons button {
-  background-color: #f9f9f9; /* Light background */
+  background-color: #F0F0F0;
   color: #333;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s, transform 0.2s, box-shadow 0.3s ease;
+  transition: background-color 0.3s, transform 0.2s ease;
 }
 
 .time-range-buttons button:hover {
-  background-color: #C2A790; /* Soft color from sales section */
-  color: white;
+  background-color: #D0C0A5;
   transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .time-range-buttons button:active {
-  background-color: #bfa58e; /* Darker shade */
+  background-color: #BBA788;
   transform: scale(0.95);
 }
 
 .time-range-buttons button.active {
-  background-color: #d9c0a5; /* Soft neutral */
-  color: white;
-  border: 1px solid #C2A790;
+  background-color: #C2A790;
+  color: #fff;
 }
 
-/* Timeframe Option Buttons */
-.timeframe-options button.today {
-  background-color: #FFE2E5; /* Soft pink */
+/* Timeframe Buttons */
+.timeframe-options button {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
 }
 
-.timeframe-options button.weekly {
-  background-color: #C9F7F5; /* Soft teal */
-}
+.timeframe-options button.today { background-color: #FFE2E5; }
+.timeframe-options button.weekly { background-color: #C9F7F5; }
+.timeframe-options button.monthly { background-color: #FFF4DE; }
+.timeframe-options button.yearly { background-color: #E1F0FF; }
 
-.timeframe-options button.monthly {
-  background-color: #FFF4DE; /* Light yellow */
-}
-
-.timeframe-options button.yearly {
-  background-color: #E1F0FF; /* Soft blue */
-}
-
-/* Hover effects for timeframe buttons */
-.timeframe-options button:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: scale(1.05);
-}
-
-/* Toggle Switch Styles */
-.toggle-container {
-  padding-top: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
+/* Toggle Switch */
 .switch {
   position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 3.75rem;
+  height: 2.125rem;
 }
 
 .switch input {
@@ -176,26 +186,25 @@ h4, h5, h6 {
 
 .slider {
   position: absolute;
-  cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #d9c0a5; /* Soft neutral */
-  transition: .4s;
-  border-radius: 34px;
+  background-color: #D9C0A5;
+  border-radius: 2.125rem;
+  transition: background-color 0.4s;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
+  height: 1.625rem;
+  width: 1.625rem;
   border-radius: 50%;
-  left: 4px;
-  bottom: 4px;
+  left: 0.25rem;
+  bottom: 0.25rem;
   background-color: white;
-  transition: .4s;
+  transition: transform 0.4s;
 }
 
 input:checked + .slider {
@@ -203,153 +212,90 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-.toggle-text {
-  font-size: 16px;
-  font-weight: bold;
-  color: #53545C; /* Soft dark color */
+  transform: translateX(1.875rem);
 }
 
 /* Top Sales Section */
 .top-sales {
-  margin-top: 40px;
+  margin-top: 2.5rem;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 10px 0;
+  padding: 0.625rem 0;
 }
 
 .top-sales-list {
   display: inline-flex;
-  gap: 15px;
+  gap: 1rem;
 }
 
 .top-sales-item {
   text-align: center;
-  display: inline-block;
-  min-width: 120px;
+  min-width: 7.5rem;
 }
 
 .top-sales-item img {
-  width: 100px;
-  height: 100px;
-  border-radius: 8px;
+  width: 6.25rem;
+  height: 6.25rem;
+  border-radius: 0.5rem;
 }
 
-.txt {
-  font-size: 14px;
-  font-weight: 400; /* Regular text */
+/* Order Summary */
+.order-summary-container {
+  margin-top: 1.25rem;
 }
 
-.Top {
-  margin-left: 10px;
-  color: #53545C;
-  font-weight: bold;
-}
-
-.show-all {
-  background-color: #C2A790;
-  color: white;
-  border-radius: 15px;
-  border: none;
-  padding: 10px 10px; 
-}
-
-.Sales-Total {
-  margin-left: 10px;
-  color: #53545C;
-  font-weight: bold;
-}
-
-/* Line Graph Container */
-.line-graph-container {
-  width: 65%;
-  padding: 20px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.line-graph-container h2 {
-  margin-bottom: 20px;
-}
-
-/* Toggle Header */
-.toggle_header {
+.order-summary {
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.input_type {
-  display: none; /* Hide the default checkbox */
-}
-
-.display {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.label_type {
-  display: flex;
-  align-items: center;
-  padding: 5px;
-  border-radius: 20px;
-  background-color: #d9c0a5; /* Soft neutral */
-  transition: background-color 0.3s;
-}
-
-.label_type:hover {
-  background-color: #bfa58e; /* Darker on hover */
-}
-
-.circle {
+.order-summary-item {
   display: flex;
   justify-content: space-between;
-  width: 40px;
+  font-size: 1rem;
 }
 
-.material-symbols-outlined {
-  font-size: 24px;
+.order-summary-item h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
-.toggle-text {
-  margin-left: 10px;
-  color: #53545C; /* Soft dark color */
-  font-weight: bold;
-}
-
-/* Time Range Selector Styles */
-.time-range-selector {
-  margin-bottom: 20px;
-  border-radius: 8px;
-}
-
-.time-range-selector label {
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-.time-range-selector select {
-  padding: 5px 10px;
-  font-size: 14px;
-}
-
-/* Add padding and background color for chart containers */
-.pie-chart-container {
-  width: 100%;
-  text-align: center;
-  padding: 20px;
-  background-color: white;
+/* Dropdowns */
+select {
+  padding: 0.5rem;
+  border-radius: 0.3125rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  width: 100%;
 }
 
-.pie-chart-container h2 {
-  margin-bottom: 20px;
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .chart-container, .dashboard-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-item {
+    width: 100%;
+  }
+
+  .bar-graph-container {
+    flex-direction: column;
+  }
+
+  .pie-chart-container {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .time-range-buttons button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .time-range-selector select {
+    font-size: 0.75rem;
+  }
 }
