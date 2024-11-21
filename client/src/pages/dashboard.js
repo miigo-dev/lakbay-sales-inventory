@@ -25,19 +25,12 @@ const Dashboard = () => {
   const [orders, setOrders] = useState([]); // Orders array for filtering
   const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); // Default time frame for Kain
   const [selectedTimeFrameKape, setSelectedTimeFrameKape] = useState('today'); // Default time frame for Kape
-  
-  const [allOrdersCount, setAllOrdersCount] = useState(0);
-  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
-  const [completedOrdersCount, setCompletedOrdersCount] = useState(0);
-
   const [allOrdersCountKain, setAllOrdersCountKain] = useState(0);
   const [pendingOrdersCountKain, setPendingOrdersCountKain] = useState(0);
   const [completedOrdersCountKain, setCompletedOrdersCountKain] = useState(0);
-
   const [allOrdersCountKape, setAllOrdersCountKape] = useState(0);
   const [pendingOrdersCountKape, setPendingOrdersCountKape] = useState(0);
   const [completedOrdersCountKape, setCompletedOrdersCountKape] = useState(0);
-
   const [timeRange, setTimeRange] = useState('weekly');
   const [selectedCategory, setSelectedCategory] = useState('kain');
   const [barChartData, setBarChartData] = useState({});
@@ -47,7 +40,6 @@ const Dashboard = () => {
   });
   const [pieChartText, setPieChartText] = useState('');
 
-  // Sample order data (replace with real data from an API)
   const orderData = [
     { id: 1, orderNumber: '001', category: 'kain', status: 'completed', date: '2024-11-08' },
     { id: 2, orderNumber: '002', category: 'kain', status: 'pending', date: '2024-11-07' },
@@ -73,7 +65,6 @@ const Dashboard = () => {
     }
   };
 
-  // Helper function to filter orders by time frame
   const getOrdersForTimeFrame = (timeFrame, category) => {
     const now = new Date();
     return orderData.filter(order => {
@@ -84,7 +75,7 @@ const Dashboard = () => {
         case 'today':
           return orderDate.toDateString() === now.toDateString();
         case 'weekly':
-          const weekStart = new Date(now.setDate(now.getDate() - now.getDay())); // Start of the week
+          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
           return orderDate >= weekStart;
         case 'monthly':
           return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
@@ -96,7 +87,6 @@ const Dashboard = () => {
     });
   };
 
-  // Update the order counts for Kain and Kape based on selected time frame
   useEffect(() => {
     const updateOrderCounts = (category) => {
       const ordersForCategory = getOrdersForTimeFrame(selectedTimeFrameKain, category);
@@ -116,12 +106,10 @@ const Dashboard = () => {
       }
     };
 
-    // Update order counts for both categories (Kain and Kape)
     updateOrderCounts('kain');
     updateOrderCounts('kape');
   }, [selectedTimeFrameKain, selectedTimeFrameKape]);
 
-  // Update charts based on selected range and category
   const updateCharts = (range, category) => {
     const selectedSales = salesData[category][range];
     setPieChartData({
@@ -130,7 +118,6 @@ const Dashboard = () => {
     });
     setPieChartText(`Kape: ${selectedSales[1]} php  Kain: ${selectedSales[0]} php`);
 
-    // Bar Data for Different Ranges
     const barData = {
       kain: {
         daily: Array.from({ length: 24 }, (_, index) => Math.floor(Math.random() * 100)),
@@ -147,7 +134,6 @@ const Dashboard = () => {
     };
 
     const currentData = barData[category][range];
-
     let labels = [];
     switch (range) {
       case 'daily':
@@ -166,60 +152,58 @@ const Dashboard = () => {
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
     }
 
+    const barChartColors = currentData.map(value => {
+      if (value > 50) return '#FF6F61'; // Red for higher values
+      else if (value > 20) return '#FFB84D'; // Orange for moderate values
+      else return '#6A9E55'; // Green for lower values
+    });
+
     setBarChartData({
       labels: labels,
       datasets: [{
         label: 'Sales',
         data: currentData,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        backgroundColor: barChartColors,
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
-        borderRadius: 10, // Curved bars
+        borderRadius: 10,
       }],
       options: {
         responsive: true,
         scales: {
           y: {
-            grid: {
-              display: false, // Remove grid lines
-            },
+            grid: { display: false },
           },
           x: {
-            grid: {
-              display: false, // Remove grid lines
-            },
+            grid: { display: false },
           }
         },
       }
     });
   };
 
-  // Fetch protected info when the component mounts
   const protectedInfo = async () => {
     try {
-      const data = await fetchProtectedInfo();  // Fetch protected data
+      const data = await fetchProtectedInfo();
       setProtectedData(data);
-      setLoading(false);  // Update loading state once data is fetched
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching protected info:', error);
-      // Handle error (e.g., redirect to login page)
     }
   };
 
-  // Handle logout action
   const logout = async () => {
     try {
-      await onLogout();  // Log out from your API or backend
-      dispatch(unauthenticateUser());  // Dispatch Redux action to unauthenticate the user
+      await onLogout();
+      dispatch(unauthenticateUser());
     } catch (error) {
       console.error('Error during logout:', error);
-      // Optionally handle error (e.g., show a message)
     }
   };
 
   useEffect(() => {
-    protectedInfo();  // Fetch protected data
-    updateCharts(timeRange, selectedCategory);  // Update charts based on selected time range and category
+    protectedInfo();
+    updateCharts(timeRange, selectedCategory);
   }, [timeRange, selectedCategory]);
 
   return loading ? (
@@ -357,7 +341,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Logout Button */}
       <button onClick={logout} className="btn btn-primary">Logout</button>
     </div>
   );
