@@ -133,6 +133,15 @@ const Sidebar = ({ onToggle }) => {
             </>
           )}
         </NavLink>
+
+        <NavLink to="/inventoryv2" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => handleNavLinkClick('inventory')}> 
+          {({ isActive }) => (
+            <>
+              <img src={logout_icon} alt="Logout icon" />
+              {isOpen && "Logout"}
+            </>
+          )}
+        </NavLink>
       </div>
     </div>
   );
