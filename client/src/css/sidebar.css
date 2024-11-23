@@ -1,42 +1,99 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
 
 .sidebar {
-    display: flex; 
-    width: 260px; 
+    display: flex;
+    width: 260px;
     height: 100vh;
     background-color: #ffffff;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
     font-family: 'Inter', sans-serif;
-    font-weight: 300; 
+    font-weight: 300;
     font-size: large;
-    display: flex;
-    border-right: 1px solid rgba(122, 118, 118, 0.199);
+    border-right: 1px solid rgba(122, 118, 118, 0.2);
     flex-direction: column;
-    transition: width 0.3s ease;
-}
-
-.sidebar a, .toggle-btn {
-    margin-right: 15px; 
+    transition: width 0.2s ease-in-out;
 }
 
 .sidebar.collapsed {
-    width: 90px; 
+    width: 90px;
+}
+
+.sidebar .header_sidebar {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #ffffff;
+}
+
+.sidebar .logo {
+    width: 70px;
+    height: auto;
+    margin-bottom: 1rem;
+    transition: width 0.2s ease-in-out;
+}
+
+.sidebar.collapsed .logo {
+    width: 50px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    color: #343a40;
+    padding: 20px 25px; /* Increase padding for bigger buttons */
+    text-decoration: none;
+    border-radius: 10px;
+    margin: 5px 15px;
+    height: 60px; /* Increased height for larger buttons */
+    box-sizing: border-box;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar a img {
+    width: 24px; /* Increased icon size */
+    height: 24px;
+    margin-right: 1rem;
+    transition: margin-right 0.2s ease;
+}
+
+.sidebar.collapsed a {
+    justify-content: center;
+}
+
+.sidebar.collapsed a img {
+    margin-right: 0;
+}
+
+.sidebar a.active {
+    background-color: #C2A790;
+    color: white;
+    border-radius: 10px;
+}
+
+.sidebar a:hover {
+    background-color: #D9C6A6;
+    color: white;
+    transform: translateX(5px);
 }
 
 .dropdown-child {
+    background-color: #ffffff;
     padding-left: 20px;
-    background-color: white;
-    max-height: 0;
     overflow: hidden;
-    transition: max-height -.1s ease, padding -.1s ease;
+    max-height: 0;
+    transition: max-height 0.2s ease;
 }
 
 .dropdown-child.open {
-    max-height: 100%; 
-    width: 100%;
+    max-height: 300px; /* Adjust based on dropdown content */
+}
+
+.dropdown-child a {
+    height: 60px; /* Match main button height */
+    display: flex;
+    align-items: center;
 }
 
 .toggle-btn {
@@ -46,91 +103,32 @@
     font-size: 1.5rem;
     margin: 1rem;
     outline: none;
-    transition: transform 0.3s;
-}
-
-.sidebar .header_sidebar {
-    text-align: center;
-    padding: 20px 0; 
-    background-color: #ffffff; 
-}
-
-.sidebar .logo {
-    width: 70px; 
-    height: auto;
-    margin-bottom: 1rem; 
-    transition: width 0.3s;
-}
-
-.sidebar .collapsed-logo {
-    width: 50px;
-}
-
-.sidebar a {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    color: #343a40; 
-    padding: 20px;
-    margin-left: 1rem; 
-    text-decoration: none;
-    border-radius: 15px; 
-    transition: background-color 0.3s, color 0.3s, transform 0.3s;
-    overflow: hidden; 
-}
-
-.sidebar.collapsed a {
-    align-items: center;
-    justify-content: center; 
-}
-
-.sidebar a img {
-    width: 20px; 
-    height: 20px;
-    margin-right: 0.7rem;
-    transition: margin-right 0.3s;
-}
-
-.sidebar.collapsed a img {
-    margin-right: 0; 
-}
-
-.sidebar a.active {
-    background-color: #C2A790; 
-    color: white;
-    border-radius: 15px;
-}
-
-.sidebar a:hover {
-    background-color: #D9C6A6; 
-    color: white;
-    transform: translateX(5px);
+    transition: transform 0.2s ease;
 }
 
 .bot_sidebar {
     display: flex;
-    align-items: center;   
-    margin-top: auto;      
+    align-items: center;
+    margin-top: auto;
     flex-direction: column;
     padding: 20px;
-    transition: all 0.3s ease; 
+    transition: transform 0.2s ease-in-out;
 }
 
-.sidebar .collapsed .bot_sidebar {
-    display: flex;
+.sidebar.collapsed .bot_sidebar {
     justify-content: center;
 }
 
 .content {
-    margin-left: 280px; 
+    margin-left: 280px;
     padding: 40px;
-    background-color: #f1f1f1; 
+    background-color: #f1f1f1;
     min-height: 100vh;
-    transition: margin-left 0.3s; 
+    transition: margin-left 0.2s ease;
 }
 
 .sidebar.collapsed ~ .content {
-    margin-left: 10px; /* Adjust margin when sidebar is collapsed */
+    margin-left: 90px;
 }
 
 @media screen and (max-width: 700px) {
@@ -139,9 +137,15 @@
         height: auto;
         position: relative;
     }
-    .sidebar a {
-        float: left;
+
+    .sidebar.collapsed {
+        width: 100%;
     }
+
+    .sidebar a {
+        justify-content: center;
+    }
+
     .content {
         margin-left: 0;
     }
@@ -150,6 +154,12 @@
 @media screen and (max-width: 400px) {
     .sidebar a {
         text-align: center;
-        float: none;
+        padding: 20px 10px;
+        font-size: 0.9rem;
+    }
+
+    .sidebar a img {
+        width: 20px;
+        height: 20px;
     }
 }
