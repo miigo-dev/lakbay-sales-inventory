@@ -171,7 +171,24 @@ const Dashboard = () => {
       }]
     });
   };
+  const protectedInfo = async () => {
+    try {
+      const data = await fetchProtectedInfo();
+      setProtectedData(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching protected info:', error);
+    }
+  };
 
+  const logout = async () => {
+    try {
+      await onLogout();
+      dispatch(unauthenticateUser());
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
   // Fetch protected info on mount
   useEffect(() => {
     const fetchData = async () => {
@@ -188,6 +205,10 @@ const Dashboard = () => {
     fetchData();
   }, [dispatch]);
 
+  useEffect(() => {
+    protectedInfo();
+    updateCharts(timeRange, selectedCategory);
+  }, [timeRange, selectedCategory]);
 
 
   return loading ? (
@@ -329,11 +350,9 @@ const Dashboard = () => {
       </div>
     </div>
   </div>
-</div> 
-
+</div>
 </div>
 <button onClick={logout} className="btn btn-primary">Logout</button>
-
 </div>
 
   );
