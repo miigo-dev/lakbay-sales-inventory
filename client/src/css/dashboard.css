@@ -372,3 +372,15 @@ select {
     min-width: 0;
   }
 }
+
+.timeRangeTxt{
+  padding-top: 20px;
+  padding-bottom: 10px;
+  font-size: 15;
+}
+.lakabay-categ-txt{
+  padding-top: 20px;
+  padding-bottom: 10px;
+
+
+}

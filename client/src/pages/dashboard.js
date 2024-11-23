@@ -21,7 +21,7 @@ ChartJS.register(
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const [protectedData, setProtectedData] = useState(null);
+  const [protectedData, setProtectedData] = useState(null); // Keep the protected info state
   const [orders, setOrders] = useState([]); // Orders array for filtering
   const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); // Default time frame for Kain
   const [selectedTimeFrameKape, setSelectedTimeFrameKape] = useState('today'); // Default time frame for Kape
@@ -88,8 +88,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const updateOrderCounts = (category) => {
-      const ordersForCategory = getOrdersForTimeFrame(selectedTimeFrameKain, category);
+    const updateOrderCounts = (category, timeFrame) => {
+      const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
 
       const allOrders = ordersForCategory.length;
       const pendingOrders = ordersForCategory.filter(order => order.status === 'pending').length;
@@ -106,8 +106,8 @@ const Dashboard = () => {
       }
     };
 
-    updateOrderCounts('kain');
-    updateOrderCounts('kape');
+    updateOrderCounts('kain', selectedTimeFrameKain);
+    updateOrderCounts('kape', selectedTimeFrameKape);
   }, [selectedTimeFrameKain, selectedTimeFrameKape]);
 
   const updateCharts = (range, category) => {
@@ -117,7 +117,7 @@ const Dashboard = () => {
       datasets: [{ data: selectedSales, backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
     });
     setPieChartText(`Kape: ${selectedSales[1]} php  Kain: ${selectedSales[0]} php`);
-  
+
     const barData = {
       kain: {
         daily: Array.from({ length: 24 }, (_, index) => Math.floor(Math.random() * 100)),
@@ -132,7 +132,7 @@ const Dashboard = () => {
         yearly: [500, 600, 700]
       }
     };
-  
+
     const currentData = barData[category][range];
     let labels = [];
     switch (range) {
@@ -151,67 +151,44 @@ const Dashboard = () => {
       default:
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
     }
-  
-    // New color palette provided by the user
+
     const colorPalette = [
       '#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00'
     ];
-  
-    // Generate a color for each bar based on the palette, cycling through if necessary
+
     const barChartColors = currentData.map((_, index) => {
-      return colorPalette[index % colorPalette.length]; // Use modulo to cycle through the colors
+      return colorPalette[index % colorPalette.length];
     });
-  
+
     setBarChartData({
       labels: labels,
       datasets: [{
         label: 'Sales',
         data: currentData,
-        backgroundColor: barChartColors, // Apply distributed colors from the new palette
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-        borderRadius: 10,
-      }],
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            grid: { display: false },
-          },
-          x: {
-            grid: { display: false },
-          }
-        },
-      }
+        backgroundColor: barChartColors,
+        borderColor: '#7b7b7b',
+        borderWidth: 1
+      }]
     });
   };
-  
-  
-  
 
-  const protectedInfo = async () => {
-    try {
-      const data = await fetchProtectedInfo();
-      setProtectedData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching protected info:', error);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await onLogout();
-      dispatch(unauthenticateUser());
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
+  // Fetch protected info on mount
   useEffect(() => {
-    protectedInfo();
-    updateCharts(timeRange, selectedCategory);
-  }, [timeRange, selectedCategory]);
+    const fetchData = async () => {
+      try {
+        const result = await fetchProtectedInfo();
+        setProtectedData(result.data);
+      } catch (error) {
+        console.error('Error fetching protected data', error);
+        dispatch(unauthenticateUser());
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
+
+
 
   return loading ? (
 <div>lodidbnas</div>
@@ -264,11 +241,12 @@ const Dashboard = () => {
     />
     <span className="slider"></span>
   </label>
-  <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+  <span >{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
 </div>
 
 <div className="time-range-selector">
-  <label htmlFor="timeRange">Select Time Range:</label>
+
+  <label htmlFor="timeRange" className='timeRangeTxt'>Select Time Range:</label>
   <select
     className="time-range-selector"
     id="timeRange"
@@ -281,7 +259,7 @@ const Dashboard = () => {
     <option value="yearly">Yearly</option>
   </select>
 </div>
-<h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
+<h3 className='lakabay-categ-txt'>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
 <Bar data={barChartData} options={barChartData.options} />
 
     </div>
