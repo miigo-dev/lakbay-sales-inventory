@@ -191,23 +191,26 @@ const Dashboard = () => {
 
 
   return loading ? (
+<div>lodidbnas</div>
+   ) : (
+
     <div>
-      <div className='order-summaries'>
-        <div className='order-kain-sum'>
-          <div className="summary-order-kain">
-            <div className="time-frame-dropdown">
-              <label htmlFor="timeFrameKain">Select Time Frame for Kain: </label>
-              <select
-                id="timeFrameKain"
-                value={selectedTimeFrameKain}
-                onChange={(e) => setSelectedTimeFrameKain(e.target.value)}
-              >
-                <option value="today">Today</option>
-                <option value="weekly">This Week</option>
-                <option value="monthly">This Month</option>
-                <option value="yearly">This Year</option>
-              </select>
-            </div>
+    <div className='order-summaries'>
+      <div className='order-kain-sum'>
+        <div className="summary-order-kain">
+          <div className="time-frame-dropdown">
+            <label htmlFor="timeFrameKain">Select Time Frame for Kain: </label>
+            <select
+              id="timeFrameKain"
+              value={selectedTimeFrameKain}
+              onChange={(e) => setSelectedTimeFrameKain(e.target.value)}
+            >
+              <option value="today">Today</option>
+              <option value="weekly">This Week</option>
+              <option value="monthly">This Month</option>
+              <option value="yearly">This Year</option>
+            </select>
+          </div>
 
           <div className="order-summary-container">
             <div className="order-summary">
@@ -226,88 +229,90 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        
+<div className="bar-graph-container">
+<div className="bar-graph">
+<div className="toggle-container">
+  <label className="switch">
+    <input
+      type="checkbox"
+      checked={selectedCategory === 'kape'}
+      onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
+    />
+    <span className="slider"></span>
+  </label>
+  <span >{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+</div>
+
+<div className="time-range-selector">
+
+  <label htmlFor="timeRange" className='timeRangeTxt'>Select Time Range:</label>
+  <select
+    className="time-range-selector"
+    id="timeRange"
+    value={timeRange}
+    onChange={(e) => setTimeRange(e.target.value)}
+  >
+    <option value="daily">Daily</option>
+    <option value="weekly">Weekly</option>
+    <option value="monthly">Monthly</option>
+    <option value="yearly">Yearly</option>
+  </select>
+</div>
+<h3 className='lakabay-categ-txt'>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
+<Bar data={barChartData} options={barChartData.options} />
+
+    </div>
+      </div>
       </div>
 
-      <div className='order-kape-sum'>
-        <div className="summary-order-kape">
-          <div className="time-frame-dropdown">
-            <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
-            <select
-              id="timeFrameKape"
-              value={selectedTimeFrameKape}
-              onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
-            >
-              <option value="today">Today</option>
-              <option value="weekly">This Week</option>
-              <option value="monthly">This Month</option>
-              <option value="yearly">This Year</option>
-            </select>
-          </div>
-
-          <div className="order-summary-container">
-            <div className="order-summary">
-              <div className="order-summary-item">
-                <h4>All Orders (Kape)</h4>
-                <p>{allOrdersCountKape}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Pending Orders (Kape)</h4>
-                <p>{pendingOrdersCountKape}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Completed Orders (Kape)</h4>
-                <p>{completedOrdersCountKape}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<div className="order-kape-sum">
+  <div className="summary-order-kape">
+    {/* Time Frame Dropdown for Kape */}
+    <div className="time-frame-dropdown">
+      <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
+      <select
+        id="timeFrameKape"
+        value={selectedTimeFrameKape}
+        onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
+      >
+        <option value="today">Today</option>
+        <option value="weekly">This Week</option>
+        <option value="monthly">This Month</option>
+        <option value="yearly">This Year</option>
+      </select>
     </div>
 
-    <div className="bar-graph-container">
-      <div className="bar-graph">
-        <div className="toggle-container">
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={selectedCategory === 'kape'}
-              onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
-            />
-            <span className="slider"></span>
-          </label>
-          <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+    {/* Order Summary for Kape */}
+    <div className="order-summary-container">
+      <div className="order-summary">
+        <div className="order-summary-item">
+          <h4>All Orders (Kape)</h4>
+          <p>{allOrdersCountKape}</p>
         </div>
-
-        <div className="time-range-selector">
-          <label htmlFor="timeRange">Select Time Range:</label>
-          <select
-            className="time-range-selector"
-            id="timeRange"
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
+        <div className="order-summary-item">
+          <h4>Pending Orders (Kape)</h4>
+          <p>{pendingOrdersCountKape}</p>
         </div>
-        <h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
-        <Bar data={barChartData} options={barChartData.options} />
+        <div className="order-summary-item">
+          <h4>Completed Orders (Kape)</h4>
+          <p>{completedOrdersCountKape}</p>
+        </div>
       </div>
 
-      <div className="dashboard-container">
-        <div className="pie-chart-container" style={{ width: '45%' }}>
-          <div className="pie-chart">
-            <h3>Lakbay's Sales</h3>
-            <Pie data={pieChartData} options={{ responsive: true }} />
-            <p className="pie-txtData">{pieChartText}</p>
-          </div>
+      {/* Pie chart and Transaction Table (Side by Side) */}
+      <div className="pie-transaction-container">
+        {/* Pie Chart */}
+        <div className="pie-chart-container">
+          <h3>Lakbay's Sales</h3>
+          <Pie data={pieChartData} options={{ responsive: true }} />
+          <p className="pie-txtData">{pieChartText}</p>
         </div>
 
-        <div className="transaction-container">
-          <h3 className="recent-trans-text">Recent Transactions</h3>
-          <DataGrid
+        {/* Recent Transactions Table */}
+  
+          <h3 className="recent-trans-text">Recent Transactions 
+          <DataGrid className='transaction-container'
             rows={orders}
             columns={[
               { field: 'date', headerName: 'Date', width: 150 },
@@ -319,13 +324,18 @@ const Dashboard = () => {
             disableSelectionOnClick
             checkboxSelection={false}
           />
-        </div>
+          </h3>
+   
       </div>
     </div>
   </div>
+</div> 
+
 </div>
+<button onClick={logout} className="btn btn-primary">Logout</button>
+
 </div>
-</div>
+
   );
 };
 
