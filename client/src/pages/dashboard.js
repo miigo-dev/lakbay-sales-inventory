@@ -117,7 +117,7 @@ const Dashboard = () => {
       datasets: [{ data: selectedSales, backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
     });
     setPieChartText(`Kape: ${selectedSales[1]} php  Kain: ${selectedSales[0]} php`);
-
+  
     const barData = {
       kain: {
         daily: Array.from({ length: 24 }, (_, index) => Math.floor(Math.random() * 100)),
@@ -132,7 +132,7 @@ const Dashboard = () => {
         yearly: [500, 600, 700]
       }
     };
-
+  
     const currentData = barData[category][range];
     let labels = [];
     switch (range) {
@@ -151,19 +151,23 @@ const Dashboard = () => {
       default:
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
     }
-
-    const barChartColors = currentData.map(value => {
-      if (value > 50) return '#FF6F61'; // Red for higher values
-      else if (value > 20) return '#FFB84D'; // Orange for moderate values
-      else return '#6A9E55'; // Green for lower values
+  
+    // New color palette provided by the user
+    const colorPalette = [
+      '#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00'
+    ];
+  
+    // Generate a color for each bar based on the palette, cycling through if necessary
+    const barChartColors = currentData.map((_, index) => {
+      return colorPalette[index % colorPalette.length]; // Use modulo to cycle through the colors
     });
-
+  
     setBarChartData({
       labels: labels,
       datasets: [{
         label: 'Sales',
         data: currentData,
-        backgroundColor: barChartColors,
+        backgroundColor: barChartColors, // Apply distributed colors from the new palette
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
         borderRadius: 10,
@@ -181,6 +185,9 @@ const Dashboard = () => {
       }
     });
   };
+  
+  
+  
 
   const protectedInfo = async () => {
     try {
@@ -207,6 +214,9 @@ const Dashboard = () => {
   }, [timeRange, selectedCategory]);
 
   return loading ? (
+<div>lodidbnas</div>
+   ) : (
+
     <div>
     <div className='order-summaries'>
       <div className='order-kain-sum'>
@@ -242,88 +252,89 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        
+<div className="bar-graph-container">
+<div className="bar-graph">
+<div className="toggle-container">
+  <label className="switch">
+    <input
+      type="checkbox"
+      checked={selectedCategory === 'kape'}
+      onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
+    />
+    <span className="slider"></span>
+  </label>
+  <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+</div>
+
+<div className="time-range-selector">
+  <label htmlFor="timeRange">Select Time Range:</label>
+  <select
+    className="time-range-selector"
+    id="timeRange"
+    value={timeRange}
+    onChange={(e) => setTimeRange(e.target.value)}
+  >
+    <option value="daily">Daily</option>
+    <option value="weekly">Weekly</option>
+    <option value="monthly">Monthly</option>
+    <option value="yearly">Yearly</option>
+  </select>
+</div>
+<h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
+<Bar data={barChartData} options={barChartData.options} />
+
+    </div>
+      </div>
       </div>
 
-      <div className='order-kape-sum'>
-        <div className="summary-order-kape">
-          <div className="time-frame-dropdown">
-            <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
-            <select
-              id="timeFrameKape"
-              value={selectedTimeFrameKape}
-              onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
-            >
-              <option value="today">Today</option>
-              <option value="weekly">This Week</option>
-              <option value="monthly">This Month</option>
-              <option value="yearly">This Year</option>
-            </select>
-          </div>
-
-          <div className="order-summary-container">
-            <div className="order-summary">
-              <div className="order-summary-item">
-                <h4>All Orders (Kape)</h4>
-                <p>{allOrdersCountKape}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Pending Orders (Kape)</h4>
-                <p>{pendingOrdersCountKape}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Completed Orders (Kape)</h4>
-                <p>{completedOrdersCountKape}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<div className="order-kape-sum">
+  <div className="summary-order-kape">
+    {/* Time Frame Dropdown for Kape */}
+    <div className="time-frame-dropdown">
+      <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
+      <select
+        id="timeFrameKape"
+        value={selectedTimeFrameKape}
+        onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
+      >
+        <option value="today">Today</option>
+        <option value="weekly">This Week</option>
+        <option value="monthly">This Month</option>
+        <option value="yearly">This Year</option>
+      </select>
     </div>
 
-    <div className="bar-graph-container">
-      <div className="bar-graph">
-        <div className="toggle-container">
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={selectedCategory === 'kape'}
-              onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
-            />
-            <span className="slider"></span>
-          </label>
-          <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+    {/* Order Summary for Kape */}
+    <div className="order-summary-container">
+      <div className="order-summary">
+        <div className="order-summary-item">
+          <h4>All Orders (Kape)</h4>
+          <p>{allOrdersCountKape}</p>
         </div>
-
-        <div className="time-range-selector">
-          <label htmlFor="timeRange">Select Time Range:</label>
-          <select
-            className="time-range-selector"
-            id="timeRange"
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
+        <div className="order-summary-item">
+          <h4>Pending Orders (Kape)</h4>
+          <p>{pendingOrdersCountKape}</p>
         </div>
-        <h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
-        <Bar data={barChartData} options={barChartData.options} />
+        <div className="order-summary-item">
+          <h4>Completed Orders (Kape)</h4>
+          <p>{completedOrdersCountKape}</p>
+        </div>
       </div>
 
-      <div className="dashboard-container">
-        <div className="pie-chart-container" style={{ width: '45%' }}>
-          <div className="pie-chart">
-            <h3>Lakbay's Sales</h3>
-            <Pie data={pieChartData} options={{ responsive: true }} />
-            <p className="pie-txtData">{pieChartText}</p>
-          </div>
+      {/* Pie chart and Transaction Table (Side by Side) */}
+      <div className="pie-transaction-container">
+        {/* Pie Chart */}
+        <div className="pie-chart-container">
+          <h3>Lakbay's Sales</h3>
+          <Pie data={pieChartData} options={{ responsive: true }} />
+          <p className="pie-txtData">{pieChartText}</p>
         </div>
 
-        <div className="transaction-container">
-          <h3 className="recent-trans-text">Recent Transactions</h3>
-          <DataGrid
+        {/* Recent Transactions Table */}
+  
+          <h3 className="recent-trans-text">Recent Transactions 
+          <DataGrid className='transaction-container'
             rows={orders}
             columns={[
               { field: 'date', headerName: 'Date', width: 150 },
@@ -335,14 +346,15 @@ const Dashboard = () => {
             disableSelectionOnClick
             checkboxSelection={false}
           />
-        </div>
+          </h3>
+   
       </div>
     </div>
-
-    <button onClick={logout} className="btn btn-primary">Logout</button>
-  </div>  ) : (
-    <div>
+  </div>
 </div>
+</div>
+</div>
+
   );
 };
 

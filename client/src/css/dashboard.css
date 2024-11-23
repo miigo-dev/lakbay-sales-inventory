@@ -55,10 +55,27 @@ h4, h5, h6 {
 }
 
 /* Recent Transactions Table */
-.recent-transactions {
+.recent-transactions { 
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 50px;
   overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+}
+
+/* Flexbox alignment for recent transactions to be aligned with pie chart */
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2%;
+}
+
+.pie-chart-container {
+  flex: 1;
+}
+
+.recent-transactions {
+  flex: 1;
+  min-width: 300px; /* Set a minimum width for the table */
 }
 
 .recent-transactions table {
@@ -100,6 +117,15 @@ h4, h5, h6 {
 
   .recent-transactions table {
     min-width: 400px; /* Reduce minimum width for smaller screens */
+  }
+
+  .chart-container {
+    flex-direction: column; /* Stack pie chart and transactions for smaller screens */
+    align-items: center;
+  }
+
+  .pie-chart-container, .recent-transactions {
+    width: 100%;
   }
 }
 
@@ -297,5 +323,52 @@ select {
 
   .time-range-selector select {
     font-size: 0.75rem;
+  }
+}
+
+
+/* Container holding the summary and pie chart + transaction table */
+.order-kape-sum {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Container for the order summary items */
+.order-summary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Flex container to hold pie chart and transactions side by side */
+.pie-transaction-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Space between the pie chart and transaction table */
+  flex-wrap: wrap; /* Ensures the items can wrap on smaller screens */
+}
+
+/* Pie chart container */
+.pie-chart-container {
+  flex: 1; /* Allows the pie chart to take as much space as available */
+  max-width: 45%; /* Maximum width of the pie chart */
+  min-width: 300px; /* Minimum width for the pie chart */
+}
+
+/* Transaction table container */
+
+
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+  .pie-transaction-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pie-chart-container, .transaction-container {
+    width: 100%; /* Both the pie chart and transaction container take full width on mobile */
+    max-width: 100%;
+    min-width: 0;
   }
 }
