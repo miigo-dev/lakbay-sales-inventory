@@ -331,6 +331,8 @@ const Dashboard = () => {
   </div>
 </div>
 </div>
+<button onClick={logout} className="btn btn-primary">Logout</button>
+
 </div>
 
   );
