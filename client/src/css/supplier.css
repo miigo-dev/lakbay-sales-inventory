@@ -100,6 +100,9 @@ h1 {
 }
 
 /* Modal Button Styling */
+.modal-buttons{
+    background-color: #000;
+}
 .modal-buttons {
     margin-top: 15px;
 }
