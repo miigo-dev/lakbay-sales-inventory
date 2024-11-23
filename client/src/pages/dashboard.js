@@ -21,7 +21,7 @@ ChartJS.register(
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const [protectedData, setProtectedData] = useState(null);
+  const [protectedData, setProtectedData] = useState(null); // Keep the protected info state
   const [orders, setOrders] = useState([]); // Orders array for filtering
   const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); // Default time frame for Kain
   const [selectedTimeFrameKape, setSelectedTimeFrameKape] = useState('today'); // Default time frame for Kape
@@ -88,8 +88,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const updateOrderCounts = (category) => {
-      const ordersForCategory = getOrdersForTimeFrame(selectedTimeFrameKain, category);
+    const updateOrderCounts = (category, timeFrame) => {
+      const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
 
       const allOrders = ordersForCategory.length;
       const pendingOrders = ordersForCategory.filter(order => order.status === 'pending').length;
@@ -106,8 +106,8 @@ const Dashboard = () => {
       }
     };
 
-    updateOrderCounts('kain');
-    updateOrderCounts('kape');
+    updateOrderCounts('kain', selectedTimeFrameKain);
+    updateOrderCounts('kape', selectedTimeFrameKape);
   }, [selectedTimeFrameKain, selectedTimeFrameKape]);
 
   const updateCharts = (range, category) => {
@@ -152,10 +152,12 @@ const Dashboard = () => {
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
     }
 
-    const barChartColors = currentData.map(value => {
-      if (value > 50) return '#FF6F61'; // Red for higher values
-      else if (value > 20) return '#FFB84D'; // Orange for moderate values
-      else return '#6A9E55'; // Green for lower values
+    const colorPalette = [
+      '#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00'
+    ];
+
+    const barChartColors = currentData.map((_, index) => {
+      return colorPalette[index % colorPalette.length];
     });
 
     setBarChartData({
@@ -164,51 +166,31 @@ const Dashboard = () => {
         label: 'Sales',
         data: currentData,
         backgroundColor: barChartColors,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-        borderRadius: 10,
-      }],
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            grid: { display: false },
-          },
-          x: {
-            grid: { display: false },
-          }
-        },
-      }
+        borderColor: '#7b7b7b',
+        borderWidth: 1
+      }]
     });
   };
 
-  const protectedInfo = async () => {
-    try {
-      const data = await fetchProtectedInfo();
-      setProtectedData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching protected info:', error);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await onLogout();
-      dispatch(unauthenticateUser());
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
+  // Fetch protected info on mount
   useEffect(() => {
-    protectedInfo();
-    updateCharts(timeRange, selectedCategory);
-  }, [timeRange, selectedCategory]);
+    const fetchData = async () => {
+      try {
+        const result = await fetchProtectedInfo();
+        setProtectedData(result.data);
+      } catch (error) {
+        console.error('Error fetching protected data', error);
+        dispatch(unauthenticateUser());
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
+
+
 
   return loading ? (
-    <div>Loading...</div>
-  ) : (
     <div>
       <div className='order-summaries'>
         <div className='order-kain-sum'>
@@ -227,122 +209,124 @@ const Dashboard = () => {
               </select>
             </div>
 
-            <div className="order-summary-container">
-              <div className="order-summary">
-                <div className="order-summary-item">
-                  <h4>All Orders (Kain)</h4>
-                  <p>{allOrdersCountKain}</p>
-                </div>
-                <div className="order-summary-item">
-                  <h4>Pending Orders (Kain)</h4>
-                  <p>{pendingOrdersCountKain}</p>
-                </div>
-                <div className="order-summary-item">
-                  <h4>Completed Orders (Kain)</h4>
-                  <p>{completedOrdersCountKain}</p>
-                </div>
+          <div className="order-summary-container">
+            <div className="order-summary">
+              <div className="order-summary-item">
+                <h4>All Orders (Kain)</h4>
+                <p>{allOrdersCountKain}</p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className='order-kape-sum'>
-          <div className="summary-order-kape">
-            <div className="time-frame-dropdown">
-              <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
-              <select
-                id="timeFrameKape"
-                value={selectedTimeFrameKape}
-                onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
-              >
-                <option value="today">Today</option>
-                <option value="weekly">This Week</option>
-                <option value="monthly">This Month</option>
-                <option value="yearly">This Year</option>
-              </select>
-            </div>
-
-            <div className="order-summary-container">
-              <div className="order-summary">
-                <div className="order-summary-item">
-                  <h4>All Orders (Kape)</h4>
-                  <p>{allOrdersCountKape}</p>
-                </div>
-                <div className="order-summary-item">
-                  <h4>Pending Orders (Kape)</h4>
-                  <p>{pendingOrdersCountKape}</p>
-                </div>
-                <div className="order-summary-item">
-                  <h4>Completed Orders (Kape)</h4>
-                  <p>{completedOrdersCountKape}</p>
-                </div>
+              <div className="order-summary-item">
+                <h4>Pending Orders (Kain)</h4>
+                <p>{pendingOrdersCountKain}</p>
+              </div>
+              <div className="order-summary-item">
+                <h4>Completed Orders (Kain)</h4>
+                <p>{completedOrdersCountKain}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bar-graph-container">
-        <div className="bar-graph">
-          <div className="toggle-container">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={selectedCategory === 'kape'}
-                onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
-              />
-              <span className="slider"></span>
-            </label>
-            <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
-          </div>
-
-          <div className="time-range-selector">
-            <label htmlFor="timeRange">Select Time Range:</label>
+      <div className='order-kape-sum'>
+        <div className="summary-order-kape">
+          <div className="time-frame-dropdown">
+            <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
             <select
-              className="time-range-selector"
-              id="timeRange"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
+              id="timeFrameKape"
+              value={selectedTimeFrameKape}
+              onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
             >
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
+              <option value="today">Today</option>
+              <option value="weekly">This Week</option>
+              <option value="monthly">This Month</option>
+              <option value="yearly">This Year</option>
             </select>
           </div>
-          <h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
-          <Bar data={barChartData} options={barChartData.options} />
-        </div>
 
-        <div className="dashboard-container">
-          <div className="pie-chart-container" style={{ width: '45%' }}>
-            <div className="pie-chart">
-              <h3>Lakbay's Sales</h3>
-              <Pie data={pieChartData} options={{ responsive: true }} />
-              <p className="pie-txtData">{pieChartText}</p>
+          <div className="order-summary-container">
+            <div className="order-summary">
+              <div className="order-summary-item">
+                <h4>All Orders (Kape)</h4>
+                <p>{allOrdersCountKape}</p>
+              </div>
+              <div className="order-summary-item">
+                <h4>Pending Orders (Kape)</h4>
+                <p>{pendingOrdersCountKape}</p>
+              </div>
+              <div className="order-summary-item">
+                <h4>Completed Orders (Kape)</h4>
+                <p>{completedOrdersCountKape}</p>
+              </div>
             </div>
-          </div>
-
-          <div className="transaction-container">
-            <h3 className="recent-trans-text">Recent Transactions</h3>
-            <DataGrid
-              rows={orders}
-              columns={[
-                { field: 'date', headerName: 'Date', width: 150 },
-                { field: 'orderNumber', headerName: 'Order No.', width: 150 },
-                { field: 'amount', headerName: 'Amount', width: 150 }
-              ]}
-              autoHeight
-              pageSize={7}
-              disableSelectionOnClick
-              checkboxSelection={false}
-            />
           </div>
         </div>
       </div>
-
-      <button onClick={logout} className="btn btn-primary">Logout</button>
     </div>
+
+    <div className="bar-graph-container">
+      <div className="bar-graph">
+        <div className="toggle-container">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={selectedCategory === 'kape'}
+              onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
+            />
+            <span className="slider"></span>
+          </label>
+          <span>{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
+        </div>
+
+        <div className="time-range-selector">
+          <label htmlFor="timeRange">Select Time Range:</label>
+          <select
+            className="time-range-selector"
+            id="timeRange"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <h3>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
+        <Bar data={barChartData} options={barChartData.options} />
+      </div>
+
+      <div className="dashboard-container">
+        <div className="pie-chart-container" style={{ width: '45%' }}>
+          <div className="pie-chart">
+            <h3>Lakbay's Sales</h3>
+            <Pie data={pieChartData} options={{ responsive: true }} />
+            <p className="pie-txtData">{pieChartText}</p>
+          </div>
+        </div>
+
+        <div className="transaction-container">
+          <h3 className="recent-trans-text">Recent Transactions</h3>
+          <DataGrid
+            rows={orders}
+            columns={[
+              { field: 'date', headerName: 'Date', width: 150 },
+              { field: 'orderNumber', headerName: 'Order No.', width: 150 },
+              { field: 'amount', headerName: 'Amount', width: 150 }
+            ]}
+            autoHeight
+            pageSize={7}
+            disableSelectionOnClick
+            checkboxSelection={false}
+          />
+        </div>
+      </div>
+    </div>
+
+    <button onClick={logout} className="btn btn-primary">Logout</button>
+  </div>  ) : (
+    <div>
+</div>
   );
 };
 
