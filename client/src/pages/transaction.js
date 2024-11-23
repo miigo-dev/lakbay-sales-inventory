@@ -21,7 +21,7 @@ const Transaction = () => {
     <div className="dashboard">
       <div className="transaction-container">
         <div className="header">
-          <h3>Transaction</h3>
+          <h3>Transaction History</h3>
           <div className="date-filter">
             <label htmlFor="date-picker">Date: </label>
             <input

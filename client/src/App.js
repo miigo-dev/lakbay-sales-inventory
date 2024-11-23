@@ -15,6 +15,7 @@ import Register from './pages/register';
 import Orders from './pages/orders';
 import Transaction from './pages/transaction';
 import Inventory from './pages/inventory';
+import Supplier from './pages/supplier';
 import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';
@@ -58,6 +59,7 @@ const App = () => {
           <Route path='/orders' element={<Orders />} />
           <Route path='/orders/transaction' element={<Transaction />} />
           <Route path='/inventory' element={<Inventory />} />
+          <Route path='/inventory/supplier' element={<Supplier />} />
           <Route path='/sales' element={<Sales />} />
           <Route path='/reports' element={<Reports />} />
           <Route path='/users' element={<Users />} />
