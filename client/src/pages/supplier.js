@@ -1,58 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/supplier.css';
 
 const Supplier = () => {
-  const [suppliers, setSuppliers] = useState([
-    { id: 1, supplierName: 'Supplier A', contact: '123-456-7890', address: '123 Main St, City A', deliverySchedule: 'Weekly', orderNumber: '001' },
-    { id: 2, supplierName: 'Supplier B', contact: '987-654-3210', address: '456 Side Rd, City B', deliverySchedule: 'Monthly', orderNumber: '002' },
-    { id: 3, supplierName: 'Supplier C', contact: '555-555-5555', address: '789 Hilltop Ln, City C', deliverySchedule: 'Bi-Weekly', orderNumber: '003' },
-  ]);
-
+  const [suppliers, setSuppliers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newSupplier, setNewSupplier] = useState({
     supplierName: '',
-    contact: '',
+    email: '',
+    phoneNumber: '',
     address: '',
-    deliverySchedule: '',
-    orderNumber: '',
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchSuppliers = async (query = '') => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`http://localhost:8080/api/suppliers?search=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Failed to fetch suppliers.');
+      const data = await response.json();
+      setSuppliers(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSuppliers(searchQuery);
+  }, [searchQuery]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewSupplier({ ...newSupplier, [name]: value });
   };
 
-  const handleAddSupplier = () => {
-    if (
-      newSupplier.supplierName &&
-      newSupplier.contact &&
-      newSupplier.address &&
-      newSupplier.deliverySchedule &&
-      newSupplier.orderNumber
-    ) {
-      const newId = suppliers.length + 1;
-      const updatedSuppliers = [...suppliers, { id: newId, ...newSupplier }];
-      setSuppliers(updatedSuppliers);
-      setNewSupplier({ supplierName: '', contact: '', address: '', deliverySchedule: '', orderNumber: '' });
-      setIsModalOpen(false);
+  // Add a new supplier
+  const handleAddSupplier = async () => {
+    if (newSupplier.supplierName && newSupplier.email && newSupplier.phoneNumber && newSupplier.address) {
+      try {
+        const response = await fetch('http://localhost:8080/api/suppliers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: newSupplier.supplierName,
+            email: newSupplier.email,
+            phone_number: newSupplier.phoneNumber,
+            address: newSupplier.address,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Failed to add supplier: ${response.statusText}`);
+        }
+  
+        const addedSupplier = await response.json();
+  
+        setSuppliers((prevSuppliers) => [...prevSuppliers, addedSupplier]);
+  
+        setNewSupplier({ supplierName: '', email: '', phoneNumber: '', address: '' });
+        setIsModalOpen(false);
+      } catch (err) {
+        alert(err.message);
+      }
     } else {
       alert('Please fill out all fields.');
     }
   };
 
-  const filteredSuppliers = suppliers.filter((supplier) =>
-    supplier.supplierName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'supplierName', headerName: 'Supplier Name', width: 200 },
-    { field: 'contact', headerName: 'Contact', width: 150 },
+    { field: 'supplier_id', headerName: 'ID', width: 100 },
+    { field: 'supplier_name', headerName: 'Supplier Name', width: 200 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'phone_number', headerName: 'Phone Number', width: 150 },
     { field: 'address', headerName: 'Address', width: 250 },
-    { field: 'deliverySchedule', headerName: 'Delivery Schedule', width: 200 },
-    { field: 'orderNumber', headerName: 'Order No.', width: 150 },
   ];
 
   return (
@@ -89,10 +116,17 @@ const Supplier = () => {
               onChange={handleInputChange}
             />
             <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={newSupplier.email}
+              onChange={handleInputChange}
+            />
+            <input
               type="text"
-              name="contact"
-              placeholder="Contact"
-              value={newSupplier.contact}
+              name="phoneNumber"
+              placeholder="Phone Number"
+              value={newSupplier.phoneNumber}
               onChange={handleInputChange}
             />
             <input
@@ -100,23 +134,6 @@ const Supplier = () => {
               name="address"
               placeholder="Address"
               value={newSupplier.address}
-              onChange={handleInputChange}
-            />
-            <select
-              name="deliverySchedule"
-              value={newSupplier.deliverySchedule}
-              onChange={handleInputChange}
-            >
-              <option value="">Select Delivery Schedule</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Bi-Weekly">Bi-Weekly</option>
-              <option value="Monthly">Monthly</option>
-            </select>
-            <input
-              type="text"
-              name="orderNumber"
-              placeholder="Order Number"
-              value={newSupplier.orderNumber}
               onChange={handleInputChange}
             />
             <div className="modal-buttons">
@@ -129,14 +146,21 @@ const Supplier = () => {
       )}
 
       <div className="data-grid">
-        <DataGrid
-          rows={filteredSuppliers}
-          columns={columns}
-          autoHeight
-          pageSize={5}
-          pagination
-          disableSelectionOnClick
-        />
+        {loading ? (
+          <p>Loading suppliers...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : (
+          <DataGrid
+            rows={suppliers}
+            columns={columns}
+            getRowId={(row) => row.supplier_id}
+            autoHeight
+            pageSize={5}
+            pagination
+            disableSelectionOnClick
+          />
+        )}
       </div>
     </div>
   );
