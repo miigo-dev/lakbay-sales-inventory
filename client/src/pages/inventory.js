@@ -1,5 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect} from 'react';
+import * as XLSX from 'xlsx';
 import '../css/inventory.css';
 
 const Inventory = () => {
@@ -48,29 +49,57 @@ const Inventory = () => {
     const [supplierId, setSupplierId] = useState('');
     const [adjustmentType, setAdjustmentType] = useState('');
     
+    const exportToExcel = () => {
+        // Prepare the data for export
+        const dataForExport = inventoryData.map((item) => ({
+            ID: item.id,
+            ProductID: item.productId,
+            ProductName: item.productName,
+            Quantity: item.quantity,
+            Price: item.price,
+            SupplierID: item.supplierId,
+            ReorderLevel: item.reorderLevel,
+            Status: item.productStatus,
+        }));
+
+        // Create a worksheet from the data
+        const ws = XLSX.utils.json_to_sheet(dataForExport);
+
+        // Create a new workbook and append the worksheet
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+
+        // Export the workbook to an Excel file
+        XLSX.writeFile(wb, "InventoryData.xlsx");
+    };
 
     const openModal = (product = null) => {
         if (product) {
-            setCurrentProduct(product);
+            // If product exists, ensure the quantity is positive
+            setCurrentProduct({
+                ...product,
+                quantity: product.quantity >= 0 ? product.quantity : 0,  // Ensure the quantity is positive
+            });
             setIsEditing(true);
         } else {
+            // If no product, initialize fields with positive values
             setCurrentProduct({
                 id: null,
                 productId: '',
                 productName: '',
-                quantity: '',
+                quantity: 0,  // Start with a valid positive quantity
                 price: '',
                 supplierId: '',
-                reorderLevel: '',
+                reorderLevel: 0,  // Reorder level should be positive or 0
                 productStatus: 'in',
                 section: selectedSection,
-                type: selectedInventoryType
+                type: selectedInventoryType,
             });
             setIsEditing(false);
         }
         setModalOpen(true);
-        setQuantityAdjustment(0); // Reset quantity adjustment
-        setRemarks(''); // Reset remarks
+        setQuantityAdjustment(0); // Reset quantity adjustment to ensure it's positive
+        setRemarks(''); // Reset remarks field
     };
 
     const closeModal = () => {
@@ -79,20 +108,33 @@ const Inventory = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+    
+        // Ensure positive integers for quantity and reorderLevel
+        if ((name === 'quantity' || name === 'reorderLevel') && value < 0) {
+            alert(`${name} must be a positive value.`);
+            return;
+        }
+    
         setCurrentProduct((prevData) => ({
             ...prevData,
-            [name]: value
+            [name]: value,
         }));
     };
 
     const handleSubmit = () => {
+        // Ensure positive integers for quantity and reorderLevel
+        if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
+            alert('Quantity and Reorder Level must be positive values.');
+            return;
+        }
+    
         const nameKey = selectedInventoryType === 'products' ? 'productName' : 'ingredientName';
         const newProduct = {
             ...currentProduct,
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
-            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment)
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
         };
     
         if (isEditing) {
@@ -104,21 +146,21 @@ const Inventory = () => {
         } else {
             setInventoryData((prevData) => [...prevData, newProduct]);
         }
-
+    
         const transactionEntry = {
             date: new Date().toLocaleDateString(),
-            [nameKey]: newProduct[nameKey], // Dynamically use product or ingredient name
+            [nameKey]: newProduct[nameKey],
             quantity: quantityAdjustment,
             price: newProduct.price,
             status: currentProduct.productStatus,
-            productId: newProduct.productId || newProduct.ingredientId, // Use appropriate ID
+            productId: newProduct.productId || newProduct.ingredientId,
             remarks,
-            supplierId: supplierId
+            supplierId: supplierId,
         };
     
         setSelectedProduct((prevTransactions) => [
             ...prevTransactions,
-            transactionEntry
+            transactionEntry,
         ]);
     
         closeModal();
@@ -176,24 +218,39 @@ const Inventory = () => {
     const handleQuantityAdjustmentSubmit = () => {
         const adjustmentValue = parseInt(quantityAdjustment);
     
-        
-        if ((adjustmentType === 'in' && adjustmentValue <= 0) || 
-            (adjustmentType === 'out' && adjustmentValue >= 0)) {
-            alert(`Please enter a valid quantity. 
-            For "In", you can only add, 
-            and for "Out", you can only deduct.`);
+        // Ensure positive integers for adjustments
+        if (isNaN(adjustmentValue) || adjustmentValue <= 0) {
+            alert('Please enter a positive integer for quantity adjustment.');
             return;
         }
     
+        if (adjustmentType === 'out') {
+            // Ensure the quantity does not drop below zero
+            const currentItem = inventoryData.find(
+                (item) => item.productName === currentProductName
+            );
+            if (currentItem && currentItem.quantity < adjustmentValue) {
+                alert('Cannot reduce quantity below zero.');
+                return;
+            }
+        }
+    
+        // Update inventory data
         setInventoryData((prevData) =>
             prevData.map((item) =>
                 item.productName === currentProductName
-                    ? { ...item, quantity: item.quantity + adjustmentValue }
+                    ? {
+                          ...item,
+                          quantity:
+                              adjustmentType === 'in'
+                                  ? item.quantity + adjustmentValue
+                                  : item.quantity - adjustmentValue,
+                      }
                     : item
             )
         );
     
-        // Log the adjustment as a transaction
+        // Log the transaction
         setSelectedProduct((prevTransactions) => [
             ...prevTransactions,
             {
@@ -203,15 +260,16 @@ const Inventory = () => {
                 price: '',
                 status: adjustmentType,
                 remarks,
-                supplierId: supplierId
-            }
+                supplierId: supplierId,
+            },
         ]);
     
-        // Reset and close the quantity adjustment modal
+        // Reset modal and inputs
         setQuantityAdjustment('');
         setRemarks('');
         closeQuantityModal();
     };
+    
 
     return (
         <div className="dashboard_container">
@@ -235,65 +293,68 @@ const Inventory = () => {
             </div>
 
             <div className="dashboard_content">
-                <div className="dashboard_title">
-                    <h2>Inventory</h2>
-                    <div className='actions'>
-                        <select
-                            className="inventory_section_dropdown"
-                            value={selectedSection}
-                            onChange={(e) => setSelectedSection(e.target.value)}>
-                            <option value="main">Main Inventory</option>
-                            <option value="lakbayKain">Lakbay Kain</option>
-                            <option value="lakbayKape">Lakbay Kape</option>
-                        </select>
+            <div className="dashboard_title">
+                <h2>Inventory</h2>
+                <div className='actions'>
+                    <select
+                        className="inventory_section_dropdown"
+                        value={selectedSection}
+                        onChange={(e) => setSelectedSection(e.target.value)}>
+                        <option value="main">Main Inventory</option>
+                        <option value="lakbayKain">Lakbay Kain</option>
+                        <option value="lakbayKape">Lakbay Kape</option>
+                    </select>
 
-                        <select
-                            className="inventory_type_dropdown"
-                            value={selectedInventoryType}
-                            onChange={(e) => setSelectedInventoryType(e.target.value)}>
-                            <option value="products">Products</option>
-                            <option value="ingredients">Ingredients</option>
-                        </select>
+                    <select
+                        className="inventory_type_dropdown"
+                        value={selectedInventoryType}
+                        onChange={(e) => setSelectedInventoryType(e.target.value)}>
+                        <option value="products">Products</option>
+                        <option value="ingredients">Ingredients</option>
+                    </select>
 
-                        <button className="btn add-inventory_btn" onClick={() => openModal()}>
-                            Add Item
-                        </button>
-                        <button className="btn export_btn">Export</button> 
-                    </div>                   
-                </div>
+                    <button className="btn add-inventory_btn" onClick={() => openModal()}>
+                        Add Item
+                    </button>
+                    <button className="btn export_btn" onClick={exportToExcel}>
+                        Export
+                    </button> 
+                </div>                   
+            </div>
 
-                <div className="inventory_table">
-                    <DataGrid
-                        rows={filteredInventory}
-                        columns={[
-                            { field: 'id', headerName: 'No', width: 90 },
-                            selectedInventoryType === 'products' 
-                                ? { field: 'productId', headerName: 'Product ID', width: 180 } 
-                                : { field: 'ingredientId', headerName: 'Ingredient ID', width: 180 },
-                            selectedInventoryType === 'products' 
-                                ? { field: 'productName', headerName: 'Product Name', width: 180 } 
-                                : { field: 'ingredientName', headerName: 'Ingredient Name', width: 180 },
-                            { field: 'quantity', headerName: 'Quantity', width: 120 },
-                            { field: 'price', headerName: 'Price', width: 120 },
-                            { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
-                            { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
-                            { field: 'productStatus', headerName: 'Status', width: 120 },
-                            {
-                                field: 'action',
-                                headerName: 'Action',
-                                width: 180,
-                                renderCell: (params) => (
-                                    <div>
-                                        <button className="btn view_btn" onClick={() => handleViewTransactions(params.row)}>View</button>
-                                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>Delete</button>
-                                    </div>
-                                )
-                            }
-                        ]}
-                        pageSize={10}
-                        rowsPerPageOptions={[10, 20, 50]}
-                    />
-                </div>
+            <div className="inventory_table">
+                <DataGrid
+                    rows={filteredInventory}
+                    columns={[
+                        { field: 'id', headerName: 'No', width: 90 },
+                        selectedInventoryType === 'products' 
+                            ? { field: 'productId', headerName: 'Product ID', width: 180 } 
+                            : { field: 'ingredientId', headerName: 'Ingredient ID', width: 180 },
+                        selectedInventoryType === 'products' 
+                            ? { field: 'productName', headerName: 'Product Name', width: 180 } 
+                            : { field: 'ingredientName', headerName: 'Ingredient Name', width: 180 },
+                        { field: 'quantity', headerName: 'Quantity', width: 120 },
+                        { field: 'price', headerName: 'Price', width: 120 },
+                        { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
+                        { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
+                        { field: 'productStatus', headerName: 'Status', width: 120 },
+                        {
+                            field: 'action',
+                            headerName: 'Action',
+                            width: 180,
+                            renderCell: (params) => (
+                                <div>
+                                    <button className="view_btn" onClick={() => handleViewTransactions(params.row)}>View</button>
+                                    <button className="out_btn" onClick={() => handleDelete(params.row.id)}>Delete</button>
+                                </div>
+                            )
+                        }
+                    ]}
+                    pageSize={10}
+                    rowsPerPageOptions={[10, 20, 50]}
+                />
+            </div>
+
 
                 <div className="pagination">
                     <span>Showing 1 to {filteredInventory.length} of {filteredInventory.length} entries</span>
