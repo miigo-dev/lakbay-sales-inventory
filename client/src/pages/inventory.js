@@ -215,24 +215,24 @@ const Inventory = () => {
 
     return (
         <div className="dashboard_container">
-            <header className="dashboard_header">
+            <div className="dashboard_header">
                 <input
                     className="search_bar"
                     placeholder="Search anything here"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                   
+                    <div className='header_dropdown'>
                         <select
-                            className="inventory_statu_dropdown"
+                            className="inventory_status_dropdown">
                             value={selectedInventoryStatus}
-                            onChange={(e) => setSelectedInventoryStatus(e.target.value)}>
+                            onChange={(e) => setSelectedInventoryStatus(e.target.value)}
                             <option value="all">All</option>
                             <option value="in">In</option>
                             <option value="out">Out</option>
                         </select>
-                    
-            </header>
+                    </div>
+            </div>
 
             <div className="dashboard_content">
                 <div className="dashboard_title">
