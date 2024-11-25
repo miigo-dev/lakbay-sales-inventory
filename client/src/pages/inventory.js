@@ -344,8 +344,8 @@ const Inventory = () => {
                             width: 180,
                             renderCell: (params) => (
                                 <div>
-                                    <button className="view_btn" onClick={() => handleViewTransactions(params.row)}>View</button>
-                                    <button className="out_btn" onClick={() => handleDelete(params.row.id)}>Delete</button>
+                                    <button className="btn view_btn" onClick={() => handleViewTransactions(params.row)}>View</button>
+                                    <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>Delete</button>
                                 </div>
                             )
                         }
