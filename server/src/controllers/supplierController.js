@@ -21,8 +21,8 @@ exports.getSupplierByID = async (req, res) => {
 
 exports.addSupplier = async (req, res) => {
     try {
-        const { name, address, city, country, email, phone, contact_person, contact_person_phone } = req.body;
-        const supplier = await supplierService.addSupplier(name, address, city, country, email, phone, contact_person, contact_person_phone);
+        const { name, email, phone_number, address } = req.body;
+        const supplier = await supplierService.addSupplier(name, email, phone_number, address);
         res.status(201).json(supplier);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -32,8 +32,8 @@ exports.addSupplier = async (req, res) => {
 exports.updateSupplier = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, address, city, country, email, phone, contact_person, contact_person_phone } = req.body;
-        const supplier = await supplierService.updateSupplier(id, name, address, city, country, email, phone, contact_person, contact_person_phone);
+        const { name, email, phone_number, address } = req.body;
+        const supplier = await supplierService.updateSupplier(id, name, email, phone_number, address);
         res.status(200).json(supplier);
     } catch (error) {
         res.status(500).json({ message: error.message });
