@@ -1,8 +1,8 @@
-/* Container settings */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
 .container {
     font-family: 'Inter', sans-serif;
     padding: 10px;
-
     max-width: 100%;
 }
 
@@ -74,29 +74,38 @@
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
 }
 
-.header-search {
+.header_search {
     display: flex;
     align-items: center;
     white-space: nowrap;
     margin: 0;
 }
 
-.search-bar {
-    display: flex;
+.search_bar {
     align-items: center;
-    margin-bottom: 15px;
+    margin: 15px 0;
+    padding: 3px;
+    width: 100%;
 }
 
-.search-bar input {
-    margin-right: 10px;
-    max-width: 500px;
-    margin-bottom: 5px;
-    flex-grow: 1;
+.search_bar input {
+    padding: 5px;
+    font-size: 15px;
+    width: 100%;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+}
+.search_bar input:focus {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #33333383;
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .user-management h2 {
     font-size: 20px;
-    margin-right: 1000px;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -162,67 +171,147 @@
 
 .user-management .view-button:hover {
     background: #31a2c3;
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .user-management .edit-button:hover {
     background: #4cae4c;
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .user-management .delete-button:hover {
     background: #c9302c;
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .user-management .register-button:hover {
     background: #ec971f;
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-3px) scale(1);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Mobile Responsive Styles */
+.orders_table{
+    background-color: white;
+    border-radius: 600px;
+   
+}
+
+.modal_content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90%; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-height: 100%; 
+    overflow-y: auto; 
+}
+.modal_content h2{
+    margin-top: 10px;
+}
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; 
+    background-color: rgba(0, 0, 0, 0.342);
+    display: flex;
+    z-index: 1000;
+}
+
+.modal_input_group {
+    margin-bottom: 15px;
+}
+
+.modal_input_group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.modal_input_group input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal_buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancel_button,
+.submit_button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel_button {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.submit_button {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.cancel_button:hover {
+    background-color: #ec971f;
+}
+
+.submit_button:hover {
+    background-color: #4cae4c;
+}
+
+  
 @media (max-width: 768px) {
     .container {
-        margin-left: 0; /* Remove sidebar margin on small screens */
-        max-width: 100%; /* Full width */
+        margin-left: 0;
+        max-width: 100%;
     }
 
     .user-details {
-        flex-direction: column; /* Stack user details */
-        gap: 20px; /* Reduce gap between elements */
+        flex-direction: column;
+        gap: 20px;
     }
 
     .user-card img {
-        width: 100%; /* Full width on mobile */
-        height: auto; /* Maintain aspect ratio */
+        width: 100%;
+        height: auto;
     }
 
     .user-info-main,
     .user-info-extra {
-        grid-template-columns: repeat(1, 1fr); /* Stack columns */
+        grid-template-columns: repeat(1, 1fr);
     }
 
     .user-management h2 {
-        margin-right: 0; /* Remove large right margin */
-        font-size: 18px; /* Smaller font size */
+        margin-right: 0;
+        font-size: 18px;
     }
 
     .search-bar input {
-        max-width: 100%; /* Full width input */
+        max-width: 100%;
     }
 
     .search-bar {
-        flex-direction: column; /* Stack input and button */
-        align-items: stretch; /* Stretch to full width */
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .user-management button {
-        width: 100%; /* Full width buttons */
-        margin-bottom: 5px; /* Space between buttons */
+        width: 100%;
+        margin-bottom: 5px;
     }
 }
-
