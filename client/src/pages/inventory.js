@@ -1,6 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect} from 'react';
-import * as XLSX from 'xlsx';
 import '../css/inventory.css';
 
 const Inventory = () => {
@@ -35,10 +34,11 @@ const Inventory = () => {
         productId: '',
         productName: '',
         quantity: '',
+        unitMeasure: '',
         price: '',
         supplierId: '',
         reorderLevel: '',
-        expiryDate: '',
+        expiryDate: 'date',
         productStatus: 'in',
         section: 'main',
         type: 'products'
@@ -55,29 +55,7 @@ const Inventory = () => {
         setSelectedDate(e.target.value); 
     };
     
-    const exportToExcel = () => {
-        // Prepare the data for export
-        const dataForExport = inventoryData.map((item) => ({
-            ID: item.id,
-            ProductID: item.productId,
-            ProductName: item.productName,
-            Quantity: item.quantity,
-            Price: item.price,
-            SupplierID: item.supplierId,
-            ReorderLevel: item.reorderLevel,
-            Status: item.productStatus,
-        }));
 
-        // Create a worksheet from the data
-        const ws = XLSX.utils.json_to_sheet(dataForExport);
-
-        // Create a new workbook and append the worksheet
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inventory");
-
-        // Export the workbook to an Excel file
-        XLSX.writeFile(wb, "InventoryData.xlsx");
-    };
 
     const openModal = (product = null) => {
         if (product) {
@@ -140,6 +118,7 @@ const Inventory = () => {
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
+            expiryDate: selectedDate,
             quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
         };
     
@@ -246,8 +225,8 @@ const Inventory = () => {
             prevData.map((item) =>
                 item.productName === currentProductName
                     ? {
-                          ...item,
-                          quantity:
+                        ...item,
+                        quantity:
                               adjustmentType === 'in'
                                   ? item.quantity + adjustmentValue
                                   : item.quantity - adjustmentValue,
@@ -322,9 +301,6 @@ const Inventory = () => {
                     <button className="btn add-inventory_btn" onClick={() => openModal()}>
                         Add Item
                     </button>
-                    <button className="btn export_btn" onClick={exportToExcel}>
-                        Export
-                    </button> 
                 </div>                   
             </div>
 
@@ -340,10 +316,16 @@ const Inventory = () => {
                             ? { field: 'productName', headerName: 'Product Name', width: 180 } 
                             : { field: 'ingredientName', headerName: 'Ingredient Name', width: 180 },
                         { field: 'quantity', headerName: 'Quantity', width: 120 },
+                        ...(selectedInventoryType === 'ingredients'
+                            ? [{ field: 'unitMeasure', headerName: 'Unit of Measure', width: 120 }]
+                            : []),
                         { field: 'price', headerName: 'Price', width: 120 },
                         { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
                         { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
-                        { field: 'expiryDate', headerName: 'Expiry Date', width: 120 },
+                        ...(selectedInventoryType === 'ingredients'
+                            ? [{  field: 'expiryDate', headerName: 'Expiry Date', width: 120, }]
+                            : []),
+                        
                         { field: 'productStatus', headerName: 'Status', width: 120 },
                         {
                             field: 'action',
@@ -470,6 +452,20 @@ const Inventory = () => {
                                     onChange={handleInputChange}
                                 />
 
+                                <label htmlFor="unitMeasure">Unit of Measure</label>
+                                <select
+                                    name="unitMeasure"
+                                    value={currentProduct.unitMeasure}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" disabled>Select Unit of Measure</option>
+                                    <option value="kg">Kilograms (kg)</option>
+                                    <option value="g">Grams (g)</option>
+                                    <option value="L">Liters (L)</option>
+                                    <option value="ml">Milliliters (ml)</option>
+
+                                </select>
+
                                 <label htmlFor="price">Price</label>
                                 <input
                                     type="text"
@@ -505,6 +501,7 @@ const Inventory = () => {
                                     value={selectedDate}
                                     onChange={handleDateChange}
                                 />
+
                             </>
                         )}
 
