@@ -24,6 +24,7 @@ const Inventory = () => {
         price: 'Warehouse 1',
         supplierId: 120,
         reorderLevel: 120,
+        expiryDate: '',
         productStatus: 'in',
         section: 'main',
         type: 'products'
@@ -37,6 +38,7 @@ const Inventory = () => {
         price: '',
         supplierId: '',
         reorderLevel: '',
+        expiryDate: '',
         productStatus: 'in',
         section: 'main',
         type: 'products'
@@ -48,6 +50,10 @@ const Inventory = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [supplierId, setSupplierId] = useState('');
     const [adjustmentType, setAdjustmentType] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const handleDateChange = (e) => {
+        setSelectedDate(e.target.value); 
+    };
     
     const exportToExcel = () => {
         // Prepare the data for export
@@ -337,11 +343,13 @@ const Inventory = () => {
                         { field: 'price', headerName: 'Price', width: 120 },
                         { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
                         { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
+                        { field: 'expiryDate', headerName: 'Expiry Date', width: 120 },
                         { field: 'productStatus', headerName: 'Status', width: 120 },
                         {
                             field: 'action',
                             headerName: 'Action',
                             width: 180,
+
                             renderCell: (params) => (
                                 <div>
                                     <button className="btn view_btn" onClick={() => handleViewTransactions(params.row)}>View</button>
@@ -422,6 +430,15 @@ const Inventory = () => {
                                     value={currentProduct.reorderLevel}
                                     onChange={handleInputChange}
                                 />
+
+                                <label htmlFor="expiryDate">Expiry Date</label>
+                                <input
+                                    type="date"
+                                    id='expiryDate'
+                                    placeholder="Expiry Date"
+                                    value={selectedDate}
+                                    onChange={handleDateChange}
+                                />
                             </>
                         ) : (
                             // Fields for Ingredients (if applicable)
@@ -478,6 +495,15 @@ const Inventory = () => {
                                     placeholder="Reorder Level"
                                     value={currentProduct.reorderLevel}
                                     onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="expiryDate">Expiry Date</label>
+                                <input
+                                    type="date"
+                                    name="expiryDate"
+                                    placeholder="Expiry Date"
+                                    value={selectedDate}
+                                    onChange={handleDateChange}
                                 />
                             </>
                         )}
