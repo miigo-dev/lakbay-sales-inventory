@@ -15,7 +15,7 @@ import users_active from '../assets/icons/users_active.png';
 import dash_inactive from '../assets/icons/dashboard_inactive.png';
 import order_inactive from '../assets/icons/orders_inactive.png';
 import inventory_inactive from '../assets/icons/inventory_inactive.png';
-import sales_inactive from '../assets/icons/sales _inactive.svg';
+import sales_inactive from '../assets/icons/sales_inactive.svg';
 import reports_inactive from '../assets/icons/reports_inactive.png';
 import users_inactive from '../assets/icons/users_inactive.png';
 import settings_inactive from '../assets/icons/settings_inactive.png';
@@ -39,13 +39,19 @@ const Sidebar = ({ onToggle }) => {
   };
 
   const toggleOrdersDropdown = () => {
-    setIsOrdersOpen(!isOrdersOpen);
-    setIsInventoryOpen(false);
+    if (isOpen) {
+      setIsOrdersOpen(!isOrdersOpen);
+      // Close inventory dropdown if it's open
+      setIsInventoryOpen(false);
+    }
   };
 
   const toggleInventoryDropdown = () => {
-    setIsInventoryOpen(!isInventoryOpen);
-    setIsOrdersOpen(false);
+    if (isOpen) {
+      setIsInventoryOpen(!isInventoryOpen);
+      // Close orders dropdown if it's open
+      setIsOrdersOpen(false);
+    }
   };
 
   return (
