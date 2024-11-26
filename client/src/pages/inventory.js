@@ -322,7 +322,10 @@ const Inventory = () => {
                         { field: 'price', headerName: 'Price', width: 120 },
                         { field: 'supplierId', headerName: 'Supplier Id', width: 120 },
                         { field: 'reorderLevel', headerName: 'Reorder Level', width: 120 },
-                        { field: 'expiryDate', headerName: 'Expiry Date', width: 120,},
+                        ...(selectedInventoryType === 'ingredients'
+                            ? [{  field: 'expiryDate', headerName: 'Expiry Date', width: 120, }]
+                            : []),
+                        
                         { field: 'productStatus', headerName: 'Status', width: 120 },
                         {
                             field: 'action',
