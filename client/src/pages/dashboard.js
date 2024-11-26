@@ -197,8 +197,15 @@ const Dashboard = () => {
     useEffect(() => {
       // Get filtered orders based on time range and category
       const filteredOrders = getOrdersForTimeFrame(timeRange, selectedCategory);
-      setOrders(filteredOrders); // Update the orders state to the filtered list
+
+      // Sort orders by date (most recent first)
+      const sortedOrders = filteredOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Limit to the 3 most recent orders
+      const recentOrders = sortedOrders.slice(0, 3);
     
+      setOrders(recentOrders); // Update the orders state to the 3 most recent orders
+      
       // You can keep your logic for order counts as well
       const updateOrderCounts = (category, timeFrame) => {
         const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
@@ -219,6 +226,7 @@ const Dashboard = () => {
     
       updateOrderCounts(selectedCategory, selectedCategory === 'kain' ? selectedTimeFrameKain : selectedTimeFrameKape);
     }, [timeRange, selectedCategory]); // Dependencies to trigger the effect on timeRange or selectedCategory change
+    
 
 
   const protectedInfo = async () => {
@@ -268,20 +276,24 @@ const Dashboard = () => {
     <div className='dash-board-contain'>
 <div className="order-summaries">
   <div className="order-kain-kape-sum">
-    <label className="switch">
-      <input
-        type="checkbox"
-        checked={selectedCategory === 'kape'}
-        onChange={handleCategoryChange}
-      />
-      <span className="slider"></span>
-    </label>
-    <span className="categ-txt"> {selectedCategory === 'kape' ? 'Kape' : 'Kain'} </span>
-
+  <div className='toggle_container'>
+      <input type="checkbox" className='input_type'id="toggle" onChange={handleCategoryChange} />
+          <div className="display">
+            <label className='label_type' htmlFor="toggle">
+              <div className="circle">
+                <span className="material-symbols-outlined food">restaurant</span>
+                <span className="material-symbols-outlined coffee">local_cafe</span>
+              </div>
+            </label>
+            <span className="categ-txt">
+              {selectedCategory === 'kape' ?'Kape' : 'Kain'}
+            </span>
+          </div>
+    </div>
     <div className="summary-order-kain">
       <h3>Today's Order Counts:</h3>
       <div>
-        <h4>{selectedCategory === 'kain' ? 'Kain' : 'Kape'}:</h4>
+        <h1></h1>
         <p>Total Orders: {selectedCategory === 'kain' ? allOrdersCountKain : allOrdersCountKape}</p>
         <p>Pending Orders: {selectedCategory === 'kain' ? pendingOrdersCountKain : pendingOrdersCountKape}</p>
         <p>Completed Orders: {selectedCategory === 'kain' ? completedOrdersCountKain : completedOrdersCountKape}</p>
