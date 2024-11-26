@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchProtectedInfo, onLogout } from '../api/auth';
@@ -267,24 +268,20 @@ const Dashboard = () => {
     <div className='dash-board-contain'>
 <div className="order-summaries">
   <div className="order-kain-kape-sum">
-    <div className='toggle_container'>
-      <input type="checkbox" className='input_type'id="toggle" onChange={handleCategoryChange} />
-          <div className="display">
-            <label className='label_type' htmlFor="toggle">
-              <div className="circle">
-                <span className="material-symbols-outlined food">restaurant</span>
-                <span className="material-symbols-outlined coffee">local_cafe</span>
-              </div>
-            </label>
-            <span className="categ-txt">
-              {selectedCategory === 'kape' ?'Kape' : 'Kain'}
-            </span>
-          </div>
-    </div>
+    <label className="switch">
+      <input
+        type="checkbox"
+        checked={selectedCategory === 'kape'}
+        onChange={handleCategoryChange}
+      />
+      <span className="slider"></span>
+    </label>
+    <span className="categ-txt"> {selectedCategory === 'kape' ? 'Kape' : 'Kain'} </span>
+
     <div className="summary-order-kain">
       <h3>Today's Order Counts:</h3>
       <div>
-      <h1></h1>
+        <h4>{selectedCategory === 'kain' ? 'Kain' : 'Kape'}:</h4>
         <p>Total Orders: {selectedCategory === 'kain' ? allOrdersCountKain : allOrdersCountKape}</p>
         <p>Pending Orders: {selectedCategory === 'kain' ? pendingOrdersCountKain : pendingOrdersCountKape}</p>
         <p>Completed Orders: {selectedCategory === 'kain' ? completedOrdersCountKain : completedOrdersCountKape}</p>
@@ -324,7 +321,7 @@ const Dashboard = () => {
             { field: 'amount', headerName: 'Amount', width: 150 }
           ]}
           autoHeight
-          pageSize={7}
+          pageSize={3}
           disableSelectionOnClick
           checkboxSelection={false}
         />
