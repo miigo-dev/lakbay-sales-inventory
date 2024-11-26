@@ -38,17 +38,26 @@ const Dashboard = () => {
     labels: ['Kain', 'Kape'],
     datasets: [{ data: [300, 150], backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
   });
-  const [pieChartText, setPieChartText] = useState('');
+    // Stock data for Kape and Lakbay Kain
+  const stockInfoKape = { coffee: 50, milk: 30, cups: 100 };
+  const stockInfoKain = { chicken: 40, pork: 30, beef: 20, rice: 100 };
 
-  const orderData = [
-    { id: 1, orderNumber: '001', category: 'kain', status: 'completed', date: '2024-11-08' },
-    { id: 2, orderNumber: '002', category: 'kain', status: 'pending', date: '2024-11-07' },
-    { id: 3, orderNumber: '003', category: 'kain', status: 'completed', date: '2024-11-06' },
-    { id: 4, orderNumber: '004', category: 'kape', status: 'pending', date: '2024-11-08' },
-    { id: 5, orderNumber: '005', category: 'kape', status: 'completed', date: '2024-11-08' },
-    { id: 6, orderNumber: '006', category: 'kape', status: 'completed', date: '2024-11-05' },
-    { id: 7, orderNumber: '007', category: 'kape', status: 'pending', date: '2024-11-09' },
-  ];
+    // Handle toggle switch
+    const handleCategoryChange = () => {
+      setSelectedCategory(prevCategory => (prevCategory === 'kape' ? 'kain' : 'kape'));
+    };
+  
+    const getStockInfo = () => {
+      return selectedCategory === 'kape' ? stockInfoKape : stockInfoKain;
+    };
+  
+    useEffect(() => {
+      // Perform any necessary API calls or other actions based on selectedCategory
+      // For example, fetch the data or update the charts, etc.
+    }, [selectedCategory]);
+
+
+  const [pieChartText, setPieChartText] = useState('');
 
   const salesData = {
     kain: {
@@ -64,60 +73,23 @@ const Dashboard = () => {
       yearly: [4000, 6000]
     }
   };
-
-  const getOrdersForTimeFrame = (timeFrame, category) => {
-    const now = new Date();
-    return orderData.filter(order => {
-      const orderDate = new Date(order.date);
-      if (order.category !== category) return false;
-
-      switch (timeFrame) {
-        case 'today':
-          return orderDate.toDateString() === now.toDateString();
-        case 'weekly':
-          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-          return orderDate >= weekStart;
-        case 'monthly':
-          return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
-        case 'yearly':
-          return orderDate.getFullYear() === now.getFullYear();
-        default:
-          return false;
-      }
-    });
-  };
-
-  useEffect(() => {
-    const updateOrderCounts = (category, timeFrame) => {
-      const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
-
-      const allOrders = ordersForCategory.length;
-      const pendingOrders = ordersForCategory.filter(order => order.status === 'pending').length;
-      const completedOrders = ordersForCategory.filter(order => order.status === 'completed').length;
-
-      if (category === 'kain') {
-        setAllOrdersCountKain(allOrders);
-        setPendingOrdersCountKain(pendingOrders);
-        setCompletedOrdersCountKain(completedOrders);
-      } else {
-        setAllOrdersCountKape(allOrders);
-        setPendingOrdersCountKape(pendingOrders);
-        setCompletedOrdersCountKape(completedOrders);
-      }
-    };
-
-    updateOrderCounts('kain', selectedTimeFrameKain);
-    updateOrderCounts('kape', selectedTimeFrameKape);
-  }, [selectedTimeFrameKain, selectedTimeFrameKape]);
-
-  const updateCharts = (range, category) => {
-    const selectedSales = salesData[category][range];
+  const updateCharts = (range) => {
+    const selectedSalesKain = salesData['kain'][range];
+    const selectedSalesKape = salesData['kape'][range];
+  
     setPieChartData({
       labels: ['Kain', 'Kape'],
-      datasets: [{ data: selectedSales, backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
+      datasets: [
+        {
+          data: [selectedSalesKain[0], selectedSalesKape[0]], // Show both Kain and Kape sales (no need to change based on category)
+          backgroundColor: ['#C2A790', '#7B6B5D'],
+          borderWidth: 1
+        }
+      ]
     });
-    setPieChartText(`Kape: ${selectedSales[1]} php  Kain: ${selectedSales[0]} php`);
-
+    
+    setPieChartText(`Kape: ${selectedSalesKape[0]} php  Kain: ${selectedSalesKain[0]} php`);
+  
     const barData = {
       kain: {
         daily: Array.from({ length: 24 }, (_, index) => Math.floor(Math.random() * 100)),
@@ -132,8 +104,8 @@ const Dashboard = () => {
         yearly: [500, 600, 700]
       }
     };
-
-    const currentData = barData[category][range];
+  
+    const currentData = barData['kain'][range];  // Keep the selectedCategory-dependent bar data logic
     let labels = [];
     switch (range) {
       case 'daily':
@@ -151,15 +123,15 @@ const Dashboard = () => {
       default:
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
     }
-
+  
     const colorPalette = [
       '#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00'
     ];
-
+  
     const barChartColors = currentData.map((_, index) => {
       return colorPalette[index % colorPalette.length];
     });
-
+  
     setBarChartData({
       labels: labels,
       datasets: [{
@@ -167,10 +139,87 @@ const Dashboard = () => {
         data: currentData,
         backgroundColor: barChartColors,
         borderColor: '#7b7b7b',
-        borderWidth: 1
-      }]
+        borderWidth: 1,
+        borderRadius: 12, // Make the bars rounded
+      }],
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            grid: {
+              display: false, // Remove grid lines on x-axis
+            }
+          },
+          y: {
+            grid: {
+              display: false, // Remove grid lines on y-axis
+            }
+          }
+        }
+      }
     });
   };
+  
+  const [isKainActive, setIsKainActive] = useState(true); // Default to true or false based on your initial condition
+
+    // Order data for simulation (replace this with actual API data)
+    const orderData = [
+      { id: 1, orderNumber: '001', category: 'kain', status: 'completed', date: '2024-11-08', amount: 100 },
+      { id: 2, orderNumber: '002', category: 'kain', status: 'pending', date: '2024-11-07', amount: 150 },
+      { id: 3, orderNumber: '003', category: 'kain', status: 'completed', date: '2024-11-06', amount: 200 },
+      { id: 4, orderNumber: '004', category: 'kape', status: 'pending', date: '2024-11-08', amount: 120 },
+      { id: 5, orderNumber: '005', category: 'kape', status: 'completed', date: '2024-11-08', amount: 180 },
+      { id: 6, orderNumber: '006', category: 'kape', status: 'completed', date: '2024-11-05', amount: 200 },
+      { id: 7, orderNumber: '007', category: 'kape', status: 'pending', date: '2024-11-09', amount: 150 },
+    ];
+  
+    // Function to get orders based on category and selected time frame
+    const getOrdersForTimeFrame = (timeFrame, category) => {
+      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      return orderData.filter(order => {
+        if (category && order.category !== category) return false;
+  
+        if (timeFrame === 'today') {
+          return order.date === today;
+        } else if (timeFrame === 'weekly') {
+          // Logic for weekly filtering
+          return order.date >= '2024-11-01'; // Example, replace with actual logic
+        } else if (timeFrame === 'monthly') {
+          return order.date.slice(0, 7) === '2024-11'; // Example for November 2024
+        } else if (timeFrame === 'yearly') {
+          return order.date.slice(0, 4) === '2024'; // Example for the year 2024
+        }
+        return false;
+      });
+    };
+  
+    useEffect(() => {
+      // Get filtered orders based on time range and category
+      const filteredOrders = getOrdersForTimeFrame(timeRange, selectedCategory);
+      setOrders(filteredOrders); // Update the orders state to the filtered list
+    
+      // You can keep your logic for order counts as well
+      const updateOrderCounts = (category, timeFrame) => {
+        const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
+        const allOrders = ordersForCategory.length;
+        const pendingOrders = ordersForCategory.filter(order => order.status === 'pending').length;
+        const completedOrders = ordersForCategory.filter(order => order.status === 'completed').length;
+    
+        if (category === 'kain') {
+          setAllOrdersCountKain(allOrders);
+          setPendingOrdersCountKain(pendingOrders);
+          setCompletedOrdersCountKain(completedOrders);
+        } else {
+          setAllOrdersCountKape(allOrders);
+          setPendingOrdersCountKape(pendingOrders);
+          setCompletedOrdersCountKape(completedOrders);
+        }
+      };
+    
+      updateOrderCounts(selectedCategory, selectedCategory === 'kain' ? selectedTimeFrameKain : selectedTimeFrameKape);
+    }, [timeRange, selectedCategory]); // Dependencies to trigger the effect on timeRange or selectedCategory change
+
+
   const protectedInfo = async () => {
     try {
       const data = await fetchProtectedInfo();
@@ -215,143 +264,92 @@ const Dashboard = () => {
 <div>lodidbnas</div>
    ) : (
 
-    <div>
-    <div className='order-summaries'>
-      <div className='order-kain-sum'>
-        <div className="summary-order-kain">
-          <div className="time-frame-dropdown">
-            <label htmlFor="timeFrameKain">Select Time Frame for Kain: </label>
-            <select
-              id="timeFrameKain"
-              value={selectedTimeFrameKain}
-              onChange={(e) => setSelectedTimeFrameKain(e.target.value)}
-            >
-              <option value="today">Today</option>
-              <option value="weekly">This Week</option>
-              <option value="monthly">This Month</option>
-              <option value="yearly">This Year</option>
-            </select>
-          </div>
+    <div className='dash-board-contain'>
+<div className="order-summaries">
+  <div className="order-kain-kape-sum">
+    <label className="switch">
+      <input
+        type="checkbox"
+        checked={selectedCategory === 'kape'}
+        onChange={handleCategoryChange}
+      />
+      <span className="slider"></span>
+    </label>
+    <span className="categ-txt"> {selectedCategory === 'kape' ? 'Kape' : 'Kain'} </span>
 
-          <div className="order-summary-container">
-            <div className="order-summary">
-              <div className="order-summary-item">
-                <h4>All Orders (Kain)</h4>
-                <p>{allOrdersCountKain}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Pending Orders (Kain)</h4>
-                <p>{pendingOrdersCountKain}</p>
-              </div>
-              <div className="order-summary-item">
-                <h4>Completed Orders (Kain)</h4>
-                <p>{completedOrdersCountKain}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-<div className="bar-graph-container">
-<div className="bar-graph">
-<div className="toggle-container">
-  <label className="switch">
-    <input
-      type="checkbox"
-      checked={selectedCategory === 'kape'}
-      onChange={(e) => setSelectedCategory(e.target.checked ? 'kape' : 'kain')}
-    />
-    <span className="slider"></span>
-  </label>
-  <span >{selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'}</span>
-</div>
-
-<div className="time-range-selector">
-
-  <label htmlFor="timeRange" className='timeRangeTxt'>Select Time Range:</label>
-  <select
-    className="time-range-selector"
-    id="timeRange"
-    value={timeRange}
-    onChange={(e) => setTimeRange(e.target.value)}
-  >
-    <option value="daily">Daily</option>
-    <option value="weekly">Weekly</option>
-    <option value="monthly">Monthly</option>
-    <option value="yearly">Yearly</option>
-  </select>
-</div>
-<h3 className='lakabay-categ-txt'>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
-<Bar data={barChartData} options={barChartData.options} />
-
-    </div>
+    <div className="summary-order-kain">
+      <h3>Today's Order Counts:</h3>
+      <div>
+        <h4>{selectedCategory === 'kain' ? 'Kain' : 'Kape'}:</h4>
+        <p>Total Orders: {selectedCategory === 'kain' ? allOrdersCountKain : allOrdersCountKape}</p>
+        <p>Pending Orders: {selectedCategory === 'kain' ? pendingOrdersCountKain : pendingOrdersCountKape}</p>
+        <p>Completed Orders: {selectedCategory === 'kain' ? completedOrdersCountKain : completedOrdersCountKape}</p>
       </div>
-      </div>
-
-<div className="order-kape-sum">
-  <div className="summary-order-kape">
-    {/* Time Frame Dropdown for Kape */}
-    <div className="time-frame-dropdown">
-      <label htmlFor="timeFrameKape">Select Time Frame for Kape: </label>
-      <select
-        id="timeFrameKape"
-        value={selectedTimeFrameKape}
-        onChange={(e) => setSelectedTimeFrameKape(e.target.value)}
-      >
-        <option value="today">Today</option>
-        <option value="weekly">This Week</option>
-        <option value="monthly">This Month</option>
-        <option value="yearly">This Year</option>
-      </select>
     </div>
 
-    {/* Order Summary for Kape */}
-    <div className="order-summary-container">
-      <div className="order-summary">
-        <div className="order-summary-item">
-          <h4>All Orders (Kape)</h4>
-          <p>{allOrdersCountKape}</p>
+    <div className="bar-graph-container">
+      <div className="bar-graph">
+        <div className="time-range-selector">
+          <label htmlFor="timeRange" className='timeRangeTxt'>Select Time Range: </label>
+          <select
+            className="time-range-selector"
+            id="timeRange"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </div>
-        <div className="order-summary-item">
-          <h4>Pending Orders (Kape)</h4>
-          <p>{pendingOrdersCountKape}</p>
-        </div>
-        <div className="order-summary-item">
-          <h4>Completed Orders (Kape)</h4>
-          <p>{completedOrdersCountKape}</p>
-        </div>
-      </div>
-
-      {/* Pie chart and Transaction Table (Side by Side) */}
-      <div className="pie-transaction-container">
-        {/* Pie Chart */}
-        <div className="pie-chart-container">
-          <h3>Lakbay's Sales</h3>
-          <Pie data={pieChartData} options={{ responsive: true }} />
-          <p className="pie-txtData">{pieChartText}</p>
-        </div>
-
-        {/* Recent Transactions Table */}
-  
-          <h3 className="recent-trans-text">Recent Transactions 
-          <DataGrid className='transaction-container'
-            rows={orders}
-            columns={[
-              { field: 'date', headerName: 'Date', width: 150 },
-              { field: 'orderNumber', headerName: 'Order No.', width: 150 },
-              { field: 'amount', headerName: 'Amount', width: 150 }
-            ]}
-            autoHeight
-            pageSize={7}
-            disableSelectionOnClick
-            checkboxSelection={false}
-          />
-          </h3>
-   
+        <h3 className='lakbay-categ-txt'>{`${selectedCategory === 'kain' ? 'Lakbay Kain' : 'Lakbay Kape'} Sales Data (${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})`}</h3>
+        <Bar data={barChartData} options={barChartData.options} />
       </div>
     </div>
   </div>
-</div>
-</div>
+
+  <div className="order-kape-sum">
+    <div>
+      <h3 className="recent-trans-text">Recent Transactions
+        <DataGrid className='transaction-container'
+          rows={orders}
+          columns={[
+            { field: 'date', headerName: 'Date', width: 150 },
+            { field: 'orderNumber', headerName: 'Order No.', width: 150 },
+            { field: 'amount', headerName: 'Amount', width: 150 }
+          ]}
+          autoHeight
+          pageSize={7}
+          disableSelectionOnClick
+          checkboxSelection={false}
+        />
+      </h3>
+    </div>
+
+    {/* Pie chart and Stocks (Side by Side) */}
+    <div className="pie-transaction-container">
+      <div className="pie-chart-container">
+        <h3>Lakbay's Sales</h3>
+        <Pie data={pieChartData} options={{ responsive: true }} />
+        <p className="pie-txtData">{pieChartText}</p>
+      </div>
+
+      {/* Stocks */}
+      <div className='stock-info-wrapper'>
+        <h4>Lakbay's Stocks</h4>
+        <div className='stock-info'>
+          {Object.entries(getStockInfo()).map(([item, quantity]) => (
+            <div key={item} className="stock-item">
+              <strong>{item}:</strong> {quantity}
+            </div>
+          ))}
+        </div>
+      </div>
+  </div>  
+  </div>
+  </div>
+
 <button onClick={logout} className="btn btn-primary">Logout</button>
 </div>
 
