@@ -94,7 +94,7 @@ const Supplier = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="add-supplier-btn" onClick={() => setIsModalOpen(true)}>
+        <button className="add_btn" onClick={() => setIsModalOpen(true)}>
           Add Supplier
         </button>
       </div>

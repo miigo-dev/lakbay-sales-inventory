@@ -179,7 +179,7 @@ const Sales = () => {
                                     <span className="material-symbols-outlined coffee">local_cafe</span>
                                 </div>
                             </label>
-                            <span className="toggle-text">
+                            <span className="categ-txt">
                                 {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
                             </span>
                         </div>
