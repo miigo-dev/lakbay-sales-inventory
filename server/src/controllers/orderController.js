@@ -17,7 +17,7 @@ exports.getOrderByID = async (req, res) => {
     try {
         const order = await orderService.getOrderByID(id);
         if (!order) {
-            return res.status(200).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'Order not found' });
         }
         res.status(200).json(order);
     } catch (error) {
@@ -28,10 +28,22 @@ exports.getOrderByID = async (req, res) => {
 
 // Add a new order
 exports.addOrder = async (req, res) => {
-    const { product_id, order_quantity, order_status } = req.body;
+    const { items, order_status } = req.body; 
+    /*
+      `items` should be an array of objects like:
+      [
+          { product_id: 1, quantity: 2, order_total: 40.00 },
+          { product_id: 2, quantity: 1, order_total: 20.00 }
+      ]
+    */
+
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ message: 'Items are required and must be a non-empty array.' });
+    }
+
     try {
-        const newOrder = await orderService.addOrder(product_id, order_quantity, order_status);
-        res.status(200).json(newOrder);
+        const newOrder = await orderService.addOrder(items, order_status);
+        res.status(201).json(newOrder);
     } catch (error) {
         console.error('Error adding order:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -44,7 +56,7 @@ exports.deleteOrder = async (req, res) => {
     try {
         const deletedOrder = await orderService.deleteOrder(id);
         if (!deletedOrder) {
-            return res.status(200).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'Order not found' });
         }
         res.status(200).json(deletedOrder);
     } catch (error) {
