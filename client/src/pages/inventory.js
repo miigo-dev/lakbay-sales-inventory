@@ -260,14 +260,14 @@ const Inventory = () => {
         <div className="dashboard_container">
             <div className="dashboard_header">
                 <input
-                    className="search_bar"
+                    className="search-bar"
                     placeholder="Search anything here"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                    <div className='header_dropdown'>
+                    <div className="header_dropdown">
                         <select
-                            className="inventory_status_dropdown">
+                            className="inventory_status">
                             value={selectedInventoryStatus}
                             onChange={(e) => setSelectedInventoryStatus(e.target.value)}
                             <option value="all">All</option>

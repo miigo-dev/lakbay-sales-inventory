@@ -166,24 +166,20 @@
     font-weight: bold;
   }
   
-  .search-container {
+  .search_container {
       display: flex;
       align-items: center;
       flex: 1;
+      width: 100%;
       border-radius: 5px;
-      border: 1px solid rgb(179, 172, 172);
+      border: 1px solid rgba(0, 0, 0, 0.151)
   }
 
-  .search-input {
-    flex: 1; 
+  .search_input {
+    display: flex;
     padding: 10px;
     border: 0 solid #ccc;
     border-radius: 5px;
-   
-  }
-
-  .search-input:focus {
-      border-color: #070707;
   }
 
   .search-icon-btn {

@@ -248,9 +248,9 @@ const Orders = () => {
           </button>
         </div>
 
-        <div className='search-container'>
+        <div className='search_container'>
           <input
-            className="search-input"
+            className="search_input"
             placeholder="Search your Orders"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
