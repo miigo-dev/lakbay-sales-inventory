@@ -26,6 +26,9 @@ import supplier_inactive from '../assets/icons/person-check-fill inactive.svg';
 import transaction_history_active from '../assets/icons/receipt-cutoff active.svg';
 import transaction_history_inactive from '../assets/icons/receipt-cutoff inactive.svg';
 
+import collapse from '../assets/icons/collapse.svg';
+import expand from '../assets/icons/expand.svg';
+
 const Sidebar = ({ onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
@@ -42,7 +45,7 @@ const Sidebar = ({ onToggle }) => {
     if (isOpen) {
       setIsOrdersOpen(!isOrdersOpen);
       // Close inventory dropdown if it's open
-      setIsInventoryOpen(false);
+
     }
   };
 
@@ -50,7 +53,7 @@ const Sidebar = ({ onToggle }) => {
     if (isOpen) {
       setIsInventoryOpen(!isInventoryOpen);
       // Close orders dropdown if it's open
-      setIsOrdersOpen(false);
+
     }
   };
 
@@ -117,22 +120,24 @@ const Sidebar = ({ onToggle }) => {
             )}
           </NavLink>
         </div>
+        <div className={`dropdown-child ${isInventoryOpen ? 'open' : ''}`}>
+          <NavLink to="/inventory/reports" className={({ isActive }) => isActive ? 'active' : ''}>
+            {({ isActive }) => (
+              <>
+                <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
+                {isOpen && "Reports"}
+              </>
+            )}
+          </NavLink>
+        </div>
       </div>
 
+     
       <NavLink to="/sales" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
             <img src={isActive ? sales_active : sales_inactive} alt="Sales icon" />
             {isOpen && "Sales"}
-          </>
-        )}
-      </NavLink>
-
-      <NavLink to="/reports" className={({ isActive }) => isActive ? 'active' : ''}>
-        {({ isActive }) => (
-          <>
-            <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
-            {isOpen && "Reports"}
           </>
         )}
       </NavLink>

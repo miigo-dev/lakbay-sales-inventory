@@ -25,6 +25,7 @@ const Header = () => {
           <img src={user} alt="User Profile" className="icon profile-icon" />
           <div className="dropdown-menu">
             <button className="dropdown-item">Profile</button>
+            <button className="dropdown-item">Backup</button>
             <button className="dropdown-item">Logout</button>
           </div>
         </div>
