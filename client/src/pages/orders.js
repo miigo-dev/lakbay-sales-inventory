@@ -43,11 +43,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const [productResponse] = await Promise.all([
-          axios.get('http://localhost:8080/api/products/'),
-          axios.get('http://localhost:8080/api/warehouses/')
-        ]);
-
+        const productResponse = await axios.get('http://localhost:8080/api/products/');
         const fetchedItems = productResponse.data.map(item => ({
           productname: item.product_name,
           category: categoryMap[item.category_id] || 'unknown',
@@ -72,6 +68,7 @@ const Orders = () => {
     const warehouseId = isLakbayKape ? 1 : 2;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
+
   const calculateTotalPrice = () => {
     const total = orders.reduce((total, order) => total + order.price * order.quantity, 0);
     return total - (total * discount / 100); 
@@ -166,9 +163,7 @@ const Orders = () => {
     setOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
   };
 
-  const totalPrice = orders.reduce((total, order) => total + order.price * order.quantity, 0);
-
-  const handleCharge = () => {
+  const handleCharge = async () => {
     const amount = parseFloat(customAmount);
     if (orders.length === 0) {
       alert("Please add items to your order before charging.");
@@ -176,44 +171,61 @@ const Orders = () => {
     }
     
     const totalOrderAmount = calculateTotalPrice();
-    if (amount >= totalPrice) {
-      const totalOrderAmount = orders.reduce((total, order) => total + order.price * order.quantity, 0);
-      const newOrder = {
-        orderNumber,
-        amount: totalOrderAmount.toFixed(2),
-        status: 'Pending',
-      };
-      setCompletedOrders([...completedOrders, newOrder]);
-      setOrderHistory([...orderHistory, newOrder]);
-      setRecentOrder({
-        orderNumber,
-        amount: totalOrderAmount,
-        items: orders.map(order => ({
-          item: order.item,
-          quantity: order.quantity,
-          size: order.size,
-        })),
-      });
-      setChange(amount - totalPrice);
-      setCustomAmount('');
-      setOrders([]);
-      setOrderNumber(prev => (prev < 100 ? prev + 1 : 1));
+    if (amount >= totalOrderAmount) {
+      try {
+        const newOrder = {
+          order_status: 'Pending',
+          order_date: new Date(),
+          order_items: orders.map(order => ({
+            product_id: order.product_id,
+            quantity: order.quantity,
+            order_total: order.price * order.quantity
+          }))
+        };
+        const response = await axios.post('http://localhost:8080/api/orders', newOrder);
+        const orderId = response.data.order_id;
+
+        setCompletedOrders([...completedOrders, { orderNumber, amount: totalOrderAmount.toFixed(2), status: 'Pending' }]);
+        setOrderHistory([...orderHistory, { orderNumber, amount: totalOrderAmount.toFixed(2), status: 'Pending' }]);
+        setRecentOrder({
+          orderNumber,
+          amount: totalOrderAmount,
+          items: orders.map(order => ({
+            item: order.item,
+            quantity: order.quantity,
+            size: order.size,
+          })),
+        });
+        setChange(amount - totalOrderAmount);
+        setCustomAmount('');
+        setOrders([]);
+        setOrderNumber(prev => (prev < 100 ? prev + 1 : 1));
+      } catch (error) {
+        console.error('Error creating order:', error);
+        alert('Failed to create order');
+      }
     } else {
-      alert(`Please enter an amount greater than the total price of ${totalPrice.toFixed(2)}.`);
+      alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
       setChange(0);
     }
   };
 
-  const completeOrder = (index) => {
+  const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
-    setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
-    setOrderHistory((prevHistory) =>
-      prevHistory.map((order) =>
-        order.orderNumber === completedOrder.orderNumber
-          ? { ...order, status: 'Completed' }
-          : order
-      )
-    );
+    try {
+      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}`, { order_status: 'Completed' });
+      setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
+      setOrderHistory((prevHistory) =>
+        prevHistory.map((order) =>
+          order.orderNumber === completedOrder.orderNumber
+            ? { ...order, status: 'Completed' }
+            : order
+        )
+      );
+    } catch (error) {
+      console.error('Error completing order:', error);
+      alert('Failed to complete order');
+    }
   };
 
   const toggleExpandCollapse = () => {

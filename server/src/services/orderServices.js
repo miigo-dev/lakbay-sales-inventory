@@ -1,5 +1,32 @@
 const db = require('../db');
 
+// Create a new order
+exports.createOrder = async function(order) {
+    const { order_status, order_date, order_items } = order;
+    try {
+        await db.query('BEGIN');
+        const orderResult = await db.query(
+            'INSERT INTO orders (order_status, order_date) VALUES ($1, $2) RETURNING order_id',
+            [order_status, order_date]
+        );
+        const orderId = orderResult.rows[0].order_id;
+
+        for (const item of order_items) {
+            const { product_id, quantity, order_total } = item;
+            await db.query(
+                'INSERT INTO order_items (order_id, product_id, quantity, order_total) VALUES ($1, $2, $3, $4)',
+                [orderId, product_id, quantity, order_total]
+            );
+        }
+
+        await db.query('COMMIT');
+        return orderId;
+    } catch (error) {
+        await db.query('ROLLBACK');
+        throw error;
+    }
+}
+
 // Get all orders with their items
 exports.getAllOrders = async () => {
     const { rows } = await db.query(`
@@ -83,58 +110,22 @@ exports.getOrderByID = async (id) => {
     };
 };
 
-// Add a new order with multiple products
-exports.addOrder = async (items, order_status = 'Pending') => {
-    const client = await db.connect();
+// Delete an order
+exports.deleteOrder = async function(orderId) {
+    await db.query(
+        'DELETE FROM orders WHERE order_id = $1',
+        [orderId]
+    );
+}
 
+// Update an order status
+exports.updateOrderStatus = async function(orderId, order_status) {
     try {
-        await client.query('BEGIN');
-
-        // Insert into orders table
-        const { rows: orderRows } = await client.query(
-            'INSERT INTO orders (order_status) VALUES ($1) RETURNING *',
-            [order_status]
+        await db.query(
+            'UPDATE orders SET order_status = $1, updated_at = CURRENT_TIMESTAMP WHERE order_id = $2',
+            [order_status, orderId]
         );
-        const order = orderRows[0];
-
-        // Insert into order_items table
-        const itemQueries = items.map(({ product_id, quantity, order_total }) => {
-            return client.query(
-                'INSERT INTO order_items (order_id, product_id, quantity, order_total) VALUES ($1, $2, $3, $4)',
-                [order.order_id, product_id, quantity, order_total]
-            );
-        });
-        await Promise.all(itemQueries);
-
-        await client.query('COMMIT');
-        return order;
-    } catch (err) {
-        await client.query('ROLLBACK');
-        throw err;
-    } finally {
-        client.release();
-    }
-};
-
-// Delete an order and its items
-exports.deleteOrder = async (id) => {
-    const client = await db.connect();
-
-    try {
-        await client.query('BEGIN');
-
-        // Delete from order_items table
-        await client.query('DELETE FROM order_items WHERE order_id = $1', [id]);
-
-        // Delete from orders table
-        const { rows } = await client.query('DELETE FROM orders WHERE order_id = $1 RETURNING *', [id]);
-
-        await client.query('COMMIT');
-        return rows[0];
-    } catch (err) {
-        await client.query('ROLLBACK');
-        throw err;
-    } finally {
-        client.release();
+    } catch (error) {
+        throw error;
     }
 };

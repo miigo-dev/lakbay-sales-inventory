@@ -28,22 +28,21 @@ exports.getOrderByID = async (req, res) => {
 
 // Add a new order
 exports.addOrder = async (req, res) => {
-    const { items, order_status } = req.body; 
-    /*
-      `items` should be an array of objects like:
-      [
-          { product_id: 1, quantity: 2, order_total: 40.00 },
-          { product_id: 2, quantity: 1, order_total: 20.00 }
-      ]
-    */
+    const { order_status, order_date, order_items } = req.body;
 
-    if (!Array.isArray(items) || items.length === 0) {
+    if (!Array.isArray(order_items) || order_items.length === 0) {
         return res.status(400).json({ message: 'Items are required and must be a non-empty array.' });
     }
 
+    const order = {
+        order_status,
+        order_date: order_date || new Date(),
+        order_items
+    };
+
     try {
-        const newOrder = await orderService.addOrder(items, order_status);
-        res.status(201).json(newOrder);
+        const newOrderId = await orderService.createOrder(order);
+        res.status(201).json({ order_id: newOrderId });
     } catch (error) {
         console.error('Error adding order:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -54,13 +53,24 @@ exports.addOrder = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
     const { id } = req.params;
     try {
-        const deletedOrder = await orderService.deleteOrder(id);
-        if (!deletedOrder) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-        res.status(200).json(deletedOrder);
+        await orderService.deleteOrder(id);
+        res.status(200).json({ message: 'Order deleted successfully' });
     } catch (error) {
         console.error('Error deleting order:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+// Update an order status
+exports.updateOrderStatus = async (req, res) => {
+    const { id } = req.params;
+    const { order_status } = req.body;
+
+    try {
+        await orderService.updateOrderStatus(id, order_status);
+        res.status(200).json({ message: 'Order status updated successfully' });
+    } catch (error) {
+        console.error('Error updating order status:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
