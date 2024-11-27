@@ -3,42 +3,43 @@
 .dashboard_container {
     padding: 15px;
     background-color: white;
-    margin-right:10px;
+    margin-right: 10px;
     flex-grow: 1;
-    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
     max-width: 100%;
     max-height: 100%;
 }
 
-.dashboard_header {
+.dashboard_header,
+.header_dropdown,
+.actions {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding-bottom: 15px;
+    justify-content: space-between;
     gap: 10px;
+}
+
+.dashboard_header {
+    padding-bottom: 15px;
     border-bottom: 2px solid #ddd;
 }
 
-.header_dropdown{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.inventory_status{
-    display: flex;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
+.inventory_status,
+.inventory_section_dropdown,
+.inventory_type_dropdown,
+.inventory_status_dropdown,
 .search-bar {
     padding: 10px;
-    border-radius: 5px;
     border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.inventory_section_dropdown:focus,
+.inventory_type_dropdown:focus,
+.inventory_status_dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 .profile_section {
@@ -68,49 +69,23 @@
     padding: 10px 0;
 }
 
-.actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-
-.actions .btn {
-    padding: 10px 15px;
-    margin-left: 10px;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-}
-
-.export_btn {
-    background-color: #f5f7fa;
-    border: 1px solid #ddd;
-}
-
-.add-inventory_btn {
-    background-color: #f47545;
-    color: white;
-}
-
 .inventory_table {
     margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .inventory_table table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.inventory_table th, .inventory_table td {
+.inventory_table th,
+.inventory_table td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    font-size: 14px;
 }
 
 .inventory_table th {
@@ -127,37 +102,6 @@
     background-color: #f1f1f1;
 }
 
-.inventory_table td {
-    font-size: 14px;
-}
-
-.btn {
-    padding: 8px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.edit_btn {
-    background-color: #4CAF50;
-    color: white;
-    margin-right: 5px;
-}
-
-.edit_btn:hover {
-    background-color: #45a049; /* Darker green on hover */
-}
-
-.delete_btn {
-    background-color: #f44336;
-    color: white;
-}
-
-.delete_btn:hover {
-    background-color: #d32f2f; /* Darker red on hover */
-}
-
 .pagination {
     margin-top: 10px;
     display: flex;
@@ -169,12 +113,81 @@
     margin-left: 5px;
     padding: 5px 10px;
     border: 1px solid #ddd;
-    cursor: pointer;
     background-color: #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .pagination_btn:hover {
-    background-color: #e0e0e0; /* Light grey on hover */
+    background-color: #e0e0e0;
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+}
+
+.btn:hover {
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.add-inventory_btn {
+    background-color: #C2A790;
+    color: white;
+}
+
+.add-inventory_btn:hover  {
+    background-color: #a68a6b;
+}
+
+.edit_btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.edit_btn:hover {
+    background-color: #4cae4c;
+}
+
+.out_btn {
+    background: #d9534f;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.out_btn:hover {
+    background: #c9302c;
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.view_btn {
+    background: #5cb85c;
+    color: white;
+    margin-right: 5px; /* Add space between the buttons */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.view_btn:hover {
+    background: #4cae4c;
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .modal {
@@ -194,22 +207,16 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    width: 600px; /* Increased width */
-    max-width: 90%; /* Ensure it doesn't exceed the viewport */
+    width: 600px;
+    max-width: 90%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    max-height: 100%; /* Added max-height for better control */
-    overflow-y: auto; /* Enable scrolling if content exceeds max-height */
+    max-height: 100%;
+    overflow-y: auto;
 }
 
 .modal-content h2 {
     margin-bottom: 15px;
 }
-
-.modal-content p {
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
 
 .modal-content label {
     display: block;
@@ -222,147 +229,62 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border-radius: 5px;
     border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
-.modal-content button {
+.close-btn, .submit-btn {
     padding: 10px;
-    border-radius: 5px;
-    margin-right: 10px;
     margin-top: 10px;
+    border-radius: 5px;
     cursor: pointer;
     border: none;
     background-color: #C2A790;
     color: white;
 }
 
-.modal-content button:hover {
-    background-color: #a68a6b; /* Darker green on hover */
-}
-
-.actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.inventory_section_dropdown,
-.inventory_type_dropdown,
-.inventory_status_dropdown {
-    padding: 5px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.inventory_section_dropdown:focus,
-.inventory_type_dropdown:focus,
-.inventory_status_dropdown:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.btn {
-    padding: 7px 15px;
-    font-size: 14px;
-    background-color: #1dd05b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-    background-color: #18b34e;
-    color: white;
-    
-}
-
-.out_btn {
-    background-color: #f3554f;
-}
-
-.out_btn:hover {
-    background-color: #d02923;
-}
-
-.in_btn, .out_btn {
-    display: inline-block;
-    width: 55px; 
-    padding: 5px;
-    margin: 0 5px; 
-    font-size: 16px;
-}
-
-.export_btn {
-    background-color: #C2A790;
-}
-
-.export_btn:hover {
+.close-btn:hover {
     background-color: #a68a6b;
 }
 
-.add-inventory_btn {
-    background-color: #C2A790;
-}
-
-.add-inventory_btn:hover {
+.submit-btn:hover {
     background-color: #a68a6b;
-}
-
-.viewbtn_modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.7); 
-    z-index: 1000; 
-}
-
-.viewbtn_content {
-    background: white; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
-    width: 80%; 
-    max-width: 800px; 
-    padding: 20px; 
-    overflow-y: auto; 
-}
-
-.view_btn{
-    padding: 7px;
-    margin-top: 7px;
-}
-
-.out_btn{
-    padding: 5px;
-    margin-top: 7px;
-}
-
-.close-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #333;
-}
-
-.close-icon:hover {
-    color: #999;
 }
 
 .viewModal_in_out_btn {
     display: flex;
-    gap: 1px; 
+    justify-content: flex-end; 
+    gap: 10px; 
+    margin-top: 15px; 
+}
+
+.btn_in_btn, .btn_out_btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
+    font-size: 14px;
+}
+
+.btn_in_btn {
+    background: #5cb85c; /* Green background for 'In' button */
+}
+
+.btn_in_btn:hover {
+    background: #4cae4c;
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn_out_btn {
+    background: #d9534f; /* Red background for 'Out' button */
+}
+
+.btn_out_btn:hover {
+    background: #c9302c;
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
