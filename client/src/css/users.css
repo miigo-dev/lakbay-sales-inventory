@@ -84,8 +84,10 @@
 .search_bar {
     align-items: center;
     margin: 15px 0;
-    padding: 3px;
+    padding: 0px;
     width: 100%;
+    border:1px solid rgba(0, 0, 0, 0.336);
+    border-radius: 5px;
 }
 
 .search_bar input {

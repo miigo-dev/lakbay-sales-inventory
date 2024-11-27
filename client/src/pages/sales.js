@@ -28,31 +28,23 @@ const Sales = () => {
     };
 
     const getSalesData = (frame) => {
-        switch (frame) {
-            case 'Today':
-                return {
-                    labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'],
-                    data: [12, 19, 3, 5, 2],
-                };
-            case 'Weekly':
-                return {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [50, 100, 75, 125],
-                };
-            case 'Monthly':
-                return {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [200, 300, 250, 400],
-                };
-            case 'Yearly':
-                return {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    data: [1200, 1500, 1300, 1600, 2000, 1800, 2200, 2400, 2600, 3000, 3200, 3500],
-                };
-            default:
-                return { labels: [], data: [] };
-        }
+        const kapeSalesData = {
+            Today: { labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'], data: [12, 19, 3, 5, 2] },
+            Weekly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [50, 100, 75, 125] },
+            Monthly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [200, 300, 250, 400] },
+            Yearly: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [1200, 1500, 1300, 1600, 2000, 1800, 2200, 2400, 2600, 3000, 3200, 3500] }
+        };
+    
+        const kainSalesData = {
+            Today: { labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'], data: [8, 14, 7, 10, 6] },
+            Weekly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [30, 70, 50, 110] },
+            Monthly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [180, 270, 230, 350] },
+            Yearly: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [1100, 1300, 1150, 1500, 1800, 1700, 2100, 2300, 2500, 2800, 3000, 3300] }
+        };
+    
+        return isLakbayKape ? kapeSalesData[frame] : kainSalesData[frame];
     };
+    
 
     const calculateTotalSales = (data) => {
         return data.reduce((total, value) => total + value, 0);
@@ -166,6 +158,22 @@ const Sales = () => {
         { field: 'sales', headerName: 'Sales', width: 100 },
     ];
 
+
+
+
+    useEffect(() => {
+        const getSalesForPeriod = (period, isKape) => {
+            const salesData = getSalesData(period); // Get sales data based on the period
+            return calculateTotalSales(salesData.data); // Calculate total sales based on data
+        };
+    
+        setSalesTotals({
+            Today: getSalesForPeriod('Today', isLakbayKape),
+            Weekly: getSalesForPeriod('Weekly', isLakbayKape),
+            Monthly: getSalesForPeriod('Monthly', isLakbayKape),
+            Yearly: getSalesForPeriod('Yearly', isLakbayKape),
+        });
+    }, [isLakbayKape]);  // Dependency on `isLakbayKape` to update when the toggle is changed
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
