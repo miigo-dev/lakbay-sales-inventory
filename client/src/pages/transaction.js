@@ -1,21 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/transaction.css';
 
 const Transaction = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [completedOrders, setCompletedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const completedOrders = [
-    { id: 1, orderNumber: '001', item: 'Item A', date: '2024-11-08', amount: '$20' },
-    { id: 2, orderNumber: '002', item: 'Item B', date: '2024-11-07', amount: '$40' },
-    { id: 3, orderNumber: '003', item: 'Item C', date: '2024-11-06', amount: '$15' },
-  ];
+  // Fetch orders from API endpoint
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:8080/api/orders/'); // Replace with your endpoint
+        setCompletedOrders(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        setError('Failed to load transaction data');
+        setLoading(false);
+      }
+    };
 
+    fetchOrders();
+  }, []);
+
+  // Filter orders based on selected date
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
 
   const filteredOrders = completedOrders.filter(order => order.date === selectedDate);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="dashboard">
@@ -37,11 +62,12 @@ const Transaction = () => {
           columns={[
             { field: 'date', headerName: 'Date', width: 150 },
             { field: 'orderNumber', headerName: 'Order No.', width: 100 },
+            { field: 'item', headerName: 'Item', width: 150 },
             { field: 'amount', headerName: 'Amount', width: 100 },
           ]}
-          autoHeights
+          autoHeight
           pageSize={5}
-          pagination={true}
+          pagination
           disableSelectionOnClick
         />
       </div>

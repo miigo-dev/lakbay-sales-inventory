@@ -30,7 +30,8 @@ CREATE TABLE ingredient_types (
 
 CREATE TABLE product_categories (
     category_id SERIAL PRIMARY KEY,
-    category_name VARCHAR(100) NOT NULL
+    category_name VARCHAR(100) NOT NULL,
+    warehouse_id INT REFERENCES warehouses(warehouse_id)
 );
 
 CREATE TABLE ingredients (
