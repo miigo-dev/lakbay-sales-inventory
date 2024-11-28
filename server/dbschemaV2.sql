@@ -2,6 +2,8 @@
 
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -34,12 +36,11 @@ CREATE TABLE product_categories (
 CREATE TABLE ingredients (
     ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
-    ingredient_quantity INT NOT NULL CHECK (ingredient_quantity >= 0),
+    ingredient_quantity INT,
     ingredient_unit VARCHAR(50),
     ingredient_price DECIMAL(10, 2) NOT NULL,
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
-    ingredient_status VARCHAR(50) DEFAULT 'Active',
     type_id INT REFERENCES ingredient_types(type_id),
     warehouse_id INT REFERENCES warehouses(warehouse_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -52,7 +53,6 @@ CREATE TABLE products (
     product_quantity INT NOT NULL CHECK (product_quantity >= 0),
     product_price DECIMAL(10, 2) NOT NULL,
     reorder_level INT DEFAULT 10,
-    product_status VARCHAR(50) DEFAULT 'Active',
     category_id INT REFERENCES product_categories(category_id),
     warehouse_id INT REFERENCES warehouses(warehouse_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -79,35 +79,12 @@ CREATE TABLE ingredient_movements (
 
 CREATE TABLE orders (
     order_id SERIAL PRIMARY KEY,
-    product_id INT REFERENCES products(product_id),
-    order_quantity INT NOT NULL,
     order_status VARCHAR(50) DEFAULT 'Pending',
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-/* new */
-CREATE TABLE orders (
-    order_id SERIAL PRIMARY KEY,
-    order_status VARCHAR(50) DEFAULT 'Pending',
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE order_summary (
-    order_summary_id SERIAL PRIMARY KEY,
-    order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
-    product_id INT REFERENCES products(product_id),
-    quantity INT NOT NULL CHECK (quantity > 0),
-    order_status VARCHAR(50) DEFAULT 'Pending',
-    order_total DECIMAL(10, 2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-/* new */
 CREATE TABLE order_items (
     order_item_id SERIAL PRIMARY KEY,
     order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
