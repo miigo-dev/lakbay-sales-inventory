@@ -29,6 +29,14 @@
     margin-right: 10px; 
     transition: background-color 0.3s ease, transform 0.3s ease; 
 }
+
+.dropdown_btn{
+    padding: 10px;
+    margin-left: 1220px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
 .addReport{
     margin-left: 10px;
     padding: 10px 20px;
