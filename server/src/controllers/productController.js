@@ -79,3 +79,13 @@ exports.deleteProduct = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+exports.getProductByWarehouse = async (req, res) => {
+    try {
+        const { warehouse_id } = req.params;
+        const products = await inventoryService.getProductByWarehouse(warehouse_id);
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}

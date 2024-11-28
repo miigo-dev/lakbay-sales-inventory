@@ -53,3 +53,8 @@ exports.deleteProduct = async (id) => {
         throw new Error('Error deleting product: ' + error.message);
     }
 };
+
+exports.getProductByWarehouse = async (warehouse_id) => {
+    const { rows } = await db.query('SELECT * FROM products WHERE warehouse_id = $1', [warehouse_id]);
+    return rows;
+}
