@@ -285,7 +285,6 @@ const Inventory = () => {
                         className="inventory_section_dropdown"
                         value={selectedSection}
                         onChange={(e) => setSelectedSection(e.target.value)}>
-                        <option value="main">Main Inventory</option>
                         <option value="lakbayKain">Lakbay Kain</option>
                         <option value="lakbayKape">Lakbay Kape</option>
                     </select>
