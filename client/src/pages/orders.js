@@ -65,19 +65,19 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/orders');
-        setCompletedOrders(response.data);
-        setOrderHistory(response.data); // If you use order history similarly
-      } catch (err) {
-        console.error('Error fetching orders:', err);
-        setError('Failed to load orders');
-      }
-    };
-  
-    fetchOrders();
-  }, []);
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/orders');
+      setCompletedOrders(response.data);
+      setOrderHistory(response.data); // If you use order history similarly
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Failed to load orders');
+    }
+  };
+
+  fetchOrders();
+}, []);
 
   useEffect(() => {
     const warehouseId = isLakbayKape ? 2 : 1;
