@@ -65,7 +65,7 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    const warehouseId = isLakbayKape ? 1 : 2;
+    const warehouseId = isLakbayKape ? 2 : 1;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
 
