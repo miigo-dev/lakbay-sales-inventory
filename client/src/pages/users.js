@@ -126,8 +126,8 @@ const Users = () => {
     setEditModalOpen(true);
   };
 
-  const handleDelete = (userId) => {
-    setUsers(users.filter(user => user.id !== userId));
+  const handleDelete = (user_id) => {
+    setUsers(users.filter(user => user.id !== user_id));
   };
 
   // Reset form fields and open modal
