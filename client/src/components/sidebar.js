@@ -157,6 +157,7 @@ const Sidebar = ({ onToggle }) => {
             </>
           )}
         </NavLink>
+        
         <NavLink to="/logout" className={({ isActive }) => isActive ? 'active' : ''}>
           {({ isActive }) => (
             <>
