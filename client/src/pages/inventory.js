@@ -289,7 +289,6 @@ const Inventory = () => {
                         <option value="lakbayKain">Lakbay Kain</option>
                         <option value="lakbayKape">Lakbay Kape</option>
                     </select>
-
                     <select
                         className="inventory_type_dropdown"
                         value={selectedInventoryType}

@@ -26,9 +26,6 @@ import supplier_inactive from '../assets/icons/person-check-fill inactive.svg';
 import transaction_history_active from '../assets/icons/receipt-cutoff active.svg';
 import transaction_history_inactive from '../assets/icons/receipt-cutoff inactive.svg';
 
-import collapse from '../assets/icons/collapse.svg';
-import expand from '../assets/icons/expand.svg';
-
 const Sidebar = ({ onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);

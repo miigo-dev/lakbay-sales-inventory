@@ -1,0 +1,82 @@
+/* Container for the About section */
+.about-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Title of the About section */
+  .about-title h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Description of the system */
+  .about-description p {
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+  
+  /* Title for the Developers section */
+  .about-developers-title h2 {
+    font-size: 1.5rem;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Flex container for developers list */
+  .about-developers-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 30px; /* Space between developers */
+    margin-top: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  }
+  
+  /* Each developer's container */
+  .about-developer {
+    text-align: center;
+    font-size: 1rem;
+    max-width: 150px; /* Limit width for responsive design */
+  }
+  
+  /* Developer's name and role styling */
+  .about-developer p {
+    margin: 5px 0;
+  }
+  
+  .about-developer strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  /* Developer icons color */
+  .about-developer svg {
+    color: #007BFF; /* Icon color */
+    margin-bottom: 10px;
+  }
+  
+  /* Responsive Design for smaller screens */
+  @media (max-width: 768px) {
+    .about-developers-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .about-developer {
+      max-width: 100%; /* Full width for each developer */
+    }
+  
+    .about-description p {
+      font-size: 0.9rem; /* Smaller text for mobile */
+    }
+  }
+  

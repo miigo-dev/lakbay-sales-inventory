@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   BrowserRouter,
   Navigate,
   Routes,
   Route,
-  Outlet
+  Outlet,
 } from 'react-router-dom';
 
 import Dashboard from './pages/dashboard';
@@ -20,11 +19,15 @@ import Sales from './pages/sales';
 import Reports from './pages/reports';
 import Users from './pages/users';
 import Settings from './pages/settings';
+import Backup from './pages/backup';
+import Historylog from './pages/historylog';
+import About from './pages/about';
 import Sidebar from './components/sidebar';
 import Header from './components/header';
+import Notification from './pages/notification';
 
 const PrivateRoutes = () => {
-  const { isAuth } = useSelector((state) => state .auth);
+  const { isAuth } = useSelector((state) => state.auth);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!isAuth) {
@@ -64,7 +67,12 @@ const App = () => {
           <Route path='/inventory/reports' element={<Reports />} />
           <Route path='/users' element={<Users />} />
           <Route path='/settings' element={<Settings />} />
+          <Route path='/settings/backup' element={<Backup />} />
+          <Route path='/settings/historylog' element={<Historylog />} />
+          <Route path='/settings/about' element={<About />} />
+          <Route path="/notifications" element={<Notification />} />
         </Route>
+        
         <Route element={<RestrictedRoutes />}>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />

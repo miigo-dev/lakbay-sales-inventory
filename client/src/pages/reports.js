@@ -113,8 +113,9 @@ const Reports = () => {
 
     return (
         <div className='damage_container'>
-            <div className="tabs">
-                {/* Dropdown Button */}
+           
+            <div className='header_container'>
+            <h2>Reports</h2>
                 <select 
                     className="dropdown_btn" 
                     value={activeTab} 
@@ -123,10 +124,13 @@ const Reports = () => {
                     <option value="Lakbay Kape">Lakbay Kape</option>
                     <option value="Lakbay Kain">Lakbay Kain</option>
                 </select>
-
-                <button className="addReport" onClick={() => openModal()}>
+                
+            </div>
+            <button className="addReport" onClick={() => openModal()}>
                     Add Report
-                </button>
+                </button> 
+            <div className="tabs">
+                {/* Dropdown Button */}
                 <div className="searchbar">
                 <input type="text" placeholder="Search a product" className="searchbar_input" />
             </div>

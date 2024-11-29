@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/orders.css';
@@ -274,32 +275,33 @@ const Orders = () => {
 
         <div id='order-content'>
           <div id={isLakbayKape ? "lakbay-kape" : "lakbay-kain"}>
-            <ul className='navigation-bar'>
-              {isLakbayKape
-                ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
-                  <li key={category}>
-                    <a
-                      href="#!"
-                      className={activeLink === category ? 'active' : ''}
-                      onClick={() => handleLinkClick(category)}
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </a>
-                  </li>
-                ))
-                : ['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
-                  <li key={category}>
-                    <a
-                      href="#!"
-                      className={activeLink === category ? 'active' : ''}
-                      onClick={() => handleLinkClick(category)}
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
+            <div className="navigation-container">
+              <ul className="navigation-bar">
+                {isLakbayKape
+                  ? ['all', 'coffee', 'non-Coffee', 'frappes', 'affogato Series'].map((category) => (
+                    <li key={category}>
+                      <a
+                        href="#!"
+                        className={activeLink === category ? 'active' : ''}
+                        onClick={() => handleLinkClick(category)}
+                      >
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </a>
+                    </li>
+                  ))
+                  : ['all', 'meals', 'drinks', 'side Orders', 'desserts'].map((category) => (
+                    <li key={category}>
+                      <a
+                        href="#!"
+                        className={activeLink === category ? 'active' : ''}
+                        onClick={() => handleLinkClick(category)}
+                      >
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            </div>
 
             <div className='order_container'>
               {displayedItems.map((item, index) => (
