@@ -4,13 +4,13 @@ const { sign } = require('jsonwebtoken')
 const { SECRET } = require('../constants')
 
 exports.register = async (req, res) => {
-    const { firstName, lastName, phoneNumber, username, password, roleID } = req.body;
+    const { full_name, email, username, password, role_id } = req.body;
     try {
         const hashedPassword = await hash(password, 10)
         await db.query(
-            `INSERT INTO Users (FirstName, LastName, PhoneNumber, Username, Password, RoleID)
-            VALUES ($1, $2, $3, $4, $5, $6)`,
-            [firstName, lastName, phoneNumber, username, hashedPassword, roleID]
+            `INSERT INTO Users (full_name, email, username, password)
+            VALUES ($1, $2, $3, $4)`,
+            [full_name, email, username, hashedPassword]
         );
       res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
     let user = req.user
 
     let payload = {
-        id: user.userid,
+        id: user.user_id,
         username: user.username
     }
 

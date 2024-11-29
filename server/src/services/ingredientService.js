@@ -12,31 +12,20 @@ exports.getIngredientByID = async (id) => {
 
 exports.addIngredient = async (
     ingredient_name,
-    type_id,
     ingredient_quantity,
     ingredient_unit,
     ingredient_price,
     supplier_id,
     reorder_level,
-    ingredient_status
+    type_id,    
+    warehouse_id,
 ) => {
-    const ingredient = await db.query('INSERT INTO ingredients (ingredient_name, type_id, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, ingredient_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [ingredient_name, type_id, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, ingredient_status]);
-    return ingredient.rows[0];
+    const result = await db.query('INSERT INTO ingredients (ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id]);
 }
 
-exports.updateIngredient = async (
-    ingredient_name,
-    type_id,
-    ingredient_quantity,
-    ingredient_unit,
-    ingredient_price,
-    supplier_id,
-    reorder_level,
-    ingredient_status,
-    id
-) => {
-    const ingredient = await db.query('UPDATE ingredients SET ingredient_name = $1, type_id = $2, ingredient_quantity = $3, ingredient_unit = $4, ingredient_price = $5, supplier_id = $6, reorder_level = $7, ingredient_status = $8 WHERE ingredient_id = $9 RETURNING *', [ingredient_name, type_id, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, ingredient_status, id]);
-    return ingredient.rows[0];
+exports.updateIngredient = async ( id, ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id) => { 
+    const result = await db.query('UPDATE ingredients SET ingredient_name = $1, ingredient_quantity = $2, ingredient_unit = $3, ingredient_price = $4, supplier_id = $5 , reorder_level = $6, type_id = $7, warehouse_id = $8 WHERE ingredient = $9 RETURNING *', [ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id, id]);
+    return result.rows[0];
 }
 
 exports.deleteIngredient = async (id) => {

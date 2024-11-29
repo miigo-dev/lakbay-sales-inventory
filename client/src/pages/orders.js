@@ -65,7 +65,22 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    const warehouseId = isLakbayKape ? 1 : 2;
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/orders');
+      setCompletedOrders(response.data);
+      setOrderHistory(response.data); // If you use order history similarly
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Failed to load orders');
+    }
+  };
+
+  fetchOrders();
+}, []);
+
+  useEffect(() => {
+    const warehouseId = isLakbayKape ? 2 : 1;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
 
