@@ -17,10 +17,8 @@ exports.addProduct = async (
     product_quantity, 
     product_price, 
     reorder_level, 
-    product_status, 
-    remarks
 ) => {
-    const { rows } = await db.query('INSERT INTO products (warehouse_id, product_name, category_id, product_quantity, product_price, reorder_level, product_status, remarks) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [warehouse_id, product_name, category_id, product_quantity, product_price, reorder_level, product_status, remarks]);
+    const { rows } = await db.query('INSERT INTO products (warehouse_id, product_name, category_id, product_quantity, product_price, reorder_level) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [warehouse_id, product_name, category_id, product_quantity, product_price, reorder_level]);
     return rows[0];  
 }
 
@@ -52,4 +50,28 @@ exports.deleteProduct = async (id) => {
         await db.query('ROLLBACK'); // Rollback transaction in case of error
         throw new Error('Error deleting product: ' + error.message);
     }
+};
+
+// productService.js
+exports.getFilteredProducts = async (filters) => {
+    const { section, type, status } = filters;
+
+    let query = "SELECT * FROM products WHERE 1=1";
+    const params = [];
+
+    if (section) {
+        query += " AND section = $1";
+        params.push(section);
+    }
+    if (type) {
+        query += " AND type = $2";
+        params.push(type);
+    }
+    if (status && status !== 'all') {
+        query += " AND product_status = $3";
+        params.push(status);
+    }
+
+    const { rows } = await db.query(query, params);
+    return rows;
 };

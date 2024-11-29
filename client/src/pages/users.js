@@ -77,7 +77,7 @@ const Users = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const currentDateTime = new Date().toLocaleString(); // Get the current date and time
+    const currentDateTime = new Date().toLocaleString();
 
     if (selectedUser) {
       // Handle user edit (update existing user)
@@ -110,10 +110,10 @@ const Users = () => {
           lastLogin: "N/A",
         },
       ]);
-      setModalOpen(false); // Close modal after registering user
+      setModalOpen(false);
     }
 
-    setSelectedUser(null); // Reset selected user after saving
+    setSelectedUser(null);
   };
 
   const handleView = (user) => {
@@ -126,11 +126,10 @@ const Users = () => {
     setEditModalOpen(true);
   };
 
-  const handleDelete = (userId) => {
-    setUsers(users.filter(user => user.id !== userId));
+  const handleDelete = (user_id) => {
+    setUsers(users.filter(user => user.id !== user_id));
   };
 
-  // Reset form fields and open modal
   const handleRegisterClick = () => {
     setNewUser({
       name: "",
@@ -145,66 +144,20 @@ const Users = () => {
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="user-details">
-          <div className="user-card">
-            <img src={user_img} alt="User" />
-            <h2>Isaac Mariano</h2>
-          </div>
-          <div className="user-info-main">
-            <div className="info-row">
-              <span>Email</span>
-              <span>bossmalupiton@lakbaykk.live</span>
-            </div>
-            <div className="info-row">
-              <span>User ID</span>
-              <span>ds74nv-h438-d435-29fd-34hf8d38549</span>
-            </div>
-            <div className="info-row">
-              <span>Role</span>
-              <span>Owner</span>
-            </div>
-          </div>
-          <div className="user-info-extra">
-            <div className="info-row">
-              <span>Mobile Phone</span>
-              <span>+63 1234-567-890</span>
-            </div>
-            <div className="info-row">
-              <span>Birthdate</span>
-              <span>30.6.2002 (22)</span>
-            </div>
-            <div className="info-row">
-              <span>Username</span>
-              <span>tobimariano</span>
-            </div>
-            <div className="info-row">
-              <span>Created</span>
-              <span>9.24.2024 06:04</span>
-            </div>
-            <div className="info-row">
-              <span>Last Login</span>
-              <span>9.27.2024 12:29</span>
-            </div>
-          </div>
-        </div>
+    <div className="user-management">
+      <h2>User Management</h2>
+      <div className="search_bar">
+        <input
+          type="text"
+          placeholder="Search User"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
-      <div className="user-management">
-        <h2>User Management</h2>
-        <div className="search_bar">
-          <input
-            type="text"
-            placeholder="Search User"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="orders_table" style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
-          <DataGrid rows={filteredUsers} columns={columns} pageSize={5} pagination={true} />
-        </div>
-        <button className="register-button" onClick={handleRegisterClick}>Register User</button>
+      <div className="orders_table" style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
+        <DataGrid rows={filteredUsers} columns={columns} pageSize={5} pagination={true} />
       </div>
+      <button className="register-button" onClick={handleRegisterClick}>Register User</button>
 
       {/* Modal for Registering User */}
       {modalOpen && (
@@ -286,6 +239,8 @@ const Users = () => {
             <button onClick={() => setViewModalOpen(false)} className="cancel_button">Close</button>
           </div>
         </div>
+     
+
       )}
 
       {/* Modal for Editing User */}

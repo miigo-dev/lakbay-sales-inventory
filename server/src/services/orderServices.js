@@ -129,3 +129,14 @@ exports.updateOrderStatus = async function(orderId, order_status) {
         throw error;
     }
 };
+
+exports.completeOrder = async function(orderId) {
+    try {
+        await db.query(
+            'UPDATE orders SET order_status = $1, updated_at = CURRENT_TIMESTAMP WHERE order_id = $2',
+            ['Completed', orderId]
+        );
+    } catch (error) {
+        throw error;
+    }
+};

@@ -1,6 +1,8 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect} from 'react';
 import '../css/inventory.css';
+import order_status from '../assets/icons/orders.svg';
+
 
 const Inventory = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -14,6 +16,7 @@ const Inventory = () => {
     const [filteredView, setFilteredView] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [transactionFilter, setTransactionFilter] = useState('all');
+    const [isLakbayKape, setIsLakbayKape] = useState(false);
 
     const [inventoryData, setInventoryData] = useState([{
         id: 1,
@@ -54,6 +57,7 @@ const Inventory = () => {
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value); 
     };
+    
     
 
 
@@ -255,6 +259,9 @@ const Inventory = () => {
         closeQuantityModal();
     };
     
+    useEffect(() => {
+        setSelectedSection(isLakbayKape ? 'lakbayKape' : 'lakbayKain');
+    }, [isLakbayKape]);
 
     return (
         <div className="dashboard_container">
@@ -289,6 +296,7 @@ const Inventory = () => {
                         <option value="lakbayKain">Lakbay Kain</option>
                         <option value="lakbayKape">Lakbay Kape</option>
                     </select>
+
                     <select
                         className="inventory_type_dropdown"
                         value={selectedInventoryType}

@@ -4,9 +4,10 @@ import { onLogin } from '../api/auth'
 import { useDispatch } from 'react-redux'
 import { authenticateUser } from '../redux/slices/authSlice'
 import '../css/login.css'
-import logo from '../assets/icons/lakbay_logo50px.png'
+import logo from '../assets/icons/LKK.svg'
 import profile_icon from '../assets/icons/users_inactive.png' 
 import password_icon from '../assets/icons/pass_icon25px.png'
+import background from '../assets/icons/Coffeebackground2.svg';
 
 const Login = () => {
     const [values, setValues] = useState({
@@ -35,21 +36,30 @@ const Login = () => {
     }
 
     return (
-        <div className='login_container'>
-            <div className='login_box'>
-                <div className='logo_container'>
-                    <img src={logo} alt='Lakbay Logo' className='logo'/>
-                </div>
 
-            <h2>Lakbay Kape and Kain</h2>
-            <p>Login to your account</p>
+      
+      <div 
+      className='login_container' 
+      style={{
+          backgroundImage: `url(${background})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: '100vh',
+      }}
+  >
+      <div className='login_box'>
+          <div className='logo_container'>
+              <img src={logo} alt='Lakbay Logo' className='logo'/>
+          </div>
+          <h2>Lakbay Kape and Kain</h2>
+          <p>Login to your account</p>
 
-                <form onSubmit={(e) => onSubmit(e)}>
-                    <div className='form_input'>
-                      <label htmlFor='username' className='username'>
+          <form onSubmit={(e) => onSubmit(e)}>
+              <div className='form_input'>
+                  <label htmlFor='username' className='username'>
                       <img src={profile_icon} alt="email icon" className="input_icon"/>
-                      </label>  
-                      <input
+                  </label>  
+                  <input
                       onChange={(e) => onChange(e)}
                       type='username' 
                       value={values.username}
@@ -57,14 +67,14 @@ const Login = () => {
                       name='username'
                       placeholder='Username' 
                       required
-                      />
-                    </div>
+                  />
+              </div>
 
-                    <div className='form_input'>
-                      <label htmlFor='password' className='password'>
+              <div className='form_input'>
+                  <label htmlFor='password' className='password'>
                       <img src={password_icon} alt="password icon" className="input_icon"/>
-                      </label>  
-                      <input
+                  </label>  
+                  <input
                       onChange={(e) => onChange(e)}
                       type='password' 
                       value={values.password}
@@ -72,20 +82,20 @@ const Login = () => {
                       name='password'
                       placeholder='Password' 
                       required
-                      />
-                    </div>
+                  />
+              </div>
 
-                    <div className='forgot_pass'>
-                      <a href='/forgot_password'>Forgot Password</a>
-                    </div>
+              <div className='forgot_pass'>
+                  <a href='/forgot_password'>Forgot Password</a>
+              </div>
 
-                    <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>
+              <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>
 
-                    <button type="submit" className="login_button">Login</button>
-                </form>
-            </div>
-        </div>
-    )
+              <button type="submit" className="login_button">Login</button>
+          </form>
+      </div>
+  </div>
+);
 }
 
 export default Login;

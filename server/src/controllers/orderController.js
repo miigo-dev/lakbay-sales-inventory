@@ -61,13 +61,13 @@ exports.deleteOrder = async (req, res) => {
     }
 };
 
-// Update an order status
-exports.updateOrderStatus = async (req, res) => {
+// Update an order status (completing an order)
+exports.completeOrder = async (req, res) => {
     const { id } = req.params;
-    const { order_status } = req.body;
 
     try {
-        await orderService.updateOrderStatus(id, order_status);
+        // Call the service to mark the order as 'Completed'
+        await orderService.completeOrder(id);
         res.status(200).json({ message: 'Order status updated successfully' });
     } catch (error) {
         console.error('Error updating order status:', error);
