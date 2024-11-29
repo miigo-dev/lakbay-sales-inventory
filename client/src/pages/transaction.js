@@ -14,7 +14,7 @@ const Transaction = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/orders/'); // Replace with your endpoint
+        const response = await axios.get('http://localhost:8080/api/transactions/'); // Replace with your endpoint
         setCompletedOrders(response.data);
         setLoading(false);
       } catch (err) {

@@ -65,21 +65,6 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-  const fetchOrders = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/orders');
-      setCompletedOrders(response.data);
-      setOrderHistory(response.data); // If you use order history similarly
-    } catch (err) {
-      console.error('Error fetching orders:', err);
-      setError('Failed to load orders');
-    }
-  };
-
-  fetchOrders();
-}, []);
-
-  useEffect(() => {
     const warehouseId = isLakbayKape ? 2 : 1;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
@@ -228,7 +213,7 @@ const Orders = () => {
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
     try {
-      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}`, { order_status: 'Completed' });
+      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
       setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
       setOrderHistory((prevHistory) =>
         prevHistory.map((order) =>
