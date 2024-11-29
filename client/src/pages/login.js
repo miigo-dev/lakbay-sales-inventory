@@ -7,7 +7,7 @@ import '../css/login.css'
 import logo from '../assets/icons/LKK.svg'
 import profile_icon from '../assets/icons/users_inactive.png' 
 import password_icon from '../assets/icons/pass_icon25px.png'
-import background from '../assets/icons/Coffeebackground3.svg';
+import background from '../assets/icons/Coffeebackground2.svg';
 
 const Login = () => {
     const [values, setValues] = useState({
