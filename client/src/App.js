@@ -39,6 +39,18 @@ import Inventoryper_reports from './inventoryper_js/inventoryper_reports';
 import Inventoryper_header from './inventoryper_js/inventoryper_header';
 import Inventoryper_notification from './inventoryper_js/inventoryper_notification';
 
+import Admin_user from './admin_js/admin_sidebar';
+import Admin_dashboard from './admin_js/admin_dashboard';
+import Admin_header from './admin_js/admin_header';
+import Admin_orders from './admin_js/admin_orders';
+import Admin_transaction from './admin_js/admin_transaction';
+import Admin_inventory from './admin_js/admin_inventory';
+import Admin_supplier from './admin_js/admin_supplier';
+import Admin_reports from './admin_js/admin_reports';
+import Admin_sales from './admin_js/admin_sales';
+import Admin_settings from './admin_js/admin_settings';
+import Admin_notification from './admin_js/admin_notification';
+
 const PrivateRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -102,6 +114,28 @@ const InventoryRoutes = () => {
   );
 };
 
+const AdminRoutes = () => {
+  const { isAuth } = useSelector((state) => state.auth);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  if (!isAuth) {
+    return <Navigate to='/login' />;
+  }
+
+  return (
+    <div className={`inventory-container ${sidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+      <Admin_user onToggle={setSidebarOpen} />
+      <div className="main-content">
+        <Admin_header />
+        <div className="outlet-container">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const RestrictedRoutes = () => {
   const { isAuth } = useSelector((state) => state.auth);
   return <>{!isAuth ? <Outlet /> : <Navigate to='/dashboard' />}</>;
@@ -141,6 +175,19 @@ const App = () => {
           <Route path="/inventoryper_inventory/inventoryper_supplier" element={<Inventoryper_supplier />} />
           <Route path="/inventoryper_inventory/inventoryper_reports" element={<Inventoryper_reports />} />
           <Route path="/inventoryper_inventory/inventoryper_notification" element={<Inventoryper_notification />} />
+        </Route>
+
+        <Route element={<AdminRoutes />}>
+          <Route path="/admin_sidebar" element={<Navigate to="/admin_dashboard" />} />
+          <Route path="/admin_dashboard" element={<Admin_dashboard />} />
+          <Route path="/admin_orders" element={<Admin_orders />} />
+          <Route path="/admin_orders/admin_transaction" element={<Admin_transaction/>} />
+          <Route path="/admin_inventory" element={<Admin_inventory />} />
+          <Route path="/admin_inventory/admin_supplier" element={<Admin_supplier />} />
+          <Route path="/admin_inventory/admin_reports" element={<Admin_reports/>} />
+          <Route path="/admin_sales" element={<Admin_sales />} />
+          <Route path="/admin_settings" element={<Admin_settings />} />
+          <Route path="/admin_dashboard/admin_notification" element={<Admin_notification/>} />
         </Route>
 
         <Route element={<RestrictedRoutes />}>
