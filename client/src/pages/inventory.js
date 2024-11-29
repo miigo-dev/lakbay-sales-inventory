@@ -1,6 +1,8 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect} from 'react';
 import '../css/inventory.css';
+import order_status from '../assets/icons/orders.svg';
+
 
 const Inventory = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -14,6 +16,7 @@ const Inventory = () => {
     const [filteredView, setFilteredView] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [transactionFilter, setTransactionFilter] = useState('all');
+    const [isLakbayKape, setIsLakbayKape] = useState(false);
 
     const [inventoryData, setInventoryData] = useState([{
         id: 1,
@@ -54,6 +57,7 @@ const Inventory = () => {
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value); 
     };
+    
     
 
 
@@ -255,6 +259,9 @@ const Inventory = () => {
         closeQuantityModal();
     };
     
+    useEffect(() => {
+        setSelectedSection(isLakbayKape ? 'lakbayKape' : 'lakbayKain');
+    }, [isLakbayKape]);
 
     return (
         <div className="dashboard_container">
@@ -278,16 +285,30 @@ const Inventory = () => {
             </div>
 
             <div className="dashboard_content">
-            <div className="dashboard_title">
-                <h2>Inventory</h2>
-                <div className='actions'>
-                    <select
-                        className="inventory_section_dropdown"
-                        value={selectedSection}
-                        onChange={(e) => setSelectedSection(e.target.value)}>
-                        <option value="lakbayKain">Lakbay Kain</option>
-                        <option value="lakbayKape">Lakbay Kape</option>
-                    </select>
+    <div className="dashboard_title">
+        <h2>Inventory</h2>
+        <div className='actions'>
+            <div className="toggle_lakbaykainkape">
+                <input
+                    type="checkbox"
+                    className="input_type"
+                    id="toggle-section"
+                    checked={selectedSection === 'lakbayKape'}
+                    onChange={() => setSelectedSection(selectedSection === 'lakbayKape' ? 'lakbayKain' : 'lakbayKape')}
+                />
+                <div className="display">
+                    <label className="label_type" htmlFor="toggle-section">
+                        <div className="circle">
+                        <span className="material-symbols-outlined food">restaurant</span>
+                        <span className="material-symbols-outlined coffee">local_cafe</span>
+                        </div>
+                    </label>
+                    <span className="categ-txt">
+                        {selectedSection === 'lakbayKape' ? 'Lakbay Kape' : 'Lakbay Kain'}
+                    </span>
+                </div>
+            </div>
+
 
                     <select
                         className="inventory_type_dropdown"

@@ -288,3 +288,26 @@
     transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
+
+.toggle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 20px;
+}
+
+.circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white; 
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05), -10px -10px 30px rgba(0, 0, 0, 0.05) inset;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: left 0.3s ease-in-out;
+    }
