@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/supplier.css';
 
@@ -41,11 +42,24 @@ const Supplier = () => {
     setNewSupplier({ ...newSupplier, [name]: value });
   };
 
-  const handleDeleteSupplier = (supplierId) => {
+  const handleDeleteSupplier = async (supplierId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this supplier?");
     if (confirmDelete) {
-      setSuppliers((prevSuppliers) => prevSuppliers.filter(supplier => supplier.supplier_id !== supplierId));
-      alert("Supplier deleted successfully.");
+      try {
+        // Make a DELETE request to the backend API to delete the supplier
+        const response = await axios.delete(`http://localhost:8080/api/suppliers/${supplierId}`);
+  
+        if (response.status === 200) {
+          // If the response is successful, update the state
+          setSuppliers((prevSuppliers) => prevSuppliers.filter(supplier => supplier.supplier_id !== supplierId));
+          alert("Supplier deleted successfully.");
+        } else {
+          alert("Failed to delete supplier. Please try again.");
+        }
+      } catch (error) {
+        console.error('Error deleting supplier:', error);
+        alert("An error occurred while deleting the supplier. Please try again later.");
+      }
     }
   };
 
