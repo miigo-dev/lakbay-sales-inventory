@@ -63,22 +63,20 @@ const Inventory = () => {
 
     const openModal = (product = null) => {
         if (product) {
-            // If product exists, ensure the quantity is positive
             setCurrentProduct({
                 ...product,
-                quantity: product.quantity >= 0 ? product.quantity : 0,  // Ensure the quantity is positive
+                quantity: product.quantity >= 0 ? product.quantity : 0,  
             });
             setIsEditing(true);
         } else {
-            // If no product, initialize fields with positive values
             setCurrentProduct({
                 id: null,
                 productId: '',
                 productName: '',
-                quantity: 0,  // Start with a valid positive quantity
+                quantity: 0,  
                 price: '',
                 supplierId: '',
-                reorderLevel: 0,  // Reorder level should be positive or 0
+                reorderLevel: 0,  
                 productStatus: 'in',
                 section: selectedSection,
                 type: selectedInventoryType,
@@ -86,8 +84,8 @@ const Inventory = () => {
             setIsEditing(false);
         }
         setModalOpen(true);
-        setQuantityAdjustment(0); // Reset quantity adjustment to ensure it's positive
-        setRemarks(''); // Reset remarks field
+        setQuantityAdjustment(0); 
+        setRemarks('');
     };
 
     const closeModal = () => {
@@ -97,7 +95,6 @@ const Inventory = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
     
-        // Ensure positive integers for quantity and reorderLevel
         if ((name === 'quantity' || name === 'reorderLevel') && value < 0) {
             alert(`${name} must be a positive value.`);
             return;
@@ -110,7 +107,6 @@ const Inventory = () => {
     };
 
     const handleSubmit = () => {
-        // Ensure positive integers for quantity and reorderLevel
         if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
             alert('Quantity and Reorder Level must be positive values.');
             return;
@@ -175,12 +171,12 @@ const Inventory = () => {
 
     
     const openQuantityModal = (type) => {
-        setAdjustmentType(type); // Set adjustment type to "in" or "out"
+        setAdjustmentType(type); 
         setQuantityModalOpen(true);
     };
 
     const closeQuantityModal = () => {
-        setQuantityModalOpen(false); // Close quantity adjustment modal
+        setQuantityModalOpen(false); 
     };
 
     const viewFilter = (status) => {
@@ -207,14 +203,12 @@ const Inventory = () => {
     const handleQuantityAdjustmentSubmit = () => {
         const adjustmentValue = parseInt(quantityAdjustment);
     
-        // Ensure positive integers for adjustments
         if (isNaN(adjustmentValue) || adjustmentValue <= 0) {
             alert('Please enter a positive integer for quantity adjustment.');
             return;
         }
     
         if (adjustmentType === 'out') {
-            // Ensure the quantity does not drop below zero
             const currentItem = inventoryData.find(
                 (item) => item.productName === currentProductName
             );
@@ -224,7 +218,6 @@ const Inventory = () => {
             }
         }
     
-        // Update inventory data
         setInventoryData((prevData) =>
             prevData.map((item) =>
                 item.productName === currentProductName
@@ -239,7 +232,6 @@ const Inventory = () => {
             )
         );
     
-        // Log the transaction
         setSelectedProduct((prevTransactions) => [
             ...prevTransactions,
             {
@@ -253,7 +245,6 @@ const Inventory = () => {
             },
         ]);
     
-        // Reset modal and inputs
         setQuantityAdjustment('');
         setRemarks('');
         closeQuantityModal();
@@ -376,7 +367,6 @@ const Inventory = () => {
                     <div className="modal-content">
                         <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
 
-                        {/* Inventory fields for Product or Ingredient */}
                         {selectedInventoryType === 'products' ? (
                             <>
                                 <label htmlFor="productId">Product ID</label>
@@ -443,7 +433,6 @@ const Inventory = () => {
                                 />
                             </>
                         ) : (
-                            // Fields for Ingredients (if applicable)
                             <>
                                 <label htmlFor="ingredientId">Ingredient ID</label>
                                 <input
@@ -572,7 +561,6 @@ const Inventory = () => {
 
             )}
 
-            {/* Quantity Adjustment Modal */}
             {quantityModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
@@ -599,8 +587,8 @@ const Inventory = () => {
                     <label htmlFor="supplierId">Supplier ID</label>
                                 <select
                                     name="supplierId"
-                                    value={supplierId}  // Bind to a state for supplierId (or current supplier from modal)
-                                    onChange={(e) => setSupplierId(e.target.value)}  // Update the selected supplierId
+                                    value={supplierId} 
+                                    onChange={(e) => setSupplierId(e.target.value)} 
                                 >
                                     <option value="">Select Supplier</option>
                                     {suppliers.map((supplier, index) => (

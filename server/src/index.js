@@ -23,9 +23,10 @@ const ingredientRoutes = require('./routes/ingredientRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const supplierRoutes = require('./routes/supplierRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
+const salesRoutes = require('./routes/salesRoutes');
 
 // initialize route
-app.use('/api', authRoutes, productRoutes, warehouseRoutes, movementRoutes, ingredientRoutes, orderRoutes, supplierRoutes, transactionRoutes);
+app.use('/api', authRoutes, productRoutes, warehouseRoutes, movementRoutes, ingredientRoutes, orderRoutes, supplierRoutes, transactionRoutes, salesRoutes);
 
 const appStart = () => {
     try {

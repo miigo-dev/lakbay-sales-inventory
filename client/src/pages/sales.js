@@ -7,103 +7,85 @@ import T5 from '../assets/icons/t5.svg';
 import T6 from '../assets/icons/t6.svg';
 import T7 from '../assets/icons/t7.svg';
 import T8 from '../assets/icons/t8.svg';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { DataGrid } from '@mui/x-data-grid';
+
+const fetchSalesData = async (timeFrame, isKape) => {
+    const periodMap = {
+        'Today': 'daily',
+        'Weekly': 'weekly',
+        'Monthly': 'monthly',
+        'Yearly': 'yearly',
+    };
+
+    const inventoryType = isKape ? '2' : '1';
+    const response = await fetch(`http://localhost:8080/api/sales?period=${periodMap[timeFrame]}&type=${inventoryType}`);
+    if (!response.ok) throw new Error('Failed to fetch sales data');
+    return response.json(); 
+};
+
+const fetchTopSalesItems = async (timeFrame, isKape) => {
+    const periodMap = {
+        'Today': 'daily',
+        'Weekly': 'weekly',
+        'Monthly': 'monthly',
+        'Yearly': 'yearly',
+    };
+
+    const inventoryType = isKape ? 'kape' : 'kain';
+    const response = await fetch(`http://localhost:8080/api/sales?period=${periodMap[timeFrame]}&type=${inventoryType}`);
+    if (!response.ok) throw new Error('Failed to fetch top sales items');
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+        return data;
+    } else {
+        console.error('Fetched top sales data is not an array:', data);
+        return [];
+    }
+};
 
 const Sales = () => {
     const [timeFrame, setTimeFrame] = useState('Today');
     const [isLakbayKape, setIsLakbayKape] = useState(false);
-    const [showAllData, setShowAllData] = useState(false); // New state for showing all data
-    
-    const [salesTotals, setSalesTotals] = useState({
-        Today: 0,
-        Weekly: 0,
-        Monthly: 0,
-        Yearly: 0,
-    });
+    const [showAllData, setShowAllData] = useState(false);
+    const [salesData, setSalesData] = useState({ labels: [], data: [] });
+    const [salesTotals, setSalesTotals] = useState({ Today: 0, Weekly: 0, Monthly: 0, Yearly: 0 });
+    const [bestSellers, setBestSellers] = useState([]);
 
     const toggleView = () => {
         setIsLakbayKape(prev => !prev);
     };
 
-    const getSalesData = (frame) => {
-        const kapeSalesData = {
-            Today: { labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'], data: [12, 19, 3, 5, 2] },
-            Weekly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [50, 100, 75, 125] },
-            Monthly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [200, 300, 250, 400] },
-            Yearly: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [1200, 1500, 1300, 1600, 2000, 1800, 2200, 2400, 2600, 3000, 3200, 3500] }
-        };
-    
-        const kainSalesData = {
-            Today: { labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'], data: [8, 14, 7, 10, 6] },
-            Weekly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [30, 70, 50, 110] },
-            Monthly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [180, 270, 230, 350] },
-            Yearly: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [1100, 1300, 1150, 1500, 1800, 1700, 2100, 2300, 2500, 2800, 3000, 3300] }
-        };
-    
-        return isLakbayKape ? kapeSalesData[frame] : kainSalesData[frame];
-    };
-    
-
-    const calculateTotalSales = (data) => {
-        return data.reduce((total, value) => total + value, 0);
-    };
+    const calculateTotalSales = (data) => data.reduce((total, value) => total + value, 0);
 
     useEffect(() => {
-        setSalesTotals({
-            Today: calculateTotalSales(getSalesData('Today').data),
-            Weekly: calculateTotalSales(getSalesData('Weekly').data),
-            Monthly: calculateTotalSales(getSalesData('Monthly').data),
-            Yearly: calculateTotalSales(getSalesData('Yearly').data),
-        });
-    }, []);
-
-    const getTopSalesItems = (frame, isKape) => {
-        const items = {
-            Today: isKape ? [
-                { img: T3, name: 'Brewed Coffee' },
-                { img: T2, name: 'Matcha Latte' },
-                { img: T1, name: 'Sakura Latte 1' },
-            ] : [
-                { img: T4, name: 'Beef Salpicao' },
-                { img: T5, name: 'Beef Bulgogi' },
-                { img: T6, name: 'Chicken Teriyaki' },
-            ],
-            Weekly: isKape ? [
-                { img: T2, name: 'Matcha Latte' },
-                { img: T1, name: 'Sakura Latte 1' },
-                { img: T3, name: 'Brewed Coffee' },
-            ] : [
-                { img: T4, name: 'Beef Salpicao' },
-                { img: T5, name: 'Beef Bulgogi' },
-                { img: T7, name: 'Beef Padkrapao' },
-            ],
-            Monthly: isKape ? [
-                { img: T1, name: 'Sakura Latte 1' },
-                { img: T2, name: 'Matcha Latte' },
-                { img: T3, name: 'Brewed Coffee' },
-            ] : [
-                { img: T6, name: 'Chicken Teriyaki' },
-                { img: T4, name: 'Beef Salpicao' },
-                { img: T8, name: 'Chicken Buttered' },
-            ],
-            Yearly: isKape ? [
-                { img: T3, name: 'Brewed Coffee' },
-                { img: T1, name: 'Sakura Latte 1' },
-                { img: T2, name: 'Matcha Latte' },
-            ] : [
-                { img: T5, name: 'Beef Bulgogi' },
-                { img: T6, name: 'Chicken Teriyaki' },
-                { img: T4, name: 'Beef Salpicao' },
-            ],
+        const fetchData = async () => {
+            try {
+                const data = await fetchSalesData(timeFrame, isLakbayKape);
+                setSalesData(data);
+                setSalesTotals(prev => ({
+                    ...prev,
+                    [timeFrame]: calculateTotalSales(data.data),
+                }));
+            } catch (error) {
+                console.error('Error fetching sales data:', error);
+            }
         };
 
-        return items[frame];
-    };
+        const fetchTopSales = async () => {
+            try {
+                const items = await fetchTopSalesItems(timeFrame, isLakbayKape);
+                setBestSellers(items);
+            } catch (error) {
+                console.error('Error fetching top sales items:', error);
+            }
+        };
 
-    const salesData = getSalesData(timeFrame);
-    const totalSales = salesData.data.reduce((total, value) => total + value, 0);
+        fetchData();
+        fetchTopSales();
+    }, [timeFrame, isLakbayKape]);
 
     const salesGridData = [
         { id: 1, period: 'Today', amount: salesTotals.Today },
@@ -112,7 +94,6 @@ const Sales = () => {
         { id: 4, period: 'Yearly', amount: salesTotals.Yearly },
     ];
 
-    // Determine which sales grid data to display based on the state
     const displayedSalesGridData = showAllData ? salesGridData : salesGridData.filter(item => item.period === timeFrame);
 
     const columns = [
@@ -121,59 +102,11 @@ const Sales = () => {
         { field: 'amount', headerName: 'Sales Amount (₱)', width: 180 },
     ];
 
-    const productSalesData = {
-        Today: [
-            { name: 'Brewed Coffee', sales: 25, img: '/icons/brewed_coffee.svg' },
-            { name: 'Matcha Latte', sales: 15, img: '/icons/matcha_latte.svg' },
-            { name: 'Sakura Latte', sales: 20, img: '/icons/sakura_latte.svg' }
-        ],
-        Weekly: [
-            { name: 'Brewed Coffee', sales: 100, img: '/icons/brewed_coffee.svg' },
-            { name: 'Matcha Latte', sales: 120, img: '/icons/matcha_latte.svg' },
-            { name: 'Sakura Latte', sales: 90, img: '/icons/sakura_latte.svg' }
-        ],
-        Monthly: [
-            { name: 'Brewed Coffee', sales: 400, img: '/icons/brewed_coffee.svg' },
-            { name: 'Matcha Latte', sales: 350, img: '/icons/matcha_latte.svg' },
-            { name: 'Sakura Latte', sales: 300, img: '/icons/sakura_latte.svg' },
-        ],
-        Yearly: [
-            { name: 'Brewed Coffee', sales: 400, img: '/icons/brewed_coffee.svg' },
-            { name: 'Matcha Latte', sales: 350, img: '/icons/matcha_latte.svg' },
-            { name: 'Sakura Latte', sales: 300, img: '/icons/sakura_latte.svg' }
-        ]
-    };
-
-    const getBestSellers = (frame) => {
-        const sales = productSalesData[frame];
-        return sales.sort((a, b) => b.sales - a.sales).slice(0, 5); // Top 3 products
-    };
-
-    // Memoized best sellers for current timeframe
-    const bestSellers = useMemo(() => getBestSellers(timeFrame), [timeFrame]);
-
-    // Columns for the best seller data grid
     const bestSellerColumns = [
         { field: 'name', headerName: 'Product', width: 150 },
         { field: 'sales', headerName: 'Sales', width: 100 },
     ];
 
-
-
-
-    useEffect(() => {
-        const getSalesForPeriod = (period, isKape) => {
-            const salesData = getSalesData(period); // Get sales data based on the period
-            return calculateTotalSales(salesData.data); // Calculate total sales based on data
-        };
-    
-        setSalesTotals({
-            Today: getSalesForPeriod('Today', isLakbayKape),
-            Weekly: getSalesForPeriod('Weekly', isLakbayKape),
-            Monthly: getSalesForPeriod('Monthly', isLakbayKape),
-            Yearly: getSalesForPeriod('Yearly', isLakbayKape),
-        });
-    }, [isLakbayKape]);  // Dependency on `isLakbayKape` to update when the toggle is changed
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
@@ -225,9 +158,8 @@ const Sales = () => {
                 <button onClick={() => setShowAllData(prev => !prev)} className='show-all'>
                     {showAllData ? 'Show Current Period Data' : 'Show All Data'}
                 </button>
-                <h1></h1>
                 <DataGrid
-                    rows={displayedSalesGridData}  // Use the displayed data
+                    rows={displayedSalesGridData}
                     columns={columns}
                     pageSize={4}
                     rowsPerPageOptions={[4]}
@@ -238,26 +170,20 @@ const Sales = () => {
             <div className="top-sales">
                 <h2 className='Top'>Lakbay's Best Seller</h2>
                 <div className="top-sales-list">
-                    {getTopSalesItems(timeFrame, isLakbayKape).map((item, index) => (
-                        <div key={index} className={`T${index + 1}`}>
-                            <img src={item.img} alt={`Top Item ${index + 1}`} />
-                            <p className='txt'>{item.name}</p>
-                        </div>
-                    ))}
                 </div>
             </div>
-            {/* Best Sellers Grid */}
+
             <div className="best-seller-table">
-                    <h2>Top Best Sellers</h2>
-                    <DataGrid
-                        rows={bestSellers.map((item, idx) => ({ id: idx + 1, ...item }))} 
-                        columns={bestSellerColumns} 
-                        pageSize={3}
-                        rowsPerPageOptions={[3, 5, 10]} 
-                        pagination // Enable pagination
-                        disableSelectionOnClick 
-                    />
-                </div>
+                <h2>Top Best Sellers</h2>
+                <DataGrid
+                    rows={Array.isArray(bestSellers) ? bestSellers.map((item, idx) => ({ id: idx + 1, ...item })) : []}
+                    columns={bestSellerColumns}
+                    pageSize={3}
+                    rowsPerPageOptions={[3, 5, 10]}
+                    pagination
+                    disableSelectionOnClick
+                />
+            </div>
         </div>
     );
 };

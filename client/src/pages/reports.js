@@ -5,7 +5,7 @@ import '../css/damage.css';
 const Reports = () => {
     const [activeTab, setActiveTab] = useState('All');
     const [lakbayKape, setProductsKape] = useState([]);
-    const [lakbayKain, setProductsKain] = useState([]); // New state for Lakbay Kain
+    const [lakbayKain, setProductsKain] = useState([]); 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
         id: '',
@@ -104,7 +104,6 @@ const Reports = () => {
         )}
     ];
 
-    // Combine both data sets when "All" is selected
     const dataToDisplay = activeTab === 'All' 
         ? [...lakbayKape, ...lakbayKain] 
         : activeTab === 'Lakbay Kape' 
@@ -114,7 +113,6 @@ const Reports = () => {
     return (
         <div className='damage_container'>
             <div className="tabs">
-                {/* Dropdown Button */}
                 <select 
                     className="dropdown_btn" 
                     value={activeTab} 

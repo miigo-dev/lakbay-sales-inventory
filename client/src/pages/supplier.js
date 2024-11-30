@@ -6,14 +6,14 @@ import '../css/supplier.css';
 const Supplier = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false); // For edit modal
+  const [editModalOpen, setEditModalOpen] = useState(false); 
   const [newSupplier, setNewSupplier] = useState({
     supplierName: '',
     email: '',
     phoneNumber: '',
     address: '',
   });
-  const [selectedSupplier, setSelectedSupplier] = useState(null); // For the supplier being edited
+  const [selectedSupplier, setSelectedSupplier] = useState(null); 
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -46,11 +46,9 @@ const Supplier = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this supplier?");
     if (confirmDelete) {
       try {
-        // Make a DELETE request to the backend API to delete the supplier
         const response = await axios.delete(`http://localhost:8080/api/suppliers/${supplierId}`);
   
         if (response.status === 200) {
-          // If the response is successful, update the state
           setSuppliers((prevSuppliers) => prevSuppliers.filter(supplier => supplier.supplier_id !== supplierId));
           alert("Supplier deleted successfully.");
         } else {
