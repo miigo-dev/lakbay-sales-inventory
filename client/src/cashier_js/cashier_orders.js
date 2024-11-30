@@ -66,7 +66,7 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    const warehouseId = isLakbayKape ? 2 : 1;
+    const warehouseId = isLakbayKape ? 1 : 2;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
 
@@ -214,7 +214,7 @@ const Orders = () => {
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
     try {
-      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
+      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}`, { order_status: 'Completed' });
       setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
       setOrderHistory((prevHistory) =>
         prevHistory.map((order) =>

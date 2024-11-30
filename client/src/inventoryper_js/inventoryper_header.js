@@ -5,7 +5,7 @@ import notification from '../assets/icons/notif.svg';
 import user from '../assets/icons/user.svg';
 import logo_icon from '../assets/icons/LKK.svg';
 
-const Header = () => {
+const Inventoryper_header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
   const navigate = useNavigate();
@@ -17,8 +17,9 @@ const Header = () => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
   const handleViewAllClick = () => {
-    navigate('/notifications');
+    navigate('/inventoryper_inventory/inventoryper_notification'); 
     setIsModalOpen(false); 
   };
 
@@ -40,7 +41,6 @@ const Header = () => {
           <img src={user} alt="User Profile" className="icon profile-icon" />
           <div className="dropdown-menu">
             <button className="dropdown-item">Profile</button>
-            <button className="dropdown-item">Backup</button>
             <button className="dropdown-item">About</button>
             <button className="dropdown-item">Logout</button>
           </div>
@@ -63,7 +63,9 @@ const Header = () => {
               />
               <h3>No Notifications</h3>
               <p>We'll let you know when there will be something new for you.</p>
-              <button className='view-all-btn'onClick={handleViewAllClick}>View All</button>
+              <button className="view-all-btn" onClick={handleViewAllClick}>
+                View All
+              </button>
             </div>
           </div>
         </div>
@@ -72,4 +74,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Inventoryper_header;

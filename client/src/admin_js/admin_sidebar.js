@@ -10,14 +10,12 @@ import order_active from '../assets/icons/orders_active.png';
 import inventory_active from '../assets/icons/inventory_active.png';
 import sales_active from '../assets/icons/sales_active.svg';
 import reports_active from '../assets/icons/reports_active.png';
-import users_active from '../assets/icons/users_active.png';
 
 import dash_inactive from '../assets/icons/dashboard_inactive.png';
 import order_inactive from '../assets/icons/orders_inactive.png';
 import inventory_inactive from '../assets/icons/inventory_inactive.png';
 import sales_inactive from '../assets/icons/sales_inactive.svg';
-import reports_inactive from '../assets/icons/reports_inactive.png';
-import users_inactive from '../assets/icons/users_inactive.png';
+import reports_inactive from '../assets/icons/reports_inactive.png'
 import settings_inactive from '../assets/icons/settings_inactive.png';
 
 import supplier_active from '../assets/icons/person-check-fill active.svg';
@@ -26,7 +24,7 @@ import supplier_inactive from '../assets/icons/person-check-fill inactive.svg';
 import transaction_history_active from '../assets/icons/receipt-cutoff active.svg';
 import transaction_history_inactive from '../assets/icons/receipt-cutoff inactive.svg';
 
-const Sidebar = ({ onToggle }) => {
+const Admin_sidebar = ({ onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
@@ -64,7 +62,7 @@ const Sidebar = ({ onToggle }) => {
         {isOpen && <h2>Lakbay Kape</h2>}
       </div>
 
-      <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
+      <NavLink to="/admin_dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
             <img src={isActive ? dash_active : dash_inactive} alt="Dashboard icon" />
@@ -75,7 +73,7 @@ const Sidebar = ({ onToggle }) => {
 
       <div className="orders-section">
         <div onClick={toggleOrdersDropdown}>
-          <NavLink to="/orders" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink to="/admin_orders" className={({ isActive }) => isActive ? 'active' : ''}>
             {({ isActive }) => (
               <>
                 <img src={isActive ? order_active : order_inactive} alt="Orders icon" />
@@ -85,7 +83,7 @@ const Sidebar = ({ onToggle }) => {
           </NavLink>
         </div>
         <div className={`dropdown-child ${isOrdersOpen ? 'open' : ''}`}>
-          <NavLink to="/orders/transaction" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink to="/admin_orders/admin_transaction" className={({ isActive }) => isActive ? 'active' : ''}>
             {({ isActive }) => (
               <>
                 <img src={isActive ? transaction_history_active : transaction_history_inactive} alt="Transaction icon" />
@@ -98,7 +96,7 @@ const Sidebar = ({ onToggle }) => {
 
       <div className="inventory-section">
         <div onClick={toggleInventoryDropdown}>
-          <NavLink to="/inventory" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink to="/admin_inventory" className={({ isActive }) => isActive ? 'active' : ''}>
             {({ isActive }) => (
               <>
                 <img src={isActive ? inventory_active : inventory_inactive} alt="Inventory icon" />
@@ -108,7 +106,7 @@ const Sidebar = ({ onToggle }) => {
           </NavLink>
         </div>
         <div className={`dropdown-child ${isInventoryOpen ? 'open' : ''}`}>
-          <NavLink to="/inventory/supplier" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink to="/admin_inventory/admin_supplier" className={({ isActive }) => isActive ? 'active' : ''}>
             {({ isActive }) => (
               <>
                 <img src={isActive ? supplier_active : supplier_inactive} alt="Supplier icon" />
@@ -118,7 +116,7 @@ const Sidebar = ({ onToggle }) => {
           </NavLink>
         </div>
         <div className={`dropdown-child ${isInventoryOpen ? 'open' : ''}`}>
-          <NavLink to="/inventory/reports" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink to="/admin_inventory/admin_reports" className={({ isActive }) => isActive ? 'active' : ''}>
             {({ isActive }) => (
               <>
                 <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
@@ -130,7 +128,7 @@ const Sidebar = ({ onToggle }) => {
       </div>
 
      
-      <NavLink to="/sales" className={({ isActive }) => isActive ? 'active' : ''}>
+      <NavLink to="/admin_sales" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
             <img src={isActive ? sales_active : sales_inactive} alt="Sales icon" />
@@ -139,17 +137,8 @@ const Sidebar = ({ onToggle }) => {
         )}
       </NavLink>
 
-      <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
-        {({ isActive }) => (
-          <>
-            <img src={isActive ? users_active : users_inactive} alt="Users icon" />
-            {isOpen && "Users"}
-          </>
-        )}
-      </NavLink>
-
       <div className="bot_sidebar">
-        <NavLink to="/settings" className={({ isActive }) => isActive ? 'active' : ''}>
+        <NavLink to="/admin_settings" className={({ isActive }) => isActive ? 'active' : ''}>
           {({ isActive }) => (
             <>
               <img src={settings_inactive} alt="Settings icon" />
@@ -171,4 +160,4 @@ const Sidebar = ({ onToggle }) => {
   );
 };
 
-export default Sidebar;
+export default Admin_sidebar;

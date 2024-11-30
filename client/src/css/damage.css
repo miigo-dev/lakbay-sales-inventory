@@ -26,31 +26,48 @@
     color: #fff; 
     cursor: pointer;
     border-radius: 5px;
-    margin-right: 10px; 
+    margin-right: 10px;
+    justify-content: space-between;
     transition: background-color 0.3s ease, transform 0.3s ease; 
 }
 
-.dropdown_btn{
+.header_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
     padding: 10px;
-    margin-left: 1220px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border-bottom: 1px solid #ccc; 
 }
-.addReport{
-    margin-left: 10px;
+
+.header_container h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.header_container select.dropdown_btn {
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.addReport {
+    margin-top: 10px;
+    margin-bottom: 10px;
     padding: 10px 20px;
     border: none;
     background-color: #d9c0a5; 
     color: #fff; 
     border-radius: 5px;
-
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.addReport:hover{
-    background-color: #b38e6a; 
-    transform: scale(1.05);
+.header_container .addReport:hover {
+    background-color: #b59c84;
 }
+
 
 .addReport:active {
     background-color: #b38e6a;

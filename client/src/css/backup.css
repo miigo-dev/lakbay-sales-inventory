@@ -1,0 +1,146 @@
+/* General container styling for the settings page */
+.settings-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Back button styling */
+  .back-button {
+    padding-bottom: 10px;
+  }
+  
+  /* Settings options container with background color, padding, and box-shadow */
+  .settings-options {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  /* Header (h3) styling for each settings option */
+  .settings-options h3 {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  /* Paragraph styling for settings descriptions */
+  .settings-options p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  
+  /* Input container for the frequency setting, with flexbox alignment */
+  .settings-options .input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  /* Styling for the frequency input field */
+  .settings-input {
+    font-size: 1rem;
+    padding: 10px;
+    width: 120px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #fff;
+  }
+  
+  /* Styling for the span next to the input field */
+  .settings_options span {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  /* Focused state for the input field */
+  .settings-input:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Button styling for manual backup trigger */
+  .settings_button {
+    background-color: #007BFF;
+    color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointerb
+  }
+  
+  /* Disabled button styling for manual backup when in progress */
+  .settings_button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  /* Backup DataGrid container */
+  .backup-data-grid {
+    height: 300px;
+    width: 100%;
+  }
+  
+  /* DataGrid pagination styling */
+  .settings-options .MuiDataGrid-root .MuiTablePagination-root {
+    font-size: 14px;
+  }
+  
+  /* DataGrid header styling */
+  .settings-options .MuiDataGrid-columnHeaders {
+    background-color: #007BFF;
+    color: white;
+    font-weight: 600;
+  }
+  
+  /* DataGrid cell styling */
+  .settings-options .MuiDataGrid-cell {
+    font-size: 14px;
+  }
+  
+  /* Hover effect for rows in the DataGrid */
+  .settings-options .MuiDataGrid-row:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  /* DataGrid column header title alignment */
+  .settings-options .MuiDataGrid-columnHeaderTitle {
+    text-align: center;
+  }
+  
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    /* Adjust padding for smaller screens */
+    .settings-options {
+      padding: 15px;
+    }
+  
+    /* Adjust font sizes for smaller screens */
+    .settings-options h3 {
+      font-size: 1rem;
+    }
+  
+    .settings-options p {
+      font-size: 0.9rem;
+    }
+  
+    /* Adjust input width for smaller screens */
+    .settings-input {
+      width: 100px;
+    }
+  }
+  

@@ -14,7 +14,25 @@
     border-right: 1px solid rgba(122, 118, 118, 0.2);
     flex-direction: column;
     transition: width 0.2s ease-in-out;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #c2a790 #fff0f0;
 }
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #c2a790;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background-color: #ffffff;
+}
+
 
 .sidebar.collapsed {
     width: 90px;

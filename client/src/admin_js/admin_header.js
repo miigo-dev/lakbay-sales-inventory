@@ -5,7 +5,7 @@ import notification from '../assets/icons/notif.svg';
 import user from '../assets/icons/user.svg';
 import logo_icon from '../assets/icons/LKK.svg';
 
-const Header = () => {
+const Admin_header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Header = () => {
     setIsModalOpen(!isModalOpen);
   };
   const handleViewAllClick = () => {
-    navigate('/notifications');
+    navigate('/admin_dashboard/admin_notification');
     setIsModalOpen(false); 
   };
 
@@ -72,4 +72,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Admin_header;
