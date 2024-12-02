@@ -52,26 +52,7 @@ exports.deleteProduct = async (id) => {
     }
 };
 
-// productService.js
-exports.getFilteredProducts = async (filters) => {
-    const { section, type, status } = filters;
-
-    let query = "SELECT * FROM products WHERE 1=1";
-    const params = [];
-
-    if (section) {
-        query += " AND section = $1";
-        params.push(section);
-    }
-    if (type) {
-        query += " AND type = $2";
-        params.push(type);
-    }
-    if (status && status !== 'all') {
-        query += " AND product_status = $3";
-        params.push(status);
-    }
-
-    const { rows } = await db.query(query, params);
-    return rows;
-};
+exports.getProductByWarehouse = async (warehouse_id) => {
+    const product = await db.query('SELECT * FROM products WHERE warehouse_id = $1', [warehouse_id]);
+    return product.rows;
+}

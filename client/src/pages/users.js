@@ -80,7 +80,6 @@ const Users = () => {
     const currentDateTime = new Date().toLocaleString();
 
     if (selectedUser) {
-      // Handle user edit (update existing user)
       setUsers(users.map((user) =>
         user.id === selectedUser.id
           ? {
@@ -96,7 +95,6 @@ const Users = () => {
       ));
       setEditModalOpen(false); 
     } else {
-      // Handle new user registration
       setUsers([
         ...users,
         {
@@ -159,7 +157,6 @@ const Users = () => {
       </div>
       <button className="register-button" onClick={handleRegisterClick}>Register User</button>
 
-      {/* Modal for Registering User */}
       {modalOpen && (
         <div className="modal">
           <div className="modal_content">
@@ -222,7 +219,6 @@ const Users = () => {
         </div>
       )}
 
-      {/* Modal for Viewing User */}
       {viewModalOpen && selectedUser && (
         <div className="modal">
           <div className="modal_content">
@@ -243,13 +239,11 @@ const Users = () => {
 
       )}
 
-      {/* Modal for Editing User */}
       {editModalOpen && selectedUser && (
         <div className="modal">
           <div className="modal_content">
             <h2>Edit User</h2>
             <form onSubmit={handleSubmit}>
-              {/* Full Name */}
               <div className="modal_input_group">
                 <label htmlFor="name">Full Name</label>
                 <input
@@ -261,7 +255,6 @@ const Users = () => {
                   required
                 />
               </div>
-              {/* Email */}
               <div className="modal_input_group">
                 <label htmlFor="email">Email</label>
                 <input
@@ -274,7 +267,6 @@ const Users = () => {
                 />
               </div>
 
-              {/* Username */}
               <div className="modal_input_group">
                 <label htmlFor="username">Username</label>
                 <input
@@ -287,7 +279,6 @@ const Users = () => {
                 />
               </div>
 
-              {/* Role */}
               <div className="modal_input_group">
                 <label htmlFor="role">Role</label>
                 <select
@@ -303,7 +294,6 @@ const Users = () => {
                 </select>
               </div>
 
-              {/* Save and Cancel Buttons */}
               <div className="modal_buttons">
                 <button type="button" className="cancel_button" onClick={() => setEditModalOpen(false)}>Cancel</button>
                 <button type="submit" className="submit_button">Save Changes</button>

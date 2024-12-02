@@ -4,17 +4,17 @@ import { DataGrid } from '@mui/x-data-grid';
 import '../css/transaction.css';
 
 const Transaction = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); 
   const [completedOrders, setCompletedOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch orders from API endpoint
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/transactions/'); // Replace with your endpoint
+        const response = await axios.get('http://localhost:8080/api/transaction');
+        console.log('API Response:', response.data);
         setCompletedOrders(response.data);
         setLoading(false);
       } catch (err) {
@@ -27,12 +27,21 @@ const Transaction = () => {
     fetchOrders();
   }, []);
 
-  // Filter orders based on selected date
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
 
-  const filteredOrders = completedOrders.filter(order => order.date === selectedDate);
+  const formattedSelectedDate = new Date(selectedDate).toLocaleDateString('en-CA');
+
+  const filteredOrders = completedOrders
+    .map(order => ({
+      ...order,
+      id: order.order_id,
+      order_date: new Date(order.order_date).toLocaleDateString('en-CA'), 
+    }))
+    .filter(order => order.order_date === formattedSelectedDate);
+
+  console.log('Filtered Orders:', filteredOrders);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -58,18 +67,19 @@ const Transaction = () => {
           </div>
         </div>
         <DataGrid
-          rows={filteredOrders}
-          columns={[
-            { field: 'date', headerName: 'Date', width: 150 },
-            { field: 'orderNumber', headerName: 'Order No.', width: 100 },
-            { field: 'item', headerName: 'Item', width: 150 },
-            { field: 'amount', headerName: 'Amount', width: 100 },
-          ]}
-          autoHeight
-          pageSize={5}
-          pagination
-          disableSelectionOnClick
-        />
+        rows={filteredOrders}
+        columns={[
+          { field: 'order_date', headerName: 'Date', width: 150 },
+          { field: 'order_id', headerName: 'Order No.', width: 100 },
+          { field: 'order_status', headerName: 'Status', width: 150 },
+        ]}
+        getRowId={(row) => row.order_id}
+        autoHeight
+        pageSize={5}
+        pagination
+        disableSelectionOnClick
+      />
+
       </div>
     </div>
   );

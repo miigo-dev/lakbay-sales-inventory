@@ -22,10 +22,10 @@ ChartJS.register(
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const [protectedData, setProtectedData] = useState(null); // Keep the protected info state
-  const [orders, setOrders] = useState([]); // Orders array for filtering
-  const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); // Default time frame for Kain
-  const [selectedTimeFrameKape, setSelectedTimeFrameKape] = useState('today'); // Default time frame for Kape
+  const [protectedData, setProtectedData] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); 
+  const [selectedTimeFrameKape, setSelectedTimeFrameKape] = useState('today');
   const [allOrdersCountKain, setAllOrdersCountKain] = useState(0);
   const [pendingOrdersCountKain, setPendingOrdersCountKain] = useState(0);
   const [completedOrdersCountKain, setCompletedOrdersCountKain] = useState(0);
@@ -39,11 +39,9 @@ const Dashboard = () => {
     labels: ['Kain', 'Kape'],
     datasets: [{ data: [300, 150], backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
   });
-    // Stock data for Kape and Lakbay Kain
   const stockInfoKape = { coffee: 50, milk: 30, cups: 100 };
   const stockInfoKain = { chicken: 40, pork: 30, beef: 20, rice: 100 };
 
-    // Handle toggle switch
     const handleCategoryChange = () => {
       setSelectedCategory(prevCategory => (prevCategory === 'kape' ? 'kain' : 'kape'));
     };
@@ -53,8 +51,6 @@ const Dashboard = () => {
     };
   
     useEffect(() => {
-      // Perform any necessary API calls or other actions based on selectedCategory
-      // For example, fetch the data or update the charts, etc.
     }, [selectedCategory]);
 
 
@@ -82,7 +78,7 @@ const Dashboard = () => {
       labels: ['Kain', 'Kape'],
       datasets: [
         {
-          data: [selectedSalesKain[0], selectedSalesKape[0]], // Show both Kain and Kape sales (no need to change based on category)
+          data: [selectedSalesKain[0], selectedSalesKape[0]],
           backgroundColor: ['#C2A790', '#7B6B5D'],
           borderWidth: 1
         }
@@ -106,7 +102,7 @@ const Dashboard = () => {
       }
     };
   
-    const currentData = barData['kain'][range];  // Keep the selectedCategory-dependent bar data logic
+    const currentData = barData['kain'][range]; 
     let labels = [];
     switch (range) {
       case 'daily':
@@ -141,19 +137,19 @@ const Dashboard = () => {
         backgroundColor: barChartColors,
         borderColor: '#7b7b7b',
         borderWidth: 1,
-        borderRadius: 12, // Make the bars rounded
+        borderRadius: 12, 
       }],
       options: {
         responsive: true,
         scales: {
           x: {
             grid: {
-              display: false, // Remove grid lines on x-axis
+              display: false, 
             }
           },
           y: {
             grid: {
-              display: false, // Remove grid lines on y-axis
+              display: false, 
             }
           }
         }
@@ -161,9 +157,8 @@ const Dashboard = () => {
     });
   };
   
-  const [isKainActive, setIsKainActive] = useState(true); // Default to true or false based on your initial condition
+  const [isKainActive, setIsKainActive] = useState(true); 
 
-    // Order data for simulation (replace this with actual API data)
     const orderData = [
       { id: 1, orderNumber: '001', category: 'kain', status: 'completed', date: '2024-11-08', amount: 100 },
       { id: 2, orderNumber: '002', category: 'kain', status: 'pending', date: '2024-11-07', amount: 150 },
@@ -174,39 +169,33 @@ const Dashboard = () => {
       { id: 7, orderNumber: '007', category: 'kape', status: 'pending', date: '2024-11-09', amount: 150 },
     ];
   
-    // Function to get orders based on category and selected time frame
     const getOrdersForTimeFrame = (timeFrame, category) => {
-      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const today = new Date().toISOString().split('T')[0]; 
       return orderData.filter(order => {
         if (category && order.category !== category) return false;
   
         if (timeFrame === 'today') {
           return order.date === today;
         } else if (timeFrame === 'weekly') {
-          // Logic for weekly filtering
-          return order.date >= '2024-11-01'; // Example, replace with actual logic
+          return order.date >= '2024-11-01'; 
         } else if (timeFrame === 'monthly') {
-          return order.date.slice(0, 7) === '2024-11'; // Example for November 2024
+          return order.date.slice(0, 7) === '2024-11'; 
         } else if (timeFrame === 'yearly') {
-          return order.date.slice(0, 4) === '2024'; // Example for the year 2024
+          return order.date.slice(0, 4) === '2024'; 
         }
         return false;
       });
     };
   
     useEffect(() => {
-      // Get filtered orders based on time range and category
       const filteredOrders = getOrdersForTimeFrame(timeRange, selectedCategory);
 
-      // Sort orders by date (most recent first)
       const sortedOrders = filteredOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      // Limit to the 3 most recent orders
       const recentOrders = sortedOrders.slice(0, 3);
     
-      setOrders(recentOrders); // Update the orders state to the 3 most recent orders
+      setOrders(recentOrders); 
       
-      // You can keep your logic for order counts as well
       const updateOrderCounts = (category, timeFrame) => {
         const ordersForCategory = getOrdersForTimeFrame(timeFrame, category);
         const allOrders = ordersForCategory.length;
@@ -225,8 +214,7 @@ const Dashboard = () => {
       };
     
       updateOrderCounts(selectedCategory, selectedCategory === 'kain' ? selectedTimeFrameKain : selectedTimeFrameKape);
-    }, [timeRange, selectedCategory]); // Dependencies to trigger the effect on timeRange or selectedCategory change
-    
+    }, [timeRange, selectedCategory]); 
 
 
   const protectedInfo = async () => {
@@ -247,7 +235,6 @@ const Dashboard = () => {
       console.error('Error during logout:', error);
     }
   };
-  // Fetch protected info on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -340,7 +327,6 @@ const Dashboard = () => {
       </h3>
     </div>
 
-    {/* Pie chart and Stocks (Side by Side) */}
     <div className="pie-transaction-container">
       <div className="pie-chart-container">
         <h3>Lakbay's Sales</h3>
@@ -348,7 +334,6 @@ const Dashboard = () => {
         <p className="pie-txtData">{pieChartText}</p>
       </div>
 
-      {/* Stocks */}
       <div className='stock-info-wrapper'>
         <h4>Lakbay's Stocks</h4>
         <div className='stock-info'>

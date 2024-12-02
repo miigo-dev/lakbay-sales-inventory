@@ -63,3 +63,12 @@ exports.deleteIngredient = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+exports.getIngredientByWarehouse = async (req, res) => {
+    try {
+        const ingredients = await ingredientService.getIngredientByWarehouse(req.params.warehouse_id);
+        res.status(200).json(ingredients);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
