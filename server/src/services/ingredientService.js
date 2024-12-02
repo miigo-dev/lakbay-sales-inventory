@@ -32,3 +32,8 @@ exports.deleteIngredient = async (id) => {
     const ingredient = await db.query('DELETE FROM ingredients WHERE ingredient_id = $1 RETURNING *', [id]);
     return ingredient.rows[0];
 }
+
+exports.getIngredientByWarehouse = async (warehouse_id) => {
+    const ingredient = await db.query('SELECT * FROM ingredients WHERE warehouse_id = $1', [warehouse_id]);
+    return ingredient.rows;
+}

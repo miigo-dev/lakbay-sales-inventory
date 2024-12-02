@@ -1,8 +1,8 @@
-const inventoryService = require('../services/productService');
+const productService = require('../services/productService');
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await inventoryService.getAllProducts();
+        const products = await productService.getAllProducts();
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -12,7 +12,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductByID = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await inventoryService.getProductByID(id);
+        const product = await productService.getProductByID(id);
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -30,7 +30,7 @@ exports.addProduct = async (req, res) => {
             product_status,
             remarks
         } = req.body;
-        const product = await inventoryService.addProduct(warehouse_id, 
+        const product = await productService.addProduct(warehouse_id, 
             product_name, 
             category_id, 
             product_quantity, 
@@ -56,7 +56,7 @@ exports.updateProduct = async (req, res) => {
             product_status,
             remarks
         } = req.body;
-        const product = await inventoryService.updateProduct(id, warehouse_id, 
+        const product = await productService.updateProduct(id, warehouse_id, 
             product_name, 
             category_id, 
             product_price, 
@@ -73,7 +73,7 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await inventoryService.deleteProduct(id);
+        const product = await productService.deleteProduct(id);
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -83,7 +83,7 @@ exports.deleteProduct = async (req, res) => {
 exports.getProductByWarehouse = async (req, res) => {
     try {
         const { warehouse_id } = req.params;
-        const products = await inventoryService.getProductByWarehouse(warehouse_id);
+        const products = await productService.getProductByWarehouse(warehouse_id);
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
