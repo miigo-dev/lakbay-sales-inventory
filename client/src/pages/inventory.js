@@ -446,11 +446,11 @@ const Inventory = () => {
                             </>
                         )}
 
-                        <button onClick={handleSubmit} className="btn submit_btn">
+                        <button onClick={handleSubmit} className="submit">
                             {isEditing ? 'Update' : 'Add'}
                         </button>
-                        <button className="btn close_btn" onClick={closeModal}>
-                            Close
+                        <button className="close_button" onClick={closeModal}>
+                            &times;
                         </button>
                     </div>
                 </div>
