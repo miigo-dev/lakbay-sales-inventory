@@ -12,7 +12,7 @@ const Inventory = () => {
     const [viewModalOpen, setViewModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [quantityAdjustment, setQuantityAdjustment] = useState(0);
-    const [quantityModalOpen, setQuantityModalOpen] = useState(false); 
+    const [quantityModalOpen, setQuantityModalOpen] = useState(false);
     const [adjustmentType, setAdjustmentType] = useState('');
     const [filteredView, setFilteredView] = useState([]);
     const [currentProductName, setCurrentProductName] = useState(null);
@@ -43,18 +43,13 @@ const Inventory = () => {
         fetchInventoryData();
     }, [selectedSection, selectedInventoryType]);
 
-   
-    const filteredInventory = inventoryData.filter(
-        (item) =>
-            item.section === selectedSection && 
-            item.type === selectedInventoryType && 
-            (selectedInventoryType === 'products'
-                ? (item.product_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
-                : (item.ingredient_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()))
+    // Filter data based on the search term
+    const filteredInventory = inventoryData.filter((item) =>
+        selectedInventoryType === 'products'
+            ? (item.product_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+            : (item.ingredient_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
-    
 
-    // Configure columns dynamically based on selected inventory type
     const columns =
         selectedInventoryType === 'products'
             ? [
@@ -70,8 +65,12 @@ const Inventory = () => {
                       width: 180,
                       renderCell: (params) => (
                           <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>View</button>
-                              <button className="btn out_btn" onClick={() => console.log('Delete', handleDelete(params.row.id))}>Delete</button>
+                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                  View
+                              </button>
+                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                                  Delete
+                              </button>
                           </div>
                       ),
                   },
@@ -90,202 +89,191 @@ const Inventory = () => {
                       width: 180,
                       renderCell: (params) => (
                           <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>View</button>
-                              <button className="btn out_btn" onClick={() => console.log('Delete', handleDelete(params.row.id))}>Delete</button>
+                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                  View
+                              </button>
+                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                                  Delete
+                              </button>
                           </div>
                       ),
                   },
               ];
 
-            const [currentProduct, setCurrentProduct] = useState({
+    const [currentProduct, setCurrentProduct] = useState({
+        id: null,
+        productId: '',
+        productName: '',
+        quantity: '',
+        unitMeasure: '',
+        price: '',
+        supplierId: '',
+        reorderLevel: '',
+        expiryDate: 'date',
+        productStatus: 'in',
+        section: 'main',
+        type: 'products',
+    });
+
+    const openModal = (product = null) => {
+        if (product) {
+            setCurrentProduct({
+                ...product,
+                quantity: product.quantity >= 0 ? product.quantity : 0,
+            });
+            setIsEditing(true);
+        } else {
+            setCurrentProduct({
                 id: null,
                 productId: '',
                 productName: '',
-                quantity: '',
-                unitMeasure: '',
+                quantity: 0,
                 price: '',
                 supplierId: '',
-                reorderLevel: '',
-                expiryDate: 'date',
+                reorderLevel: 0,
                 productStatus: 'in',
-                section: 'main',
-                type: 'products'
+                section: selectedSection,
+                type: selectedInventoryType,
             });
+            setIsEditing(false);
+        }
+        setModalOpen(true);
+        setQuantityAdjustment(0);
+        setRemarks('');
+    };
 
-            const openModal = (product = null) => {
-                if (product) {
-                    setCurrentProduct({
-                        ...product,
-                        quantity: product.quantity >= 0 ? product.quantity : 0,  
-                    });
-                    setIsEditing(true);
-                } else {
-                    setCurrentProduct({
-                        id: null,
-                        productId: '',
-                        productName: '',
-                        quantity: 0,  
-                        price: '',
-                        supplierId: '',
-                        reorderLevel: 0,  
-                        productStatus: 'in',
-                        section: selectedSection,
-                        type: selectedInventoryType,
-                    });
-                    setIsEditing(false);
-                }
-                setModalOpen(true);
-                setQuantityAdjustment(0); 
-                setRemarks('');
-            };
+    const closeModal = () => {
+        setModalOpen(false);
+    };
 
-            const closeModal = () => {
-                setModalOpen(false);
-            };
-        
-            const handleInputChange = (e) => {
-                const { name, value } = e.target;
-            
-                if ((name === 'quantity' || name === 'reorderLevel') && value < 0) {
-                    alert(`${name} must be a positive value.`);
-                    return;
-                }
-            
-                setCurrentProduct((prevData) => ({
-                    ...prevData,
-                    [name]: value,
-                }));
-            };
-        
-            const handleSubmit = () => {
-                if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
-                    alert('Quantity and Reorder Level must be positive values.');
-                    return;
-                }
-            
-                const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
-                const newProduct = {
-                    ...currentProduct,
-                    section: selectedSection,
-                    type: selectedInventoryType,
-                    id: isEditing ? currentProduct.id : inventoryData.length + 1,
-                    quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
-                };
-            
-                if (isEditing) {
-                    setInventoryData((prevData) =>
-                        prevData.map((item) =>
-                            item.id === currentProduct.id ? newProduct : item
-                        )
-                    );
-                } else {
-                    setInventoryData((prevData) => [...prevData, newProduct]);
-                }
-            
-                const transactionEntry = {
-                    [nameKey]: newProduct[nameKey],
-                    quantity: quantityAdjustment,
-                    price: newProduct.price,
-                    status: currentProduct.productStatus,
-                    productId: newProduct.productId || newProduct.ingredientId,
-                    remarks,
-                };
-            
-                setSelectedProduct((prevTransactions) => [
-                    ...prevTransactions,
-                    transactionEntry,
-                ]);
-            
-                closeModal();
-            };
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
 
+        if ((name === 'quantity' || name === 'reorderLevel') && value < 0) {
+            alert(`${name} must be a positive value.`);
+            return;
+        }
 
-            const handleDelete = (id) => {
-                const confirmDelete = window.confirm('Are you sure you want to delete this item?');
-                if (confirmDelete) {
-                    setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
-                }
-            };
+        setCurrentProduct((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
-             
+    const handleSubmit = () => {
+        if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
+            alert('Quantity and Reorder Level must be positive values.');
+            return;
+        }
+
+        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
+        const newProduct = {
+            ...currentProduct,
+            section: selectedSection,
+            type: selectedInventoryType,
+            id: isEditing ? currentProduct.id : inventoryData.length + 1,
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
+        };
+
+        if (isEditing) {
+            setInventoryData((prevData) =>
+                prevData.map((item) => (item.id === currentProduct.id ? newProduct : item))
+            );
+        } else {
+            setInventoryData((prevData) => [...prevData, newProduct]);
+        }
+
+        const transactionEntry = {
+            [nameKey]: newProduct[nameKey],
+            quantity: quantityAdjustment,
+            price: newProduct.price,
+            status: currentProduct.productStatus,
+            productId: newProduct.productId || newProduct.ingredientId,
+            remarks,
+        };
+
+        setSelectedProduct((prevTransactions) => [...prevTransactions, transactionEntry]);
+
+        closeModal();
+    };
+
+    const handleDelete = (id) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this item?');
+        if (confirmDelete) {
+            setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
+        }
+    };
+
     const openQuantityModal = (type) => {
-        setAdjustmentType(type); 
+        setAdjustmentType(type);
         setQuantityModalOpen(true);
     };
 
     const closeQuantityModal = () => {
-        setQuantityModalOpen(false); 
+        setQuantityModalOpen(false);
     };
 
     const handleView = (item) => {
-        // Determine the correct key for name based on the selected inventory type
         const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
-    
-        // Filter transactions using the correct key
         const transactions = selectedProduct.filter(
             (transaction) => transaction[nameKey] === item[nameKey]
         );
-    
-        // Set the product name and filtered transactions for the modal
-        setCurrentProductName(item[nameKey]); // Set the current product name dynamically
-        setFilteredView(transactions); // Update the filtered transactions
-        setViewFilter('all'); // Reset the view filter
-        setViewModalOpen(true); // Open the modal
+
+        setCurrentProductName(item[nameKey]);
+        setFilteredView(transactions);
+        setViewFilter('all');
+        setViewModalOpen(true);
     };
 
     const handleQuantityAdjustmentSubmit = () => {
-        const adjustmentValue = parseInt(quantityAdjustment, 10); // Parse the adjustment as an integer
-    
+        const adjustmentValue = parseInt(quantityAdjustment, 10);
+
         if (isNaN(adjustmentValue) || adjustmentValue <= 0) {
             alert('Please enter a positive integer for quantity adjustment.');
             return;
         }
-    
-        // Determine the correct key for name and quantity based on the inventory type
+
         const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
         const quantityKey = selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity';
-    
-        // Update the inventory data
+
         const updatedData = inventoryData.map((item) => {
             if (item[nameKey] === currentProductName) {
-                const currentQuantity = parseInt(item[quantityKey], 10) || 0; // Ensure the current quantity is treated as a number
+                const currentQuantity = parseInt(item[quantityKey], 10) || 0;
                 const newQuantity =
                     adjustmentType === 'in'
                         ? currentQuantity + adjustmentValue
                         : currentQuantity - adjustmentValue;
-    
+
                 if (newQuantity < 0) {
                     alert('Cannot reduce quantity below zero.');
                     return item;
                 }
-    
+
                 return {
                     ...item,
-                    [quantityKey]: newQuantity, // Update the quantity as a number
+                    [quantityKey]: newQuantity,
                 };
             }
             return item;
         });
-    
+
         setInventoryData(updatedData);
-    
-        // Add a new transaction entry
+
         const newTransaction = {
             date: new Date().toLocaleDateString(),
             [nameKey]: currentProductName,
             quantity: adjustmentValue,
             status: adjustmentType,
-            remarks
+            remarks,
         };
-    
+
         setSelectedProduct((prevTransactions) => [...prevTransactions, newTransaction]);
-    
-        // Clear the adjustment field and close the modal
+
         setQuantityAdjustment('');
         setRemarks('');
         closeQuantityModal();
     };
-    
+
     useEffect(() => {
         setSelectedSection(isLakbayKape ? 'lakbayKape' : 'lakbayKain');
     }, [isLakbayKape]);
@@ -324,8 +312,8 @@ const Inventory = () => {
                         </select>
 
                         <button className="btn add-inventory_btn" onClick={() => openModal()}>
-                        Add Item
-                    </button>
+                            Add Item
+                        </button>
                     </div>
                 </div>
 
@@ -342,7 +330,6 @@ const Inventory = () => {
                 </div>
             </div>
 
-
             {modalOpen && (
                 <div className="modal1">
                     <div className="modal-content1">
@@ -350,7 +337,6 @@ const Inventory = () => {
 
                         {selectedInventoryType === 'products' ? (
                             <>
-
                                 <label htmlFor="productName">Product Name</label>
                                 <input
                                     type="text"
@@ -378,7 +364,6 @@ const Inventory = () => {
                                     onChange={handleInputChange}
                                 />
 
-
                                 <label htmlFor="reorderLevel">Reorder Trigger</label>
                                 <input
                                     type="number"
@@ -396,11 +381,9 @@ const Inventory = () => {
                                     value={currentProduct.category_id}
                                     onChange={handleInputChange}
                                 />
-
                             </>
                         ) : (
                             <>
-
                                 <label htmlFor="ingredientName">Ingredient Name</label>
                                 <input
                                     type="text"
@@ -425,12 +408,13 @@ const Inventory = () => {
                                     value={currentProduct.ingredient_unit}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>Select Unit of Measure</option>
+                                    <option value="" disabled>
+                                        Select Unit of Measure
+                                    </option>
                                     <option value="kg">Kilograms (kg)</option>
                                     <option value="g">Grams (g)</option>
                                     <option value="L">Liters (L)</option>
                                     <option value="ml">Milliliters (ml)</option>
-
                                 </select>
 
                                 <label htmlFor="price">Price</label>
@@ -450,46 +434,51 @@ const Inventory = () => {
                                     value={currentProduct.reorder_level}
                                     onChange={handleInputChange}
                                 />
-
-                                <label htmlFor="supplier_id">Supplier</label>
-                                <select
-                                    name="supplier_id"
-                                    value={currentProduct.supplier_id}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="" disabled>Select Supplier</option>
-
-                                </select>
-
                             </>
                         )}
 
-                        <button onClick={handleSubmit} className="btn submit_btn">{isEditing ? 'Update' : 'Add'}</button>
-                        <button className="btn close_btn" onClick={closeModal}>Close</button>
-                    
+                        <button onClick={handleSubmit} className="btn submit_btn">
+                            {isEditing ? 'Update' : 'Add'}
+                        </button>
+                        <button className="btn close_btn" onClick={closeModal}>
+                            Close
+                        </button>
                     </div>
                 </div>
             )}
 
-
-        {viewModalOpen && (
+            {viewModalOpen && (
                 <div className="modal_view">
                     <div className="modal_view2">
-                        <div className='header_container'>
-                        <h2>{selectedInventoryType === 'products' ? 'Inventory of Product' : 'Inventory of Ingredient'}: {currentProductName}</h2>
-                        <span onClick={() => setViewModalOpen(false)} className="close">&times;</span>
+                        <div className="header_container">
+                            <h2>
+                                {selectedInventoryType === 'products'
+                                    ? 'Inventory of Product'
+                                    : 'Inventory of Ingredient'}
+                                : {currentProductName}
+                            </h2>
+                            <span onClick={() => setViewModalOpen(false)} className="close">
+                                &times;
+                            </span>
                         </div>
                         <div className="viewModal_in_out_btn">
-                    
-                            <button onClick={() => openQuantityModal('in')} className="btn_in_btn">In</button>
-                            <button onClick={() => openQuantityModal('out')} className="btn_out_btn">Out</button>
+                            <button onClick={() => openQuantityModal('in')} className="btn_in_btn">
+                                In
+                            </button>
+                            <button onClick={() => openQuantityModal('out')} className="btn_out_btn">
+                                Out
+                            </button>
                         </div>
 
                         <table>
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>{selectedInventoryType === 'products' ? 'Product Name' : 'Ingredient Name'}</th>
+                                    <th>
+                                        {selectedInventoryType === 'products'
+                                            ? 'Product Name'
+                                            : 'Ingredient Name'}
+                                    </th>
                                     <th>Quantity</th>
                                     <th>Status</th>
                                     <th>Remarks</th>
@@ -500,7 +489,11 @@ const Inventory = () => {
                                 {filteredView.map((transaction, index) => (
                                     <tr key={index}>
                                         <td>{transaction.date}</td>
-                                        <td>{selectedInventoryType === 'products' ? transaction.product_name : transaction.ingredient_name}</td>
+                                        <td>
+                                            {selectedInventoryType === 'products'
+                                                ? transaction.product_name
+                                                : transaction.ingredient_name}
+                                        </td>
                                         <td>{transaction.quantity}</td>
                                         <td>{transaction.status}</td>
                                         <td>{transaction.remarks}</td>
@@ -509,19 +502,27 @@ const Inventory = () => {
                                 ))}
                             </tbody>
                         </table>
-
-                        
                     </div>
                 </div>
-
             )}
 
-        {quantityModalOpen && (
+            {quantityModalOpen && (
                 <div className="modal1">
                     <div className="modal-content1">
-                        <h3>Adjust Quantity</h3>
+                        <h3>Update Quantity</h3>
 
-                        <label htmlFor="quantityAdjustment">Adjust Quantity</label>
+                        <label htmlFor="supplier_id">Supplier</label>
+                                <select
+                                    name="supplier_id"
+                                    value={currentProduct.supplier_id}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" disabled>
+                                        Select Supplier
+                                    </option>
+                                </select>
+
+                        <label htmlFor="quantityAdjustment">Quantity</label>
                         <input
                             type="number"
                             name="quantityAdjustment"
@@ -539,14 +540,18 @@ const Inventory = () => {
                             onChange={(e) => setRemarks(e.target.value)}
                         />
 
-
-                        <button onClick={handleQuantityAdjustmentSubmit} className="submit-btn">Submit Adjustment</button>
-                        <button onClick={closeQuantityModal} className="btn close_btn">Close</button>
+                        <button
+                            onClick={handleQuantityAdjustmentSubmit}
+                            className="submit-btn"
+                        >
+                            Submit Adjustment
+                        </button>
+                        <button onClick={closeQuantityModal} className="btn close_btn">
+                            Close
+                        </button>
                     </div>
                 </div>
             )}
-
-            
         </div>
     );
 };
