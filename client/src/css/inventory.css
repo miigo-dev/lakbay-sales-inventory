@@ -189,8 +189,7 @@
     transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
-
-.modal {
+.modal1 {
     position: fixed;
     top: 0;
     left: 0;
@@ -203,45 +202,86 @@
     z-index: 1000;
 }
 
-.modal-content {
+.modal-content1 {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 600px;
-    max-width: 90%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    max-height: 100%;
+    padding: 40px; /* Increased padding for better spacing */
+    border-radius: 12px; /* Smoother corners */
+    width: 90%; /* More adaptive width */
+    max-width: 800px; /* Restricts maximum width for better readability */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
+    font-family: 'Arial', sans-serif;
+    color: #333;
 }
 
-.modal-content h2 {
-    margin-bottom: 15px;
-}
-
-.modal-content label {
-    display: block;
-    margin-bottom: 5px;
+/* Style for the modal header */
+.modal-header {
+    font-size: 1.5rem;
     font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center; /* Center-align the header */
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
 }
 
-.modal-content input,
-.modal-content select {
+/* Style for input fields */
+.modal-content1 input, 
+.modal-content1 select, 
+.modal-content1 button {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
+    margin: 10px 0;
+    border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
-.close-btn, .submit-btn {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
+/* Style for the submit button */
+.modal-content1 button {
+    background-color: #C2A790; /* Green background */
+    color: white;
+    font-size: 1rem;
     cursor: pointer;
     border: none;
-    background-color: #C2A790;
-    color: white;
+    transition: background-color 0.3s ease;
 }
+
+.modal-content1 button:hover {
+    background-color: #C2A790; /* Slightly darker green on hover */
+}
+
+/* Add spacing between form fields */
+.modal-content1 .form-group {
+    margin-bottom: 15px;
+}
+
+
+.modal_view {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal_view2 {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%; 
+    max-width: 700px; 
+    max-height: 90%; 
+    overflow-y: auto; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+
 
 .close-btn:hover {
     background-color: #a68a6b;
@@ -295,19 +335,3 @@
     justify-content: space-between; 
     padding: 20px;
 }
-
-.circle {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: white; 
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05), -10px -10px 30px rgba(0, 0, 0, 0.05) inset;
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: left 0.3s ease-in-out;
-    }
