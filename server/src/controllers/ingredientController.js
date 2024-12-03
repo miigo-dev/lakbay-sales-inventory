@@ -72,3 +72,12 @@ exports.getIngredientByWarehouse = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+exports.addIngredientType = async (req, res) => {
+    try {
+        const ingredientType = await ingredientService.addIngredientType(req.body.type_name);
+        res.status(201).json(ingredientType);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}

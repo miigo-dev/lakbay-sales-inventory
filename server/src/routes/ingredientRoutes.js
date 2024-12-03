@@ -8,5 +8,6 @@ router.post('/ingredients', ingredientController.addIngredient);
 router.put('/ingredients/:id', ingredientController.updateIngredient);
 router.delete('/ingredients/:id', ingredientController.deleteIngredient);
 router.get('/ingredients/warehouses/:warehouse_id', ingredientController.getIngredientByWarehouse);
+router.post('/ingredients', ingredientController.addIngredientType);
 
 module.exports = router;
