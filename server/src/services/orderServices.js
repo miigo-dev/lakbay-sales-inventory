@@ -125,15 +125,36 @@ exports.updateOrderStatus = async function(orderId, order_status) {
 };
 
 exports.completeOrder = async function (orderId) {
-    console.log("Updating order ID in DB: ", orderId); // Log the order ID
     try {
+        await db.query('BEGIN');
+
+        const { rows: orderItems } = await db.query(
+            'SELECT product_id, quantity FROM order_items WHERE order_id = $1',
+            [orderId]
+        );
+
+        if (orderItems.length === 0) {
+            throw new Error('No items found for this order.');
+        }
+
+        for (const item of orderItems) {
+            const { product_id, quantity } = item;
+            await db.query(
+                'UPDATE products SET product_quantity = product_quantity - $1 WHERE product_id = $2',
+                [quantity, product_id]
+            );
+        }
+
         await db.query(
             'UPDATE orders SET order_status = $1, updated_at = CURRENT_TIMESTAMP WHERE order_id = $2',
             ['Completed', orderId]
         );
-        console.log("Order updated successfully in the database."); // Log success
+
+        await db.query('COMMIT');
+        console.log('Order completed and stock updated successfully.');
     } catch (error) {
-        console.error("Database query error:", error); // Log query error
+        await db.query('ROLLBACK');
+        console.error('Error completing order:', error);
         throw error;
     }
 };

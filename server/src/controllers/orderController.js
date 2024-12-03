@@ -64,15 +64,11 @@ exports.deleteOrder = async (req, res) => {
 exports.completeOrder = async (req, res) => {
     const { id } = req.params;
 
-    console.log("Order ID received: ", id); // Log the received ID
-
     try {
-        // Call the service to mark the order as 'Completed'
         await orderService.completeOrder(id);
-        console.log("Order status updated successfully for ID:", id); // Log success
-        res.status(200).json({ message: 'Order status updated successfully' });
+        res.status(200).json({ message: 'Order marked as completed and stock updated successfully.' });
     } catch (error) {
-        console.error('Error updating order status:', error); // Log the error
+        console.error('Error updating order status:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
