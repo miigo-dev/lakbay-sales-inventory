@@ -9,7 +9,7 @@ const Settings = () => {
       <hr className="settings-divider" />
 
       {/* Sidebar Navigation for Settings */}
-      <div className="settings-options">
+      <div className="settings_options">
         <NavLink
           to="/settings/backup"
           className={({ isActive }) => (isActive ? 'settings-button active' : 'settings-button')}

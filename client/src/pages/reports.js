@@ -150,8 +150,8 @@ const Reports = () => {
 
             {modalOpen && (
                 <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={closeModal}>&times;</span>
+                    <div className="modal_content">
+                        <span className="close_button" onClick={closeModal}>&times;</span>
                         <h2>{edit ? 'Edit Report' : 'Add Report'}</h2>
                         <form onSubmit={(e) => { e.preventDefault(); submitForm(); }} className='input_report'>
                             <label>Product ID:</label>
@@ -198,7 +198,7 @@ const Reports = () => {
                                 <option value="compensation">compensation</option>
                             </select>
                             <br />
-                            <button type="submit">{edit ? 'Update' : 'Add'} Report</button>
+                            <button className="submit" type="submit">{edit ? 'Update' : 'Add'} Report</button>
                         </form>
                     </div>
                 </div>

@@ -331,8 +331,8 @@ const Inventory = () => {
             </div>
 
             {modalOpen && (
-                <div className="modal1">
-                    <div className="modal-content1">
+                <div className="modal">
+                    <div className="modal_content">
                         <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
 
                         {selectedInventoryType === 'products' ? (
@@ -446,11 +446,11 @@ const Inventory = () => {
                             </>
                         )}
 
-                        <button onClick={handleSubmit} className="btn submit_btn">
+                        <button onClick={handleSubmit} className="submit">
                             {isEditing ? 'Update' : 'Add'}
                         </button>
-                        <button className="btn close_btn" onClick={closeModal}>
-                            Close
+                        <button className="close_button" onClick={closeModal}>
+                            &times;
                         </button>
                     </div>
                 </div>
