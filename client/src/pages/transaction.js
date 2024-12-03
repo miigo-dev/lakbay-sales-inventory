@@ -40,15 +40,39 @@ const Transaction = () => {
     setSelectedDate(e.target.value);
   };
 
-  const handleViewClick = (order) => {
-    setSelectedOrder(order);
-    setModalOpen(true);
-  };
+  const handleViewClick = async (order) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/api/transaction/${order.order_id}`);
+        setSelectedOrder(response.data); // Fetch and set the detailed order data
+        setModalOpen(true);
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        alert('Failed to fetch order details.');
+    }
+};
+
 
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedOrder(null);
   };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('http://localhost:8080/api/transaction');
+            setCompletedOrders(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching orders:', err);
+            setError('Failed to load transaction data');
+            setLoading(false);
+        }
+    };
+
+    fetchOrders();
+}, []);
 
   const formattedSelectedDate = new Date(selectedDate).toLocaleDateString('en-CA');
 
@@ -115,21 +139,26 @@ const Transaction = () => {
 
       {modalOpen && (
         <div className="modal">
-          <div className="modal_content">
-            <h2>Order ID: {selectedOrder?.order_id}</h2>
+        <div className="modal_content">
+          <h2>Order ID: {selectedOrder.order_id}</h2>
             <DataGrid
-              rows={staticOrderDetails}
-              columns={[
-                { field: 'item_name', headerName: 'Order Items', width: 200 },
-                { field: 'quantity', headerName: 'Quantity', width: 150 },
-                { field: 'total_amount', headerName: 'Amount', width: 150 },
-              ]}
-              autoHeight
-              pageSize={5}
-              disableSelectionOnClick
+                rows={selectedOrder.items.map((item, index) => ({
+                    id: index,
+                    product_name: item.product_name,
+                    quantity: item.quantity,
+                    total_amount: item.order_total,
+                }))}
+                columns={[
+                    { field: 'product_name', headerName: 'Order Items', width: 200 },
+                    { field: 'quantity', headerName: 'Quantity', width: 150 },
+                    { field: 'total_amount', headerName: 'Amount', width: 150 },
+                ]}
+                autoHeight
+                pageSize={5}
+                disableSelectionOnClick
             />
             <button className="cancel_button" onClick={handleCloseModal}>
-              Close
+                Close
             </button>
           </div>
         </div>
