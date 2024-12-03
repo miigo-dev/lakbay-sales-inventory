@@ -389,7 +389,7 @@ const Inventory = () => {
                                     type="text"
                                     name="ingredient_type"
                                     placeholder="Type"
-                                    value={currentProduct.ingredient_type}
+                                    value={currentProduct.category_id}
                                     onChange={handleInputChange}
                                 />
 
