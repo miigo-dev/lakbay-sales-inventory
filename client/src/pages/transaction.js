@@ -11,13 +11,6 @@ const Transaction = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Static data for modal's DataGrid
-  const staticOrderDetails = [
-    { id: 1, item_name: 'Item A', quantity: 2, total_amount: 40 },
-    { id: 2, item_name: 'Item B', quantity: 1, total_amount: 20 },
-    { id: 3, item_name: 'Item C', quantity: 3, total_amount: 60 },
-  ];
-
   useEffect(() => {
     const fetchOrders = async () => {
       try {
