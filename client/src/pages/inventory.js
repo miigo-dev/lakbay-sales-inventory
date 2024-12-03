@@ -337,6 +337,15 @@ const Inventory = () => {
 
                         {selectedInventoryType === 'products' ? (
                             <>
+                                <label htmlFor="categoryid">Category</label>
+                                <input
+                                    type="text"
+                                    name="category_id"
+                                    placeholder="Category ID"
+                                    value={currentProduct.category_id}
+                                    onChange={handleInputChange}
+                                />
+
                                 <label htmlFor="productName">Product Name</label>
                                 <input
                                     type="text"
@@ -372,18 +381,18 @@ const Inventory = () => {
                                     value={currentProduct.reorder_level}
                                     onChange={handleInputChange}
                                 />
-
-                                <label htmlFor="categoryid">Meal Type</label>
-                                <input
-                                    type="text"
-                                    name="category_id"
-                                    placeholder="Category ID"
-                                    value={currentProduct.category_id}
-                                    onChange={handleInputChange}
-                                />
                             </>
                         ) : (
                             <>
+                                <label htmlFor="ingredientType">Type</label>
+                                <input
+                                    type="text"
+                                    name="ingredient_type"
+                                    placeholder="Type"
+                                    value={currentProduct.ingredient_type}
+                                    onChange={handleInputChange}
+                                />
+
                                 <label htmlFor="ingredientName">Ingredient Name</label>
                                 <input
                                     type="text"
