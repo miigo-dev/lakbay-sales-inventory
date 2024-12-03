@@ -65,87 +65,6 @@ const Orders = () => {
     fetchMenuItems();
   }, []);
 
-  useEffect(() => {
-    const warehouseId = isLakbayKape ? 2 : 1;
-    setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
-  }, [menuItems, isLakbayKape]);
-
-  const calculateTotalPrice = () => {
-    const total = orders.reduce((total, order) => total + order.price * order.quantity, 0);
-    return total - (total * discount / 100); 
-  };
-
-  const applyDiscount = (type) => {
-    if (type === 'SNR') {
-      if (snrActive) {
-        setSNRActive(false);
-        setDiscount(0);
-      } else {
-        setSNRActive(true);
-        setPWDActive(false);
-        setSTUActive(false);
-        setDiscount(20); 
-      }
-    } else if (type === 'PWD') {
-      if (pwdActive) {
-        setPWDActive(false);
-        setDiscount(0);
-      } else {
-        setPWDActive(true);
-        setSNRActive(false);
-        setSTUActive(false);
-        setDiscount(20);
-      }
-    } else if (type === 'STU') {
-      if (stuActive) {
-        setSTUActive(false);
-        setDiscount(0);
-      } else {
-        setSTUActive(true);
-        setSNRActive(false);
-        setPWDActive(false);
-        setDiscount(10);
-      }
-    }
-  };
-  
-
-  const handleLinkClick = (link) => {
-    setActiveLink(link);
-    setSearchTerm('');
-  };
-
-  const handleItemClick = (item) => {
-    if (item.stockquantity > 0) {
-      setSelectedItem(item);
-      setQuantity(0);
-      setSize('');
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleCloseRecentOrderModal = () => {
-    setRecentOrder(null);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedItem(null);
-  };
-
-  const handleQuantityChange = (operation) => {
-    setQuantity((prev) => {
-      if (operation === 'increase' && prev < selectedItem.stockquantity) {
-        return prev + 1;
-      } else if (operation === 'decrease' && prev > 0) {
-        return prev - 1;
-      }
-      return prev;
-    });
-  };
-
-  const handleSizeSelection = (selectedSize) => setSize(selectedSize);
-
   const addOrder = () => {
     if (quantity > 0) {
       if (selectedItem.category === 'drinks' && !size) {
@@ -242,16 +161,96 @@ const Orders = () => {
     }
   };
 
+  const calculateTotalPrice = () => {
+    const total = orders.reduce((total, order) => total + order.price * order.quantity, 0);
+    return total - (total * discount / 100); 
+  };
+
+  const applyDiscount = (type) => {
+    if (type === 'SNR') {
+      if (snrActive) {
+        setSNRActive(false);
+        setDiscount(0);
+      } else {
+        setSNRActive(true);
+        setPWDActive(false);
+        setSTUActive(false);
+        setDiscount(20); 
+      }
+    } else if (type === 'PWD') {
+      if (pwdActive) {
+        setPWDActive(false);
+        setDiscount(0);
+      } else {
+        setPWDActive(true);
+        setSNRActive(false);
+        setSTUActive(false);
+        setDiscount(20);
+      }
+    } else if (type === 'STU') {
+      if (stuActive) {
+        setSTUActive(false);
+        setDiscount(0);
+      } else {
+        setSTUActive(true);
+        setSNRActive(false);
+        setPWDActive(false);
+        setDiscount(10);
+      }
+    }
+  };
+
+  const handleQuantityChange = (operation) => {
+    setQuantity((prev) => {
+      if (operation === 'increase' && prev < selectedItem.stockquantity) {
+        return prev + 1;
+      } else if (operation === 'decrease' && prev > 0) {
+        return prev - 1;
+      }
+      return prev;
+    });
+  };
+
+  const handleSizeSelection = (selectedSize) => setSize(selectedSize);
+
+  const displayedItems = filteredMenuItems.filter(item =>
+    (activeLink === 'all' || item.category === activeLink) &&
+    item.productname.includes(searchTerm)
+  );
+
+  const handleLinkClick = (link) => {
+    setActiveLink(link);
+    setSearchTerm('');
+  };
+
+  const handleItemClick = (item) => {
+    if (item.stockquantity > 0) {
+      setSelectedItem(item);
+      setQuantity(0);
+      setSize('');
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseRecentOrderModal = () => {
+    setRecentOrder(null);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
   const toggleExpandCollapse = () => {
     setIsExpanded((prev) => !prev);
   };
 
   const toggleView = () => setIsLakbayKape((prev) => !prev);
 
-  const displayedItems = filteredMenuItems.filter(item =>
-    (activeLink === 'all' || item.category === activeLink) &&
-    item.productname.includes(searchTerm)
-  );
+  useEffect(() => {
+    const warehouseId = isLakbayKape ? 2 : 1;
+    setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
+  }, [menuItems, isLakbayKape]);
 
   return (
     <div className="main-container">
