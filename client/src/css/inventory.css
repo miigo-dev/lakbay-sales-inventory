@@ -204,13 +204,13 @@
 
 .modal-content1 {
     background-color: #fff;
-    padding: 40px; /* Increased padding for better spacing */
-    border-radius: 12px; /* Smoother corners */
-    width: 90%; /* More adaptive width */
-    max-width: 800px; /* Restricts maximum width for better readability */
+    padding: 40px; 
+    border-radius: 12px; 
+    width: 90%; 
+    max-width: 800px; 
+    max-height: 100%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
-    font-family: 'Arial', sans-serif;
     color: #333;
 }
 

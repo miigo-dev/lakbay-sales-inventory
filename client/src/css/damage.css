@@ -216,7 +216,20 @@
 .modal-content button[type="submit"]:hover {
     background-color: #8f7255;
 }
-
+.submit{
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #c7ad91;
+    width: 100%;
+}
+.submit:hover{
+    background-color: #a18466;
+    color: white;
+}
 @media (max-width: 768px) {
     .modal-content {
         width: 90%; 

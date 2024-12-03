@@ -3,7 +3,7 @@ import '../css/header.css';
 import { useNavigate } from 'react-router-dom';
 import notification from '../assets/icons/notif.svg';
 import user from '../assets/icons/user.svg';
-import logo_icon from '../assets/icons/LKK.svg';
+
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -17,15 +17,20 @@ const Header = () => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
   const handleViewAllClick = () => {
     navigate('/notifications');
     setIsModalOpen(false); 
   };
 
+  const handleDropdownClick = (path) => {
+    navigate(path);
+    setIsDropdownOpen(false); // Close the dropdown after navigation
+  };
+
   return (
     <header className="static-header">
-      <div className="header-left">
-      </div>
+      <div className="header-left"></div>
       <div className="header-right">
         <img
           src={notification}
@@ -39,9 +44,18 @@ const Header = () => {
         >
           <img src={user} alt="User Profile" className="icon profile-icon" />
           <div className="dropdown-menu">
-            <button className="dropdown-item">Profile</button>
-            <button className="dropdown-item">Backup</button>
-            <button className="dropdown-item">About</button>
+            <button
+              className="dropdown-item"
+              onClick={() => handleDropdownClick("/settings/backup")}
+            >
+              Backup
+            </button>
+            <button
+              className="dropdown-item"
+              onClick={() => handleDropdownClick("/settings/about")}
+            >
+              About
+            </button>
             <button className="dropdown-item">Logout</button>
           </div>
         </div>
@@ -51,7 +65,7 @@ const Header = () => {
       {isModalOpen && (
         <div className="notification-modal">
           <div className="modal-content">
-            <button className="close-btn" onClick={toggleModal}>
+            <button className="close_button" onClick={toggleModal}>
               &times;
             </button>
             <h2>Notifications</h2>

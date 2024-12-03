@@ -77,7 +77,7 @@ const CashierRoutes = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!isAuth) {
-    return <Navigate to='/login' />;
+    return <Navigate to='/login' />;                                                                                                                     
   }
 
   return (

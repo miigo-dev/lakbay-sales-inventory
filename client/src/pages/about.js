@@ -19,6 +19,7 @@ const About = () => {
         <img src={Back} alt="Back" />
       </button>
       <h1>About the System</h1>
+      <hr className="settings-divider" />
       <div className="about-title">
         <h1>Sales and Inventory Management System</h1>
       </div>
