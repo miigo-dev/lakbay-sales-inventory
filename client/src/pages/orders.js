@@ -17,7 +17,6 @@ const Orders = () => {
   const [change, setChange] = useState(0);
   const [isLakbayKape, setIsLakbayKape] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState(1);
   const [completedOrders, setCompletedOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
@@ -27,6 +26,7 @@ const Orders = () => {
   const [discount, setDiscount] = useState(0); 
   const [snrActive, setSNRActive] = useState(false);
   const [pwdActive, setPWDActive] = useState(false);
+  const [stuActive, setSTUActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +46,7 @@ const Orders = () => {
       try {
         const productResponse = await axios.get('http://localhost:8080/api/products/');
         const fetchedItems = productResponse.data.map(item => ({
+          product_id: item.product_id,
           productname: item.product_name,
           category: categoryMap[item.category_id] || 'unknown',
           price: parseFloat(item.product_price),
@@ -83,7 +84,8 @@ const Orders = () => {
       } else {
         setSNRActive(true);
         setPWDActive(false);
-        setDiscount(20);
+        setSTUActive(false);
+        setDiscount(20); 
       }
     } else if (type === 'PWD') {
       if (pwdActive) {
@@ -92,10 +94,22 @@ const Orders = () => {
       } else {
         setPWDActive(true);
         setSNRActive(false);
+        setSTUActive(false);
         setDiscount(20);
+      }
+    } else if (type === 'STU') {
+      if (stuActive) {
+        setSTUActive(false);
+        setDiscount(0);
+      } else {
+        setSTUActive(true);
+        setSNRActive(false);
+        setPWDActive(false);
+        setDiscount(10);
       }
     }
   };
+  
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
@@ -113,10 +127,6 @@ const Orders = () => {
 
   const handleCloseRecentOrderModal = () => {
     setRecentOrder(null);
-  };
-
-  const openTransactionModal = () => {
-    setIsTransactionModalOpen(true);
   };
 
   const closeModal = () => {
@@ -146,6 +156,7 @@ const Orders = () => {
       setOrders((prevOrders) => [
         ...prevOrders,
         {
+          product_id: selectedItem.product_id,
           item: selectedItem.productname,
           size: selectedItem.category === 'meals' ? '' : size,
           quantity,
@@ -213,19 +224,22 @@ const Orders = () => {
 
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
+    console.log("Order Number: ", completedOrder.orderNumber); // Log the order number
+    console.log("Endpoint: ", `http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`); // Log the endpoint
+
     try {
-      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
-      setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
-      setOrderHistory((prevHistory) =>
-        prevHistory.map((order) =>
-          order.orderNumber === completedOrder.orderNumber
-            ? { ...order, status: 'Completed' }
-            : order
-        )
-      );
+        await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
+        setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
+        setOrderHistory((prevHistory) =>
+            prevHistory.map((order) =>
+                order.orderNumber === completedOrder.orderNumber
+                    ? { ...order, status: 'Completed' }
+                    : order
+            )
+        );
     } catch (error) {
-      console.error('Error completing order:', error);
-      alert('Failed to complete order');
+        console.error('Error completing order:', error);
+        alert('Failed to complete order');
     }
   };
 
@@ -256,9 +270,6 @@ const Orders = () => {
               {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
             </span>
           </div>
-          <button className="transaction-button" onClick={openTransactionModal}>
-            <i className="material-symbols-outlined">receipt_long</i>
-          </button>
         </div>
 
         <div className='search_container'>
@@ -341,6 +352,7 @@ const Orders = () => {
               </ul>
             )}
           </div>
+
           <div className="discount-buttons">
             <button
               className={`discount-button1 ${snrActive ? 'active' : ''}`} 
@@ -354,7 +366,14 @@ const Orders = () => {
             >
               PWD
             </button>
+            <button
+              className={`discount-button3 ${stuActive ? 'active' : ''}`} 
+              onClick={() => applyDiscount('STU')}
+            >
+              STU
+            </button>
           </div>
+
           <div className="total-section">
             <h4>Total: {calculateTotalPrice().toFixed(2)}</h4>
             <div className="custom-amount-section">
@@ -416,35 +435,6 @@ const Orders = () => {
           )}
         </div>
       </div>
-      
-      {isTransactionModalOpen && (
-        <div className="full-screen-modal">
-          <div className="modal-content">
-            <h3>Recent History:</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Order</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderHistory.map((order, index) => (
-                  <tr key={index}>
-                    <td>{new Date().toLocaleDateString()}</td>    
-                    <td>{order.orderNumber}</td>
-                    <td>{order.amount}</td>
-                    <td>{order.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button onClick={() => setIsTransactionModalOpen(false)}>Close</button>
-          </div>
-        </div>
-      )}
   
       {isModalOpen && selectedItem && (
         <div className="modal">
@@ -484,6 +474,5 @@ const Orders = () => {
       
     </div>
   );
-  
 };
 export default Orders;

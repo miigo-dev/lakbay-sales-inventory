@@ -738,6 +738,30 @@
     width: 100%; 
   }
 
+  .discount-button3 {
+    color: #4caf50;
+    border: 1px solid #4caf50;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; 
+  }
+   .discount-button3:hover {
+      background-color: #4caf50;
+      color: white;
+  }
+
+  .discount-button3:focus {
+      outline: none;
+  }
+
+  .discount-button3.active {
+    background-color: #45a049;
+  }
+  
   .discount-button1:hover {
       background-color: #4960ca;
       color: white;
