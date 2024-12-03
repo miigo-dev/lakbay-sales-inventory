@@ -46,6 +46,7 @@ const Orders = () => {
       try {
         const productResponse = await axios.get('http://localhost:8080/api/products/');
         const fetchedItems = productResponse.data.map(item => ({
+          product_id: item.product_id,
           productname: item.product_name,
           category: categoryMap[item.category_id] || 'unknown',
           price: parseFloat(item.product_price),
@@ -146,6 +147,7 @@ const Orders = () => {
       setOrders((prevOrders) => [
         ...prevOrders,
         {
+          product_id: selectedItem.product_id,
           item: selectedItem.productname,
           size: selectedItem.category === 'meals' ? '' : size,
           quantity,
@@ -213,19 +215,22 @@ const Orders = () => {
 
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
+    console.log("Order Number: ", completedOrder.orderNumber); // Log the order number
+    console.log("Endpoint: ", `http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`); // Log the endpoint
+
     try {
-      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
-      setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
-      setOrderHistory((prevHistory) =>
-        prevHistory.map((order) =>
-          order.orderNumber === completedOrder.orderNumber
-            ? { ...order, status: 'Completed' }
-            : order
-        )
-      );
+        await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
+        setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
+        setOrderHistory((prevHistory) =>
+            prevHistory.map((order) =>
+                order.orderNumber === completedOrder.orderNumber
+                    ? { ...order, status: 'Completed' }
+                    : order
+            )
+        );
     } catch (error) {
-      console.error('Error completing order:', error);
-      alert('Failed to complete order');
+        console.error('Error completing order:', error);
+        alert('Failed to complete order');
     }
   };
 
@@ -484,6 +489,5 @@ const Orders = () => {
       
     </div>
   );
-  
 };
 export default Orders;

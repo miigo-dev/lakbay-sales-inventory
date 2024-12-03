@@ -1,6 +1,5 @@
 const db = require('../db');
 
-// Create a new order
 exports.createOrder = async function(order) {
     const { order_status, order_date, order_items } = order;
     try {
@@ -27,7 +26,6 @@ exports.createOrder = async function(order) {
     }
 }
 
-// Get all orders with their items
 exports.getAllOrders = async () => {
     const { rows } = await db.query(`
         SELECT 
@@ -43,7 +41,6 @@ exports.getAllOrders = async () => {
         ORDER BY o.order_id, oi.order_item_id;
     `);
 
-    // Group items by order_id
     const orders = rows.reduce((acc, row) => {
         const { order_id, order_status, order_date, order_item_id, product_id, quantity, order_total } = row;
 
@@ -71,7 +68,6 @@ exports.getAllOrders = async () => {
     return Object.values(orders);
 };
 
-// Get a single order with its items by ID
 exports.getOrderByID = async (id) => {
     const { rows } = await db.query(`
         SELECT 
@@ -110,7 +106,6 @@ exports.getOrderByID = async (id) => {
     };
 };
 
-// Delete an order
 exports.deleteOrder = async function(orderId) {
     await db.query(
         'DELETE FROM orders WHERE order_id = $1',
@@ -118,7 +113,6 @@ exports.deleteOrder = async function(orderId) {
     );
 }
 
-// Update an order status
 exports.updateOrderStatus = async function(orderId, order_status) {
     try {
         await db.query(
@@ -130,13 +124,16 @@ exports.updateOrderStatus = async function(orderId, order_status) {
     }
 };
 
-exports.completeOrder = async function(orderId) {
+exports.completeOrder = async function (orderId) {
+    console.log("Updating order ID in DB: ", orderId); // Log the order ID
     try {
         await db.query(
             'UPDATE orders SET order_status = $1, updated_at = CURRENT_TIMESTAMP WHERE order_id = $2',
             ['Completed', orderId]
         );
+        console.log("Order updated successfully in the database."); // Log success
     } catch (error) {
+        console.error("Database query error:", error); // Log query error
         throw error;
     }
 };
