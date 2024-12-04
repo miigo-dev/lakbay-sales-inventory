@@ -1,11 +1,14 @@
 const db = require('../db');
 
-exports.createMovement = async (itemId, quantity, movementType, remarks, itemType) => {
+exports.createMovement = async (itemId, quantity, movementType, remarks, itemType, supplierId) => {
     const table = itemType === 'PRODUCT' ? 'products' : 'ingredients';
     const quantityField = itemType === 'PRODUCT' ? 'product_quantity' : 'ingredient_quantity';
 
     // Fetch current quantity
-    const item = await db.query(`SELECT ${quantityField} FROM ${table} WHERE ${table.slice(0, -1)}_id = $1`, [itemId]);
+    const item = await db.query(
+        `SELECT ${quantityField} FROM ${table} WHERE ${table.slice(0, -1)}_id = $1`,
+        [itemId]
+    );
     if (!item.rows.length) {
         throw new Error(`${itemType} not found`);
     }
@@ -26,9 +29,9 @@ exports.createMovement = async (itemId, quantity, movementType, remarks, itemTyp
 
     // Insert movement into the unified movements table
     const { rows } = await db.query(
-        `INSERT INTO movements (item_type, item_id, movement_quantity, movement_type, remarks) 
-         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [itemType, itemId, quantity, movementType, remarks]
+        `INSERT INTO movements (item_type, item_id, movement_quantity, movement_type, supplier_id, remarks) 
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [itemType, itemId, quantity, movementType, supplierId, remarks]
     );
 
     return rows[0];

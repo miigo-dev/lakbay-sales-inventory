@@ -299,15 +299,24 @@ const Inventory = () => {
             return;
         }
     
+        console.log('Payload being sent:', {
+            itemType: itemType.toUpperCase(),
+            itemId,
+            quantity: adjustmentValue,
+            movementType: adjustmentType.toUpperCase(),
+            supplierId: currentProduct.supplier_id || null,
+            remarks,
+        });
+    
         try {
             const response = await fetch('http://localhost:8080/api/movements', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    itemType: itemType.toUpperCase(), // API expects uppercase
+                    itemType: itemType.toUpperCase(),
                     itemId,
                     quantity: adjustmentValue,
-                    movementType: adjustmentType.toUpperCase(), // 'IN' or 'OUT'
+                    movementType: adjustmentType.toUpperCase(),
                     supplierId: currentProduct.supplier_id || null,
                     remarks,
                 }),
@@ -317,9 +326,8 @@ const Inventory = () => {
                 throw new Error(`Error creating movement: ${response.statusText}`);
             }
     
-            const newMovement = await response.json(); // The newly created movement from the server
-    
-            alert(`Movement ${adjustmentType.toUpperCase()} created successfully!`);
+            const newMovement = await response.json();
+            console.log('New movement created:', newMovement);
     
             // Update filteredView with the new movement
             const updatedMovement = {
@@ -346,15 +354,16 @@ const Inventory = () => {
                 })
             );
     
-            // Reset modal fields
             setQuantityAdjustment('');
             setRemarks('');
             closeQuantityModal();
+            alert(`Movement ${adjustmentType.toUpperCase()} created successfully!`);
         } catch (error) {
             console.error('Error creating movement:', error);
             alert('Failed to create movement. Please try again.');
         }
-    };    
+    };
+    
 
     return (
         <div className="dashboard_container">
@@ -572,15 +581,21 @@ const Inventory = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredView.map((movement, index) => (
-                                    <tr key={index}>
-                                        <td>{movement.movement_date}</td>
-                                        <td>{movement.movement_quantity}</td>
-                                        <td>{movement.movement_type}</td>
-                                        <td>{movement.remarks}</td>
-                                        <td>{movement.supplier_name|| 'N/A'}</td>
-                                    </tr>
-                                ))}
+                                {filteredView.map((movement, index) => {
+                                    // Find the supplier name using the supplier_id
+                                    const supplier = suppliers.find(
+                                        (sup) => sup.supplier_id === movement.supplier_id
+                                    );
+                                    return (
+                                        <tr key={index}>
+                                            <td>{movement.movement_date}</td>
+                                            <td>{movement.movement_quantity}</td>
+                                            <td>{movement.movement_type}</td>
+                                            <td>{movement.remarks}</td>
+                                            <td>{supplier ? supplier.supplier_name : 'N/A'}</td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -598,12 +613,10 @@ const Inventory = () => {
                             value={currentProduct.supplier_id}
                             onChange={(e) => setCurrentProduct({ ...currentProduct, supplier_id: e.target.value })}
                         >
-                            <option value="" disabled>
-                                Select Supplier
-                            </option>
+                            <option value="" disabled>Select Supplier</option>
                             {suppliers.map((supplier) => (
                                 <option key={supplier.supplier_id} value={supplier.supplier_id}>
-                                    {supplier.supplier_name}
+                                    {supplier.supplier_name} 
                                 </option>
                             ))}
                         </select>

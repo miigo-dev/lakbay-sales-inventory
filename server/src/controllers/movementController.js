@@ -2,10 +2,12 @@ const movementService = require('../services/movementService');
 
 exports.createMovement = async (req, res) => {
     try {
-        const { itemId, quantity, movementType, remarks, itemType } = req.body;
-        const result = await movementService.createMovement(itemId, quantity, movementType, remarks, itemType);
-        res.status(201).json(result);
+        const { itemId, quantity, movementType, remarks, itemType, supplierId } = req.body;
+
+        const movement = await movementService.createMovement(itemId, quantity, movementType, remarks, itemType, supplierId);
+        res.status(201).json(movement);
     } catch (error) {
+        console.error('Error creating movement:', error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -14,7 +16,6 @@ exports.getMovementsByID = async (req, res) => {
     try {
         const { itemType, itemId } = req.params;
 
-        // Convert itemType to uppercase for the database query
         const upperCaseItemType = itemType.toUpperCase();
 
         const movements = await movementService.getMovementsByID(itemId, upperCaseItemType);
