@@ -337,14 +337,16 @@ const Inventory = () => {
 
                         {selectedInventoryType === 'products' ? (
                             <>
-                                <label htmlFor="categoryid">Category</label>
-                                <input
-                                    type="text"
-                                    name="category_id"
-                                    placeholder="Category ID"
+                                <label htmlFor="product_category">Product Category</label>
+                                <select
+                                    name="product_category"
                                     value={currentProduct.category_id}
                                     onChange={handleInputChange}
-                                />
+                                >
+                                    <option value="" disabled>
+                                        Select Type
+                                    </option>
+                                </select>
 
                                 <label htmlFor="productName">Product Name</label>
                                 <input
@@ -384,14 +386,16 @@ const Inventory = () => {
                             </>
                         ) : (
                             <>
-                                <label htmlFor="ingredientType">Type</label>
-                                <input
-                                    type="text"
-                                    name="ingredient_type"
-                                    placeholder="Type"
-                                    value={currentProduct.category_id}
+                                <label htmlFor="ingredient_type">Ingredient Type</label>
+                                <select
+                                    name="ingredient_typpe"
+                                    value={currentProduct.ingredient_id}
                                     onChange={handleInputChange}
-                                />
+                                >
+                                    <option value="" disabled>
+                                        Select Type
+                                    </option>
+                                </select>
 
                                 <label htmlFor="ingredientName">Ingredient Name</label>
                                 <input
@@ -521,15 +525,15 @@ const Inventory = () => {
                         <h3>Update Quantity</h3>
 
                         <label htmlFor="supplier_id">Supplier</label>
-                                <select
-                                    name="supplier_id"
-                                    value={currentProduct.supplier_id}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="" disabled>
-                                        Select Supplier
-                                    </option>
-                                </select>
+                        <select
+                            name="supplier_id"
+                            value={currentProduct.supplier_id}
+                            onChange={handleInputChange}
+                        >
+                            <option value="" disabled>
+                                Select Supplier
+                            </option>
+                        </select>
 
                         <label htmlFor="quantityAdjustment">Quantity</label>
                         <input
