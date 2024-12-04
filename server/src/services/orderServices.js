@@ -26,49 +26,34 @@ exports.createOrder = async function(order) {
     }
 }
 
-exports.getAllOrders = async () => {
+exports.getPendingOrders = async () => {
     const { rows } = await db.query(`
         SELECT 
             o.order_id, 
             o.order_status, 
             o.order_date, 
-            oi.order_item_id, 
-            oi.product_id, 
-            oi.quantity, 
-            oi.order_total
+            COALESCE(SUM(oi.order_total), 0) AS total_amount
         FROM orders o
         LEFT JOIN order_items oi ON o.order_id = oi.order_id
-        ORDER BY o.order_id, oi.order_item_id;
+        WHERE o.order_status = 'Pending'
+        GROUP BY o.order_id, o.order_status, o.order_date
+        ORDER BY o.order_date ASC;
     `);
+    return rows;
+};
 
-    const orders = rows.reduce((acc, row) => {
-        const { order_id, order_status, order_date, order_item_id, product_id, quantity, order_total } = row;
-
-        if (!acc[order_id]) {
-            acc[order_id] = {
-                order_id,
-                order_status,
-                order_date,
-                items: []
-            };
-        }
-
-        if (order_item_id) {
-            acc[order_id].items.push({
-                order_item_id,
-                product_id,
-                quantity,
-                order_total
-            });
-        }
-
-        return acc;
-    }, {});
-
-    return Object.values(orders);
+exports.getMaxOrderNumber = async () => {
+    const { rows } = await db.query(`
+        SELECT MAX(order_id) AS max_order_id FROM orders;
+    `);
+    return rows[0]?.max_order_id || 0;
 };
 
 exports.getOrderByID = async (id) => {
+    if (!id || isNaN(parseInt(id, 10))) {
+        throw new Error('Invalid input: ID must be a valid integer');
+    }
+
     const { rows } = await db.query(`
         SELECT 
             o.order_id, 
@@ -82,28 +67,9 @@ exports.getOrderByID = async (id) => {
         LEFT JOIN order_items oi ON o.order_id = oi.order_id
         WHERE o.order_id = $1
         ORDER BY oi.order_item_id;
-    `, [id]);
+    `, [parseInt(id, 10)]);
 
-    if (rows.length === 0) {
-        return null;
-    }
-
-    const { order_id, order_status, order_date } = rows[0];
-    const items = rows
-        .filter(row => row.order_item_id)
-        .map(({ order_item_id, product_id, quantity, order_total }) => ({
-            order_item_id,
-            product_id,
-            quantity,
-            order_total
-        }));
-
-    return {
-        order_id,
-        order_status,
-        order_date,
-        items
-    };
+    return rows;
 };
 
 exports.deleteOrder = async function(orderId) {

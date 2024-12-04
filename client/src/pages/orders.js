@@ -96,47 +96,52 @@ const Orders = () => {
   const handleCharge = async () => {
     const amount = parseFloat(customAmount);
     if (orders.length === 0) {
-      alert("Please add items to your order before charging.");
-      return;
+        alert("Please add items to your order before charging.");
+        return;
     }
-    
+
     const totalOrderAmount = calculateTotalPrice();
     if (amount >= totalOrderAmount) {
-      try {
-        const newOrder = {
-          order_status: 'Pending',
-          order_date: new Date(),
-          order_items: orders.map(order => ({
-            product_id: order.product_id,
-            quantity: order.quantity,
-            order_total: order.price * order.quantity
-          }))
-        };
-        const response = await axios.post('http://localhost:8080/api/orders', newOrder);
-        const orderId = response.data.order_id;
+        try {
+            const newOrder = {
+                order_status: 'Pending',
+                order_date: new Date(),
+                order_items: orders.map(order => ({
+                    product_id: order.product_id,
+                    quantity: order.quantity,
+                    order_total: order.price * order.quantity,
+                })),
+            };
+            const response = await axios.post('http://localhost:8080/api/orders', newOrder);
+            const orderId = response.data.order_id;
 
-        setCompletedOrders([...completedOrders, { orderNumber, amount: totalOrderAmount.toFixed(2), status: 'Pending' }]);
-        setOrderHistory([...orderHistory, { orderNumber, amount: totalOrderAmount.toFixed(2), status: 'Pending' }]);
-        setRecentOrder({
-          orderNumber,
-          amount: totalOrderAmount,
-          items: orders.map(order => ({
-            item: order.item,
-            quantity: order.quantity,
-            size: order.size,
-          })),
-        });
-        setChange(amount - totalOrderAmount);
-        setCustomAmount('');
-        setOrders([]);
-        setOrderNumber(prev => (prev < 100 ? prev + 1 : 1));
-      } catch (error) {
-        console.error('Error creating order:', error);
-        alert('Failed to create order');
-      }
+            const newOrderObject = {
+                orderNumber,
+                amount: totalOrderAmount.toFixed(2),
+                status: 'Pending',
+            };
+
+            setCompletedOrders(prev => [...prev, newOrderObject]);
+            setOrderHistory(prev => [...prev, newOrderObject]);
+            setRecentOrder({
+                orderNumber,
+                amount: totalOrderAmount,
+                items: orders.map(order => ({
+                    item: order.item,
+                    quantity: order.quantity,
+                    size: order.size,
+                })),
+            });
+            setChange(amount - totalOrderAmount);
+            setCustomAmount('');
+            setOrders([]);
+        } catch (error) {
+            console.error('Error creating order:', error);
+            alert('Failed to create order');
+        }
     } else {
-      alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
-      setChange(0);
+        alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
+        setChange(0);
     }
   };
 
@@ -251,6 +256,67 @@ const Orders = () => {
     const warehouseId = isLakbayKape ? 2 : 1;
     setFilteredMenuItems(menuItems.filter(item => item.warehouse_id === warehouseId));
   }, [menuItems, isLakbayKape]);
+
+  useEffect(() => {
+    const fetchPendingOrders = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/orders');
+            setCompletedOrders(response.data.map(order => ({
+                orderNumber: order.order_id,
+                amount: parseFloat(order.total_amount).toFixed(2),
+                status: order.order_status,
+            })));
+        } catch (error) {
+            console.error('Error fetching pending orders:', error);
+        }
+    };
+
+    fetchPendingOrders();
+  }, []);
+
+  useEffect(() => {
+    if (completedOrders.length > 0) {
+        const maxOrderNumber = Math.max(...completedOrders.map(order => order.orderNumber));
+        setOrderNumber(maxOrderNumber + 1);
+    }
+  }, [completedOrders]);
+
+  useEffect(() => {
+    const savedPendingOrders = JSON.parse(localStorage.getItem('pendingOrders'));
+    if (savedPendingOrders) {
+        setCompletedOrders(savedPendingOrders);
+    }
+  }, []);
+
+  useEffect(() => {
+      localStorage.setItem('pendingOrders', JSON.stringify(completedOrders));
+  }, [completedOrders]);
+
+  useEffect(() => {
+    const fetchMaxOrderNumber = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/orders/maxOrderNumber');
+            setOrderNumber(response.data.maxOrderNumber + 1); // Set to the next order number
+        } catch (error) {
+            console.error('Error fetching max order number:', error);
+        }
+    };
+
+    fetchMaxOrderNumber();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('completedOrders', JSON.stringify(completedOrders));
+    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+  }, [completedOrders, orderHistory]);
+
+  useEffect(() => {
+    const savedCompletedOrders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+    const savedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+
+    setCompletedOrders(savedCompletedOrders);
+    setOrderHistory(savedOrderHistory);
+  }, []);
 
   return (
     <div className="main-container">

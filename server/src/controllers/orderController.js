@@ -1,21 +1,34 @@
 const orderService = require('../services/orderServices');
 
-// Get all orders
-exports.getAllOrders = async (req, res) => {
+exports.getPendingOrders = async (req, res) => {
     try {
-        const orders = await orderService.getAllOrders();
+        const orders = await orderService.getPendingOrders();
         res.status(200).json(orders);
     } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error('Error fetching pending orders:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
-// Get an order by ID
+exports.getMaxOrderNumber = async (req, res) => {
+    try {
+        const maxOrderNumber = await orderService.getMaxOrderNumber();
+        res.status(200).json({ maxOrderNumber });
+    } catch (error) {
+        console.error('Error fetching max order number:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 exports.getOrderByID = async (req, res) => {
     const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id, 10))) {
+        return res.status(400).json({ message: 'Invalid order ID' });
+    }
+
     try {
-        const order = await orderService.getOrderByID(id);
+        const order = await orderService.getOrderByID(parseInt(id, 10));
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
@@ -26,7 +39,7 @@ exports.getOrderByID = async (req, res) => {
     }
 };
 
-// Add a new order
+
 exports.addOrder = async (req, res) => {
     const { order_status, order_date, order_items } = req.body;
 
@@ -49,7 +62,6 @@ exports.addOrder = async (req, res) => {
     }
 };
 
-// Delete an order
 exports.deleteOrder = async (req, res) => {
     const { id } = req.params;
     try {
