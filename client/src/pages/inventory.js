@@ -33,22 +33,51 @@ const Inventory = () => {
         }
     };
 
-    // Fetch inventory data dynamically based on section and type
     const fetchInventoryData = async () => {
         try {
             const warehouseId = getWarehouseId();
             const type = selectedInventoryType;
-
+    
             const url = `http://localhost:8080/api/${type}/warehouses/${warehouseId}`;
             const response = await fetch(url);
             const data = await response.json();
-
-            // Ensure a unique ID exists for DataGrid
-            setInventoryData(data.map((item, index) => ({ ...item, id: item.product_id || item.ingredient_id || index })));
+    
+            setInventoryData(
+                data.map((item) => ({
+                    ...item,
+                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id, // Explicit id assignment
+                }))
+            );
         } catch (error) {
             console.error('Error fetching inventory data:', error);
         }
     };
+
+    const fetchMovementsByID = async (itemId, itemType) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/movements/${itemType}/${itemId}`);
+            if (!response.ok) {
+                throw new Error(`Error fetching movements: ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+    
+            // Map the data to only include necessary fields
+            const mappedData = data.map((movement) => ({
+                supplier_id: movement.supplier_id,
+                movement_quantity: movement.movement_quantity,
+                movement_type: movement.movement_type,
+                remarks: movement.remarks,
+                movement_date: new Date(movement.movement_date).toLocaleDateString(),
+            }));
+    
+            setFilteredView(mappedData);
+        } catch (error) {
+            console.error('Error fetching movements:', error);
+            alert('Failed to fetch movement history. Please try again.');
+        }
+    };
+    
 
     useEffect(() => {
         fetchInventoryData();
@@ -225,70 +254,107 @@ const Inventory = () => {
         setQuantityModalOpen(false);
     };
 
-    const handleView = (item) => {
-        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
-        const transactions = selectedProduct.filter(
-            (transaction) => transaction[nameKey] === item[nameKey]
+    const handleView = async (item) => {
+        console.log('Selected Item:', item);
+    
+        // Set the current product details
+        setCurrentProduct({
+            ...item,
+            id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
+        });
+    
+        setCurrentProductName(
+            selectedInventoryType === 'products' ? item.product_name : item.ingredient_name
         );
-
-        setCurrentProductName(item[nameKey]);
-        setFilteredView(transactions);
-        setViewFilter('all');
+    
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
+        const itemId = selectedInventoryType === 'products' ? item.product_id : item.ingredient_id;
+    
+        if (!itemId || !itemType) {
+            console.error('Invalid itemId or itemType:', { itemId, itemType });
+            return;
+        }
+    
+        // Dynamically fetch movements for the selected item
+        await fetchMovementsByID(itemId, itemType);
+    
+        // Open the modal to display the movements
         setViewModalOpen(true);
-    };
+    };    
 
-    const handleQuantityAdjustmentSubmit = () => {
+    const handleQuantityAdjustmentSubmit = async () => {
         const adjustmentValue = parseInt(quantityAdjustment, 10);
-
+    
         if (isNaN(adjustmentValue) || adjustmentValue <= 0) {
             alert('Please enter a positive integer for quantity adjustment.');
             return;
         }
-
-        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
-        const quantityKey = selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity';
-
-        const updatedData = inventoryData.map((item) => {
-            if (item[nameKey] === currentProductName) {
-                const currentQuantity = parseInt(item[quantityKey], 10) || 0;
-                const newQuantity =
-                    adjustmentType === 'in'
-                        ? currentQuantity + adjustmentValue
-                        : currentQuantity - adjustmentValue;
-
-                if (newQuantity < 0) {
-                    alert('Cannot reduce quantity below zero.');
-                    return item;
-                }
-
-                return {
-                    ...item,
-                    [quantityKey]: newQuantity,
-                };
+    
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
+        const itemId = currentProduct.id; // Use `id` from `currentProduct`
+    
+        if (!itemId) {
+            alert('Error: Item ID is missing. Please try again.');
+            console.error('Missing Item ID:', currentProduct);
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://localhost:8080/api/movements', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    itemType: itemType.toUpperCase(), // API expects uppercase
+                    itemId,
+                    quantity: adjustmentValue,
+                    movementType: adjustmentType.toUpperCase(), // 'IN' or 'OUT'
+                    supplierId: currentProduct.supplier_id || null,
+                    remarks,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error creating movement: ${response.statusText}`);
             }
-            return item;
-        });
-
-        setInventoryData(updatedData);
-
-        const newTransaction = {
-            date: new Date().toLocaleDateString(),
-            [nameKey]: currentProductName,
-            quantity: adjustmentValue,
-            status: adjustmentType,
-            remarks,
-        };
-
-        setSelectedProduct((prevTransactions) => [...prevTransactions, newTransaction]);
-
-        setQuantityAdjustment('');
-        setRemarks('');
-        closeQuantityModal();
-    };
-
-    useEffect(() => {
-        setSelectedSection(isLakbayKape ? 'lakbayKape' : 'lakbayKain');
-    }, [isLakbayKape]);
+    
+            const newMovement = await response.json(); // The newly created movement from the server
+    
+            alert(`Movement ${adjustmentType.toUpperCase()} created successfully!`);
+    
+            // Update filteredView with the new movement
+            const updatedMovement = {
+                supplier_id: newMovement.supplier_id,
+                movement_quantity: newMovement.movement_quantity,
+                movement_type: newMovement.movement_type,
+                remarks: newMovement.remarks,
+                movement_date: new Date(newMovement.movement_date).toLocaleDateString(),
+            };
+    
+            setFilteredView((prevMovements) => [...prevMovements, updatedMovement]);
+    
+            // Update inventoryData for the affected product/ingredient
+            setInventoryData((prevInventory) =>
+                prevInventory.map((item) => {
+                    if (item.id === itemId) {
+                        const updatedQuantity =
+                            adjustmentType === 'IN'
+                                ? item.product_quantity + adjustmentValue
+                                : item.product_quantity - adjustmentValue;
+                        return { ...item, product_quantity: updatedQuantity };
+                    }
+                    return item;
+                })
+            );
+    
+            // Reset modal fields
+            setQuantityAdjustment('');
+            setRemarks('');
+            closeQuantityModal();
+        } catch (error) {
+            console.error('Error creating movement:', error);
+            alert('Failed to create movement. Please try again.');
+        }
+    };    
 
     return (
         <div className="dashboard_container">
@@ -499,30 +565,20 @@ const Inventory = () => {
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>
-                                        {selectedInventoryType === 'products'
-                                            ? 'Product Name'
-                                            : 'Ingredient Name'}
-                                    </th>
                                     <th>Quantity</th>
-                                    <th>Status</th>
+                                    <th>Type</th>
                                     <th>Remarks</th>
-                                    <th>Supplier Id</th>
+                                    <th>Supplier</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredView.map((transaction, index) => (
+                                {filteredView.map((movement, index) => (
                                     <tr key={index}>
-                                        <td>{transaction.date}</td>
-                                        <td>
-                                            {selectedInventoryType === 'products'
-                                                ? transaction.product_name
-                                                : transaction.ingredient_name}
-                                        </td>
-                                        <td>{transaction.quantity}</td>
-                                        <td>{transaction.status}</td>
-                                        <td>{transaction.remarks}</td>
-                                        <td>{transaction.supplier_id}</td>
+                                        <td>{movement.movement_date}</td>
+                                        <td>{movement.movement_quantity}</td>
+                                        <td>{movement.movement_type}</td>
+                                        <td>{movement.remarks}</td>
+                                        <td>{movement.supplier_name|| 'N/A'}</td>
                                     </tr>
                                 ))}
                             </tbody>

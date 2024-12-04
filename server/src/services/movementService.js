@@ -1,77 +1,51 @@
 const db = require('../db');
 
-exports.createProductMovement = async (productId, quantity, movementType, remarks) => {
-    const product = await db.query('SELECT product_quantity FROM products WHERE product_id = $1', [productId]);
+exports.createMovement = async (itemId, quantity, movementType, remarks, itemType) => {
+    const table = itemType === 'PRODUCT' ? 'products' : 'ingredients';
+    const quantityField = itemType === 'PRODUCT' ? 'product_quantity' : 'ingredient_quantity';
 
-    if (!product.rows.length) {
-        throw new Error('Product not found');
+    // Fetch current quantity
+    const item = await db.query(`SELECT ${quantityField} FROM ${table} WHERE ${table.slice(0, -1)}_id = $1`, [itemId]);
+    if (!item.rows.length) {
+        throw new Error(`${itemType} not found`);
     }
 
-    if (movementType === 'OUT' && product.rows[0].product_quantity < quantity) {
-        throw new Error('Insufficient stock for product');
+    const currentQuantity = item.rows[0][quantityField];
+    if (movementType === 'OUT' && currentQuantity < quantity) {
+        throw new Error('Insufficient stock');
     }
 
-    const newQuantity = movementType === 'IN' 
-        ? product.rows[0].product_quantity + quantity 
-        : product.rows[0].product_quantity - quantity;
+    // Calculate new quantity
+    const newQuantity = movementType === 'IN' ? currentQuantity + quantity : currentQuantity - quantity;
 
+    // Update quantity in the respective table
     await db.query(
-        'UPDATE products SET product_quantity = $1 WHERE product_id = $2',
-        [newQuantity, productId]
+        `UPDATE ${table} SET ${quantityField} = $1 WHERE ${table.slice(0, -1)}_id = $2`,
+        [newQuantity, itemId]
     );
 
+    // Insert movement into the unified movements table
     const { rows } = await db.query(
-        'INSERT INTO product_movements (product_id, pmove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4) RETURNING *',
-        [productId, quantity, movementType, remarks]
+        `INSERT INTO movements (item_type, item_id, movement_quantity, movement_type, remarks) 
+         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [itemType, itemId, quantity, movementType, remarks]
     );
 
     return rows[0];
 };
 
-exports.getProductMovementsByID = async (productId) => {
-    const { rows } = await db.query('SELECT * FROM product_movements WHERE product_id = $1', [productId]);
+exports.getMovementsByID = async (itemId, itemType) => {
+    const query = `
+        SELECT 
+            supplier_id, 
+            movement_quantity, 
+            movement_type, 
+            remarks, 
+            movement_date 
+        FROM movements 
+        WHERE item_type = $1 AND item_id = $2
+    `;
+
+    const { rows } = await db.query(query, [itemType, itemId]);
     return rows;
-};
-
-exports.getProductMovements = async () => {
-    const { rows } = await db.query('SELECT * FROM product_movements');
-    return rows;  
-};
-
-exports.createIngredientMovement = async (ingredientId, quantity, movementType, remarks) => {
-    const ingredient = await db.query('SELECT ingredient_quantity FROM ingredients WHERE ingredient_id = $1', [ingredientId]);
-
-    if (!ingredient.rows.length) {
-        throw new Error('Ingredient not found');
-    }
-
-    if (movementType === 'OUT' && ingredient.rows[0].ingredient_quantity < quantity) {
-        throw new Error('Insufficient stock for ingredient');
-    }
-
-    const newQuantity = movementType === 'IN'
-        ? ingredient.rows[0].ingredient_quantity + quantity
-        : ingredient.rows[0].ingredient_quantity - quantity;
-
-    await db.query(
-        'UPDATE ingredients SET ingredient_quantity = $1 WHERE ingredient_id = $2',
-        [newQuantity, ingredientId]
-    );
-
-    const { rows } = await db.query(
-        'INSERT INTO ingredient_movements (ingredient_id, imove_quantity, movement_type, remarks) VALUES ($1, $2, $3, $4) RETURNING *',
-        [ingredientId, quantity, movementType, remarks]
-    );
-
-    return rows[0];
-};
-
-exports.getIngredientMovementsByID = async (ingredientId) => {
-    const { rows } = await db.query('SELECT * FROM ingredient_movements WHERE ingredient_id = $1', [ingredientId]);
-    return rows; 
-};
-
-exports.getIngredientMovements = async () => {
-    const { rows } = await db.query('SELECT * FROM ingredient_movements');
-    return rows; 
 };
