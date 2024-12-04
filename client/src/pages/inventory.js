@@ -19,8 +19,19 @@ const Inventory = () => {
     const [viewFilter, setViewFilter] = useState('all');
     const [isLakbayKape, setIsLakbayKape] = useState(false);
     const [remarks, setRemarks] = useState('');
+    const [suppliers, setSuppliers] = useState([]);
 
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
+
+    const fetchSuppliers = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/suppliers');
+            const data = await response.json();
+            setSuppliers(data);
+        } catch (error) {
+            console.error('Error fetching suppliers:', error);
+        }
+    };
 
     // Fetch inventory data dynamically based on section and type
     const fetchInventoryData = async () => {
@@ -41,6 +52,7 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchInventoryData();
+        fetchSuppliers();
     }, [selectedSection, selectedInventoryType]);
 
     // Filter data based on the search term
@@ -528,11 +540,16 @@ const Inventory = () => {
                         <select
                             name="supplier_id"
                             value={currentProduct.supplier_id}
-                            onChange={handleInputChange}
+                            onChange={(e) => setCurrentProduct({ ...currentProduct, supplier_id: e.target.value })}
                         >
                             <option value="" disabled>
                                 Select Supplier
                             </option>
+                            {suppliers.map((supplier) => (
+                                <option key={supplier.supplier_id} value={supplier.supplier_id}>
+                                    {supplier.supplier_name}
+                                </option>
+                            ))}
                         </select>
 
                         <label htmlFor="quantityAdjustment">Quantity</label>
