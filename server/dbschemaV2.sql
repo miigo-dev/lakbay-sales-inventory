@@ -60,22 +60,17 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE product_movements (
-    pmove_id SERIAL PRIMARY KEY,
-    product_id INT REFERENCES products(product_id),
-    pmove_quantity INT NOT NULL,
-    pmove_type VARCHAR(10) CHECK (pmove_type IN ('IN', 'OUT')),
+CREATE TABLE movements (
+    movement_id SERIAL PRIMARY KEY,
+    item_type VARCHAR(10) NOT NULL CHECK (item_type IN ('PRODUCT', 'INGREDIENT')),
+    item_id INT NOT NULL,
+    movement_quantity INT NOT NULL,
+    movement_type VARCHAR(10) NOT NULL CHECK (movement_type IN ('IN', 'OUT')),
+    supplier_id INT REFERENCES suppliers(supplier_id),
     remarks TEXT,
-    pmove_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE ingredient_movements (
-    imove_id SERIAL PRIMARY KEY,
-    ingredient_id INT REFERENCES ingredients(ingredient_id),
-    imove_quantity INT NOT NULL,
-    imove_type VARCHAR(10) CHECK (imove_type IN ('IN', 'OUT')),
-    remarks TEXT,
-    imove_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES products(product_id) ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE TABLE orders (
