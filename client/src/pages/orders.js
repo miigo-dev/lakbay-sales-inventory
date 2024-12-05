@@ -201,12 +201,28 @@ const Orders = () => {
       setChange(0);
     }
   };
+
+  const fetchUpdatedStock = async () => {
+    try {
+        const productResponse = await axios.get('http://localhost:8080/api/products/');
+        const updatedItems = productResponse.data.map(item => ({
+            product_id: item.product_id,
+            productname: item.product_name,
+            category: categoryMap[item.category_id] || 'unknown',
+            price: parseFloat(item.product_price),
+            stockquantity: item.product_quantity,
+            warehouse_id: item.warehouse_id 
+        }));
+        setMenuItems(updatedItems);
+        setFilteredMenuItems(updatedItems.filter(item => item.warehouse_id === (isLakbayKape ? 2 : 1)));
+    } catch (err) {
+        console.error("Error fetching updated stock:", err);
+        setError("Failed to refresh stock data");
+    }
+  };
   
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
-    console.log("Order Number: ", completedOrder.orderNumber); // Log the order number
-    console.log("Endpoint: ", `http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`); // Log the endpoint
-
     try {
         await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
         setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
@@ -217,6 +233,7 @@ const Orders = () => {
                     : order
             )
         );
+        await fetchUpdatedStock(); // Re-fetch stock quantities after completing the order
     } catch (error) {
         console.error('Error completing order:', error);
         alert('Failed to complete order');
