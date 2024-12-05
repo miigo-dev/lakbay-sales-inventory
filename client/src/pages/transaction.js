@@ -10,6 +10,7 @@ const Transaction = () => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [pageSize, setPageSize] = useState(5);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -76,6 +77,7 @@ const Transaction = () => {
         </div>
         <DataGrid
           rows={filteredOrders}
+          className="grid_container"
           columns={[
             { field: 'order_date', headerName: 'Date', width: 150 },
             { field: 'order_id', headerName: 'Order No.', width: 100 },
@@ -95,13 +97,16 @@ const Transaction = () => {
             },
           ]}
           getRowId={(row) => row.order_id}
-          autoHeight
-          pageSize={5}
+          autoHeight={false} 
+          style={{
+            maxHeight: 700, 
+          }}
+          pageSize={10}
+          rowsPerPageOptions={[5, 10, 20]}
           pagination
           disableSelectionOnClick
         />
       </div>
-
       {modalOpen && (
         <div className="modal">
           <div className="modal_content">
