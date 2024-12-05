@@ -65,24 +65,77 @@ const Orders = () => {
     fetchMenuItems();
   }, []);
 
+  const [activeDiscountType, setActiveDiscountType] = useState(null); 
+
+  const applyDiscount = (type) => {
+    let discountLabel = null;
+    let discountValue = 0;
+  
+    if (type === 'SNR') {
+      if (snrActive) {
+        setSNRActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setSNRActive(true);
+        setPWDActive(false);
+        setSTUActive(false);
+        discountLabel = 'Senior Discounted';
+        discountValue = 20;
+      }
+    } else if (type === 'PWD') {
+      if (pwdActive) {
+        setPWDActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setPWDActive(true);
+        setSNRActive(false);
+        setSTUActive(false);
+        discountLabel = 'PWD Discounted';
+        discountValue = 20;
+      }
+    } else if (type === 'STU') {
+      if (stuActive) {
+        setSTUActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setSTUActive(true);
+        setSNRActive(false);
+        setPWDActive(false);
+        discountLabel = 'Student Discounted';
+        discountValue = 20;
+      }
+    }
+  
+    setActiveDiscountType(discountLabel);
+    setDiscount(discountValue);
+  
+  };
+  
+  
+
   const addOrder = () => {
     if (quantity > 0) {
       if (selectedItem.category === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
-      setOrders((prevOrders) => [
-        ...prevOrders,
-        {
-          product_id: selectedItem.product_id,
-          item: selectedItem.productname,
-          size: selectedItem.category === 'meals' ? '' : size,
-          quantity,
-          price: parseFloat(selectedItem.price),
-          category: selectedItem.category,
-          date: new Date().toLocaleString(),
-        },
-      ]);
+  
+      const newOrder = {
+        product_id: selectedItem.product_id,
+        item: selectedItem.productname,
+        size: selectedItem.category === 'meals' ? '' : size,
+        quantity,
+        price: parseFloat(selectedItem.price),
+        category: selectedItem.category,
+        discountType: activeDiscountType || null, // Include discount type if active
+        date: new Date().toLocaleString(),
+      };
+  
+      setOrders((prevOrders) => [...prevOrders, newOrder]);
+      console.log("Added Order:", newOrder); // Debugging log
       setIsModalOpen(false);
     } else {
       alert("Please select a quantity greater than 0.");
@@ -171,39 +224,7 @@ const Orders = () => {
     return total - (total * discount / 100); 
   };
 
-  const applyDiscount = (type) => {
-    if (type === 'SNR') {
-      if (snrActive) {
-        setSNRActive(false);
-        setDiscount(0);
-      } else {
-        setSNRActive(true);
-        setPWDActive(false);
-        setSTUActive(false);
-        setDiscount(20); 
-      }
-    } else if (type === 'PWD') {
-      if (pwdActive) {
-        setPWDActive(false);
-        setDiscount(0);
-      } else {
-        setPWDActive(true);
-        setSNRActive(false);
-        setSTUActive(false);
-        setDiscount(20);
-      }
-    } else if (type === 'STU') {
-      if (stuActive) {
-        setSTUActive(false);
-        setDiscount(0);
-      } else {
-        setSTUActive(true);
-        setSNRActive(false);
-        setPWDActive(false);
-        setDiscount(10);
-      }
-    }
-  };
+  
 
   const handleQuantityChange = (operation) => {
     setQuantity((prev) => {
@@ -216,6 +237,19 @@ const Orders = () => {
     });
   };
 
+  const handleQuantityInput = (e) => {
+    const inputValue = e.target.value;
+    const parsedValue = parseInt(inputValue, 10);
+  
+    if (isNaN(parsedValue) || parsedValue < 0) {
+      setQuantity(0);
+    } else if (parsedValue > selectedItem.stockquantity) {
+      setQuantity(selectedItem.stockquantity); 
+    } else {
+      setQuantity(parsedValue); 
+    }
+  };
+  
   const handleSizeSelection = (selectedSize) => setSize(selectedSize);
 
   const displayedItems = filteredMenuItems.filter(item =>
@@ -378,15 +412,18 @@ const Orders = () => {
               </ul>
             </div>
 
-            <div className='order_container'>
+            <div className="order_container">
               {displayedItems.map((item, index) => (
-                <div
-                  key={index}
-                  className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
-                  onClick={() => handleItemClick(item)}
-                >
-                  {item.productname}
-                </div>
+                  <div
+                      key={index}
+                      className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
+                      onClick={() => handleItemClick(item)}
+                  >
+                      <div>{item.productname}</div>
+                      <div className="quantity-label">
+                          Qty: {item.stockquantity}
+                      </div>
+                  </div>
               ))}
             </div>
           </div>
@@ -416,6 +453,15 @@ const Orders = () => {
               </ul>
             )}
           </div>
+          <div className="overall-discount-container">
+            {activeDiscountType ? (
+              <p className="overall-discount-label">
+              {activeDiscountType}
+              </p>
+            ) : (
+              <p className="overall-discount-label"></p>
+            )}
+          </div>      
 
           <div className="discount-buttons">
             <button
@@ -516,7 +562,13 @@ const Orders = () => {
             )}
             <div className="quantity-control">
               <button onClick={() => handleQuantityChange('decrease')}>-</button>
-              <span>{quantity}</span>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => handleQuantityInput(e)}
+                min="0"
+                className="quantity-input"
+              />
               <button onClick={() => handleQuantityChange('increase')}>+</button>
             </div>
             <button onClick={addOrder} className="proceed-button">Add Order</button>
