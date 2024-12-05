@@ -96,55 +96,59 @@ const Orders = () => {
   const handleCharge = async () => {
     const amount = parseFloat(customAmount);
     if (orders.length === 0) {
-        alert("Please add items to your order before charging.");
-        return;
+      alert("Please add items to your order before charging.");
+      return;
     }
-
+  
     const totalOrderAmount = calculateTotalPrice();
     if (amount >= totalOrderAmount) {
-        try {
-            const newOrder = {
-                order_status: 'Pending',
-                order_date: new Date(),
-                order_items: orders.map(order => ({
-                    product_id: order.product_id,
-                    quantity: order.quantity,
-                    order_total: order.price * order.quantity,
-                })),
-            };
-            const response = await axios.post('http://localhost:8080/api/orders', newOrder);
-            const orderId = response.data.order_id;
-
-            const newOrderObject = {
-                orderNumber,
-                amount: totalOrderAmount.toFixed(2),
-                status: 'Pending',
-            };
-
-            setCompletedOrders(prev => [...prev, newOrderObject]);
-            setOrderHistory(prev => [...prev, newOrderObject]);
-            setRecentOrder({
-                orderNumber,
-                amount: totalOrderAmount,
-                items: orders.map(order => ({
-                    item: order.item,
-                    quantity: order.quantity,
-                    size: order.size,
-                })),
-            });
-            setChange(amount - totalOrderAmount);
-            setCustomAmount('');
-            setOrders([]);
-        } catch (error) {
-            console.error('Error creating order:', error);
-            alert('Failed to create order');
-        }
+      try {
+        const newOrder = {
+          order_status: 'Pending',
+          order_date: new Date(),
+          order_items: orders.map(order => ({
+            product_id: order.product_id,
+            quantity: order.quantity,
+            order_total: order.price * order.quantity,
+          })),
+        };
+  
+        const response = await axios.post('http://localhost:8080/api/orders', newOrder);
+        const backendOrderId = response.data.order_id; // Use the backend-provided order ID
+  
+        const newOrderObject = {
+          orderNumber: backendOrderId,
+          amount: totalOrderAmount.toFixed(2),
+          status: 'Pending',
+        };
+  
+        setCompletedOrders(prev => [...prev, newOrderObject]);
+        setOrderHistory(prev => [...prev, newOrderObject]);
+  
+        // Update recentOrder with the backend order ID
+        setRecentOrder({
+          orderNumber: backendOrderId, // Use backend ID here
+          amount: totalOrderAmount,
+          items: orders.map(order => ({
+            item: order.item,
+            quantity: order.quantity,
+            size: order.size,
+          })),
+        });
+  
+        setChange(amount - totalOrderAmount);
+        setCustomAmount('');
+        setOrders([]);
+      } catch (error) {
+        console.error('Error creating order:', error);
+        alert('Failed to create order');
+      }
     } else {
-        alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
-        setChange(0);
+      alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
+      setChange(0);
     }
   };
-
+  
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
     console.log("Order Number: ", completedOrder.orderNumber); // Log the order number
@@ -524,11 +528,11 @@ const Orders = () => {
         </div>
       )}
   
-      {recentOrder && (
+        {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
-            <p>Order Number: {recentOrder.orderNumber}</p>
+            <p>Order Number: {recentOrder.orderNumber}</p> {/* Use the correct order number */}
             <p>Items: {recentOrder.items.map((orderItem) => orderItem.item).join(', ')}</p>
             <p>Amount: {recentOrder.amount.toFixed(2)}</p>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Close</button>
