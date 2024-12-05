@@ -340,19 +340,23 @@ const Inventory = () => {
     
             setFilteredView((prevMovements) => [...prevMovements, updatedMovement]);
     
-            // Update inventoryData for the affected product/ingredient
             setInventoryData((prevInventory) =>
                 prevInventory.map((item) => {
                     if (item.id === itemId) {
                         const updatedQuantity =
-                            adjustmentType === 'IN'
-                                ? item.product_quantity + adjustmentValue
-                                : item.product_quantity - adjustmentValue;
-                        return { ...item, product_quantity: updatedQuantity };
+                            adjustmentType.toUpperCase() === 'IN'
+                                ? item[selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity'] + adjustmentValue
+                                : item[selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity'] - adjustmentValue;
+            
+                        return {
+                            ...item,
+                            [selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity']: updatedQuantity,
+                        };
                     }
                     return item;
                 })
             );
+            
     
             setQuantityAdjustment('');
             setRemarks('');
@@ -613,7 +617,7 @@ const Inventory = () => {
                             value={currentProduct.supplier_id}
                             onChange={(e) => setCurrentProduct({ ...currentProduct, supplier_id: e.target.value })}
                         >
-                            <option value="" disabled>Select Supplier</option>
+                            <option value="">Select Supplier</option>
                             {suppliers.map((supplier) => (
                                 <option key={supplier.supplier_id} value={supplier.supplier_id}>
                                     {supplier.supplier_name} 
