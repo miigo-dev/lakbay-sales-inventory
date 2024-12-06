@@ -22,13 +22,13 @@ exports.addIngredient = async (req, res) => {
     try {
         const ingredient = await ingredientService.addIngredient(
             req.body.ingredient_name,
-            req.body.type_id,
             req.body.ingredient_quantity,
             req.body.ingredient_unit,
             req.body.ingredient_price,
             req.body.supplier_id,
             req.body.reorder_level,
-            req.body.ingredient_status
+            req.body.type_id,
+            req.body.warehouse_id
         );
         res.status(201).json(ingredient);
     } catch (error) {
