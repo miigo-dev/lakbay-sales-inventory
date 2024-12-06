@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/transaction.css';
+import Export from '../assets/icons/export.svg';
 
 const Transaction = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -66,7 +67,7 @@ const Transaction = () => {
     <div className="dashboard">
       <div className="transaction-container">
         <div className="header">
-          <h3>Transaction History</h3>
+        <h3>Transaction History</h3>
           <div className="date-filter">
             <label htmlFor="date-picker">Date:</label>
             <input

@@ -117,19 +117,8 @@ const Sidebar = ({ onToggle }) => {
             )}
           </NavLink>
         </div>
-        <div className={`dropdown-child ${isInventoryOpen ? 'open' : ''}`}>
-          <NavLink to="/inventory/reports" className={({ isActive }) => isActive ? 'active' : ''}>
-            {({ isActive }) => (
-              <>
-                <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
-                {isOpen && "Reports"}
-              </>
-            )}
-          </NavLink>
-        </div>
       </div>
-
-     
+        
       <NavLink to="/sales" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
@@ -138,7 +127,14 @@ const Sidebar = ({ onToggle }) => {
           </>
         )}
       </NavLink>
-
+      <NavLink to="reports" className={({ isActive }) => isActive ? 'active' : ''}>
+            {({ isActive }) => (
+              <>
+                <img src={isActive ? reports_active : reports_inactive} alt="Reports icon" />
+                {isOpen && "Reports"}
+              </>
+            )}
+          </NavLink>
       <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
         {({ isActive }) => (
           <>
