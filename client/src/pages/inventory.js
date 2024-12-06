@@ -78,7 +78,7 @@ const Inventory = () => {
             setInventoryData(
                 data.map((item) => ({
                     ...item,
-                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id, // Explicit id assignment
+                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
                 }))
             );
         } catch (error) {
@@ -95,7 +95,6 @@ const Inventory = () => {
     
             const data = await response.json();
     
-            // Map the data to only include necessary fields
             const mappedData = data.map((movement) => ({
                 supplier_id: movement.supplier_id,
                 movement_quantity: movement.movement_quantity,
@@ -117,7 +116,6 @@ const Inventory = () => {
         fetchSuppliers();
     }, [selectedSection, selectedInventoryType]);
 
-    // Filter data based on the search term
     const filteredInventory = inventoryData.filter((item) =>
         selectedInventoryType === 'products'
             ? (item.product_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
@@ -204,7 +202,7 @@ const Inventory = () => {
 
     const openModal = (product = null) => {
         if (selectedInventoryType === 'ingredients') {
-            fetchIngredientTypes(); // Fetch ingredient types only for ingredients
+            fetchIngredientTypes();
         }
     
         if (product) {
@@ -222,11 +220,11 @@ const Inventory = () => {
                 price: '',
                 supplierId: '',
                 reorderLevel: 0,
-                ingredient_type_id: '', // Initialize ingredient type
+                ingredient_type_id: '', 
                 productStatus: 'in',
                 section: selectedSection,
                 type: selectedInventoryType,
-                warehouse_id: getWarehouseId(), // Set warehouse ID
+                warehouse_id: getWarehouseId(),
             });
             setIsEditing(false);
         }
@@ -262,20 +260,17 @@ const Inventory = () => {
             return;
         }
     
-        // Check if warehouse_id is valid
         const warehouseId = getWarehouseId();
         if (!warehouseId) {
             alert('Please ensure a valid warehouse is selected.');
             return;
         }
     
-        // For products, ensure category_id is selected
         if (selectedInventoryType === 'products' && !currentProduct.category_id) {
             alert('Please ensure a category is selected for the product.');
             return;
         }
     
-        // For ingredients, ensure ingredient_type_id is selected
         if (selectedInventoryType === 'ingredients' && !currentProduct.ingredient_type_id) {
             alert('Please ensure an ingredient type is selected.');
             return;
@@ -286,7 +281,7 @@ const Inventory = () => {
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
-            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment), // ensure quantity is parsed
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment), 
         };
     
         console.log('Payload to be sent:', {
@@ -334,7 +329,6 @@ const Inventory = () => {
             const addedItem = await response.json();
             console.log(`${selectedInventoryType} added successfully:`, addedItem);
     
-            // Update the inventory data after adding
             setInventoryData((prevData) => [
                 ...prevData,
                 { ...addedItem, id: addedItem.product_id || addedItem.ingredient_id },
@@ -497,7 +491,6 @@ const Inventory = () => {
             return;
         }
     
-        // Pre-fill the modal with product or ingredient details
         if (selectedInventoryType === 'products') {
             setEditedProductName(currentProduct.product_name);
             setEditedProductPrice(currentProduct.product_price);
@@ -506,7 +499,7 @@ const Inventory = () => {
             setEditedProductPrice(currentProduct.ingredient_price);
         }
     
-        setEditModalOpen(true); // Open the modal
+        setEditModalOpen(true); 
     };       
     
     const saveEditChanges = async () => {
@@ -515,7 +508,6 @@ const Inventory = () => {
             return;
         }
     
-        // Determine the payload and endpoint based on selectedInventoryType
         const payload =
             selectedInventoryType === 'products'
                 ? {
@@ -547,7 +539,6 @@ const Inventory = () => {
     
             const updatedItem = await response.json();
     
-            // Update the state with the new product/ingredient details
             setInventoryData((prevData) =>
                 prevData.map((item) =>
                     item.id === currentProduct.id ? {
@@ -643,7 +634,7 @@ const Inventory = () => {
                                 <select
                                     name="category_id"
                                     value={currentProduct.category_id}
-                                    onChange={handleInputChange} // Ensure this is updating the state
+                                    onChange={handleInputChange}
                                 >
                                     <option value="">Select Category</option>
                                     {categories.map((category) => (
@@ -807,7 +798,6 @@ const Inventory = () => {
                             </thead>
                             <tbody>
                                 {filteredView.map((movement, index) => {
-                                    // Find the supplier name using the supplier_id
                                     const supplier = suppliers.find(
                                         (sup) => sup.supplier_id === movement.supplier_id
                                     );
@@ -903,7 +893,6 @@ const Inventory = () => {
                         value={editedProductPrice}
                         onChange={(e) => {
                             const value = e.target.value;
-                            // Allow empty string or convert to number
                             setEditedProductPrice(value === '' ? '' : Number(value));
                         }}
                     />
