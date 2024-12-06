@@ -48,22 +48,8 @@ exports.addProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { warehouse_id, 
-            product_name,
-            category_id,
-            product_price,
-            reorder_level,
-            product_status,
-            remarks
-        } = req.body;
-        const product = await productService.updateProduct(id, warehouse_id, 
-            product_name, 
-            category_id, 
-            product_price, 
-            reorder_level, 
-            product_status, 
-            remarks
-        );
+        const { product_name, product_price } = req.body;
+        const product = await productService.updateProduct(id, product_name, product_price);
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: error.message });

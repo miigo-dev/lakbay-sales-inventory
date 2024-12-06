@@ -374,16 +374,67 @@ const Inventory = () => {
     };
 
     const openEditModal = () => {
-        setEditedProductName(currentProductName); // Prefill with current product name
-        setEditedProductPrice(currentProductPrice); // Prefill with current product price
-        setEditModalOpen(true);
+        if (!currentProduct || !currentProduct.product_id) {
+            alert('No product selected. Please try again.');
+            return;
+        }
+    
+        // Pre-fill the modal with product details
+        setEditedProductName(currentProduct.product_name);
+        setEditedProductPrice(currentProduct.product_price);
+    
+        setEditModalOpen(true); // Open the modal
     };
     
-    const saveEditChanges = () => {
-        // Update logic here (e.g., update database or state)
- 
-        setEditModalOpen(false); // Close Edit Modal
+    const saveEditChanges = async () => {
+        if (!editedProductName || editedProductPrice <= 0) {
+            alert('Please provide valid product details.');
+            return;
+        }
+    
+        if (!currentProduct || !currentProduct.product_id) {
+            alert('Error: No product selected for editing.');
+            return;
+        }
+    
+        try {
+            const payload = {
+                product_name: editedProductName,
+                product_price: editedProductPrice,
+            };
+    
+            // Use currentProduct.product_id for the API request
+            const response = await fetch(`http://localhost:8080/api/products/${currentProduct.product_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to update product: ${response.statusText}`);
+            }
+    
+            const updatedProduct = await response.json();
+    
+            // Update state with the new product details
+            setInventoryData((prevData) =>
+                prevData.map((item) =>
+                    item.id === updatedProduct.product_id
+                        ? { ...item, product_name: updatedProduct.product_name, product_price: updatedProduct.product_price }
+                        : item
+                )
+            );
+    
+            setEditModalOpen(false); // Close the modal
+            alert('Product updated successfully!');
+        } catch (error) {
+            console.error('Error updating product:', error);
+            alert('Failed to update the product. Please try again.');
+        }
     };
+      
     
 
     return (
