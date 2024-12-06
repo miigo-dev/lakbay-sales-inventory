@@ -38,17 +38,9 @@ exports.addIngredient = async (req, res) => {
 
 exports.updateIngredient = async (req, res) => {
     try {
-        const ingredient = await ingredientService.updateIngredient(
-            req.body.ingredient_name,
-            req.body.type_id,
-            req.body.ingredient_quantity,
-            req.body.ingredient_unit,
-            req.body.ingredient_price,
-            req.body.supplier_id,
-            req.body.reorder_level,
-            req.body.ingredient_status,
-            req.params.id
-        );
+        const { id } = req.params;
+        const { ingredient_name, ingredient_price } = req.body;
+        const ingredient = await ingredientService.updateIngredient(id, ingredient_name, ingredient_price);
         res.status(200).json(ingredient);
     } catch (error) {
         res.status(500).json({ message: error.message });
