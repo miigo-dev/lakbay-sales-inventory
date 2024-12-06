@@ -374,37 +374,52 @@ const Inventory = () => {
     };
 
     const openEditModal = () => {
-        if (!currentProduct || !currentProduct.product_id) {
-            alert('No product selected. Please try again.');
+        if (
+            !currentProduct || 
+            (selectedInventoryType === 'products' && !currentProduct.product_id) ||
+            (selectedInventoryType === 'ingredients' && !currentProduct.ingredient_id)
+        ) {
+            alert('No item selected. Please try again.');
             return;
         }
     
-        // Pre-fill the modal with product details
-        setEditedProductName(currentProduct.product_name);
-        setEditedProductPrice(currentProduct.product_price);
+        // Pre-fill the modal with product or ingredient details
+        if (selectedInventoryType === 'products') {
+            setEditedProductName(currentProduct.product_name);
+            setEditedProductPrice(currentProduct.product_price);
+        } else {
+            setEditedProductName(currentProduct.ingredient_name);
+            setEditedProductPrice(currentProduct.ingredient_price);
+        }
     
         setEditModalOpen(true); // Open the modal
-    };
+    };       
     
     const saveEditChanges = async () => {
         if (!editedProductName || editedProductPrice <= 0) {
-            alert('Please provide valid product details.');
+            alert('Please provide valid details.');
             return;
         }
     
-        if (!currentProduct || !currentProduct.product_id) {
-            alert('Error: No product selected for editing.');
-            return;
-        }
+        // Determine the payload and endpoint based on selectedInventoryType
+        const payload =
+            selectedInventoryType === 'products'
+                ? {
+                      product_name: editedProductName,
+                      product_price: editedProductPrice,
+                  }
+                : {
+                      ingredient_name: editedProductName,
+                      ingredient_price: editedProductPrice,
+                  };
+    
+        const endpoint =
+            selectedInventoryType === 'products'
+                ? `http://localhost:8080/api/products/${currentProduct.product_id}`
+                : `http://localhost:8080/api/ingredients/${currentProduct.ingredient_id}`;
     
         try {
-            const payload = {
-                product_name: editedProductName,
-                product_price: editedProductPrice,
-            };
-    
-            // Use currentProduct.product_id for the API request
-            const response = await fetch(`http://localhost:8080/api/products/${currentProduct.product_id}`, {
+            const response = await fetch(endpoint, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -413,33 +428,37 @@ const Inventory = () => {
             });
     
             if (!response.ok) {
-                throw new Error(`Failed to update product: ${response.statusText}`);
+                throw new Error(`Failed to update ${selectedInventoryType}: ${response.statusText}`);
             }
     
-            const updatedProduct = await response.json();
+            const updatedItem = await response.json();
     
-            // Update state with the new product details
+            // Update the state with the new product/ingredient details
             setInventoryData((prevData) =>
                 prevData.map((item) =>
-                    item.id === updatedProduct.product_id
-                        ? { ...item, product_name: updatedProduct.product_name, product_price: updatedProduct.product_price }
-                        : item
+                    item.id === currentProduct.id ? {
+                        ...item,
+                        ...(selectedInventoryType === 'products' ? {
+                            product_name: updatedItem.product_name,
+                            product_price: updatedItem.product_price,
+                        } : {
+                                ingredient_name: updatedItem.ingredient_name,
+                                ingredient_price: updatedItem.ingredient_price,
+                            }),
+                        }
+                    : item
                 )
             );
     
-            // Close all modals
+            alert(`${selectedInventoryType === 'products' ? 'Product' : 'Ingredient'} updated successfully!`);
             setEditModalOpen(false);
             setViewModalOpen(false);
-            setModalOpen(false); // In case it's also open
-            setQuantityModalOpen(false);
-    
-            alert('Product updated successfully!');
         } catch (error) {
-            console.error('Error updating product:', error);
-            alert('Failed to update the product. Please try again.');
+            console.error(`Error updating ${selectedInventoryType}:`, error);
+            alert('Failed to update item. Please try again.');
         }
     };
-
+    
     return (
         <div className="dashboard_container">
             <div className="dashboard_header">
