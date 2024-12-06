@@ -11,52 +11,52 @@
 }
 
 .about-title h1 {
-  font-size: 3rem; /* Larger title font size */
-  color: #663300;
+  font-size: 3rem;
+  color: black;
   margin-bottom: 20px;
   text-align: center;
 }
 
 .about-description p {
-  font-size: 1.2rem; /* Increased font size for description */
-  color: #996633;
-  text-align: justify; /* Justified alignment for the text */
+  font-size: 1.2rem; 
+  color: black;
+  text-align: justify;
   margin-bottom: 30px;
-  line-height: 1.8; /* Better line spacing for readability */
+  line-height: 1.8;
 }
 
 .about-developers-title h2 {
-  font-size: 2rem; /* Larger font for developers section title */
+  font-size: 2rem;
   margin-top: 30px;
   margin-bottom: 20px;
   text-align: center;
-  color: #663300;
+  color: black;
 }
 
 .about-developers-container {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  gap: 40px; /* Increased gap for spacing */
+  gap: 40px;
   margin-top: 20px;
   flex-wrap: wrap;
 }
 
 .about-developer {
   text-align: center;
-  font-size: 1.2rem; /* Larger font size for developers */
-  max-width: 200px; /* Slightly increased max width for better readability */
-  color: #663300;
+  font-size: 1.2rem;
+  max-width: 200px; 
+  color: #000000;
 }
 
 .about-developer p {
-  margin: 10px 0; /* Increased spacing between name and role */
+  margin: 10px 0; 
 }
 
 .about-developer strong {
   display: block;
   margin-bottom: 5px;
-  font-size: 1.5rem; /* Increased font size for names */
+  font-size: 1.5rem; 
   font-weight: bold;
 }
 

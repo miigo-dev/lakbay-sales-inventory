@@ -1,9 +1,7 @@
 import React from 'react';
-import '../css/about.css'; // Import custom styles
-import { useNavigate } from 'react-router-dom'; // for navigating back to settings
+import '../css/about.css'; 
+import { useNavigate } from 'react-router-dom'; 
 import Back from '../assets/icons/back.svg';
-
-// Sample icons for developers (replace these with actual icons or images as needed)
 import { FaUserCircle, FaCode, FaPaintBrush, FaRegFileAlt } from 'react-icons/fa';
 
 const About = () => {

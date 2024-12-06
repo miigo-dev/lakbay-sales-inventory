@@ -113,8 +113,6 @@ const Orders = () => {
     setDiscount(discountValue);
   
   };
-  
-  
 
   const addOrder = () => {
     if (quantity > 0) {
@@ -275,8 +273,28 @@ const Orders = () => {
 
   const displayedItems = filteredMenuItems.filter(item =>
     (activeLink === 'all' || item.category === activeLink) &&
-    item.productname.includes(searchTerm)
+    item.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    const filtered = menuItems.filter((item) => {
+      const matchesWarehouse = item.warehouse_id === (isLakbayKape ? 2 : 1); // Filter by warehouse
+      const matchesCategory = activeLink === 'all' || item.category === activeLink;
+      const matchesSearch = item.productname.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesWarehouse && matchesCategory && matchesSearch; // Ensure all conditions match
+    });
+    setFilteredMenuItems(filtered);
+  }, [searchTerm, activeLink, menuItems, isLakbayKape]);
+
+  useEffect(() => {
+    setSearchTerm(''); 
+  }, [isLakbayKape]);  
+
+  const handleSearchClick = () => {
+    if (filteredMenuItems.length === 0) {
+      alert("No items match your search.");
+    }
+  };
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
@@ -391,14 +409,14 @@ const Orders = () => {
           </div>
         </div>
 
-        <div className='search_container'>
+        <div className="search_container">
           <input
             className="search_input"
             placeholder="Search your Orders"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="search-icon-btn" onClick={() => alert('Search Ordered')}>
+          <button className="search-icon-btn" onClick={handleSearchClick}>
             <i className="fas fa-search search-icon"></i>
           </button>
         </div>
