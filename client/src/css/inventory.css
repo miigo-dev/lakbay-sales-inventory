@@ -23,15 +23,27 @@
     padding-bottom: 15px;
     border-bottom: 2px solid #ddd;
 }
-
 .inventory_status,
 .inventory_section_dropdown,
 .inventory_type_dropdown,
 .inventory_status_dropdown,
 .search-bar {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.inventory_section_dropdown:hover,
+.inventory_type_dropdown:hover,
+.inventory_status_dropdown:hover,
+.search-bar:hover {
+    background-color: #f1f1f1;
+    border-color: #bbb;
 }
 
 .inventory_section_dropdown:focus,
@@ -39,7 +51,8 @@
 .inventory_status_dropdown:focus {
     outline: none;
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    background-color: #fff;
 }
 
 .profile_section {
@@ -147,6 +160,15 @@
     background-color: #a68a6b;
 }
 
+.toggle_archive_btn {
+    background-color: #C2A790;
+    color: white;
+}
+
+.toggle_archive_btn:hover  {
+    background-color: #a68a6b;
+}
+
 .edit_btn {
     background-color: #4CAF50;
     color: white;
@@ -189,6 +211,32 @@
     background: #4cae4c;
     transform: translateY(3px) scale(1.05);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.archive_btn {
+    background: orange;
+    color: white;
+    margin-right: 5px; 
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
+.unarchive_btn {
+    background: orange;
+    color: white;
+    margin-right: 5px; 
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
 }
 .modal1 {
     position: fixed;

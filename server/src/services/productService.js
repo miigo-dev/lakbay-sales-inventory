@@ -58,6 +58,6 @@ exports.getProductByWarehouse = async (warehouse_id) => {
 }
 
 exports.getAllProductCategories = async () => {
-    const categories = await db.query('SELECT * FROM product_categories');
+    const categories = await db.query('SELECT * FROM product_categories WHERE warehouse_id = 1');
     return categories.rows;
 }

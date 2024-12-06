@@ -20,10 +20,12 @@ const Inventory = () => {
     const [isLakbayKape, setIsLakbayKape] = useState(false);
     const [remarks, setRemarks] = useState('');
     const [suppliers, setSuppliers] = useState([]);
-    const [editModalOpen, setEditModalOpen] = useState(false); // State for Edit Modal
-    const [editedProductName, setEditedProductName] = useState(''); // State for Product Name
-    const [editedProductPrice, setEditedProductPrice] = useState(0); // State for Product Price
+    const [editModalOpen, setEditModalOpen] = useState(false); 
+    const [editedProductName, setEditedProductName] = useState(''); 
+    const [editedProductPrice, setEditedProductPrice] = useState(0); 
     const [currentProductPrice, setCurrentProductPrice] = useState(0); 
+    const [showArchived, setShowArchived] = useState(false);
+    const [archivedItems, setArchivedItems] = useState([]);
     const [categories, setCategories] = useState([]);
     
 
@@ -113,64 +115,68 @@ const Inventory = () => {
     );
 
     const columns =
-    selectedInventoryType === 'products'
-        ? [
-            { field: 'product_id', headerName: 'Product ID', width: 120 },
-            { field: 'product_name', headerName: 'Product Name', width: 200 },
-            { field: 'product_quantity', headerName: 'Quantity', width: 120 },
-            { field: 'product_price', headerName: 'Price', width: 120 },
-            { field: 'reorder_level', headerName: 'Reorder Trigger', width: 120 },
-            {
-                field: 'category_id',
-                headerName: 'Category',
-                width: 150,
-                renderCell: (params) => {
-                    const category = categories.find(
-                        (cat) => cat.category_id === params.value
-                    );
-                    return category ? category.category_name : 'Unknown';
+        selectedInventoryType === 'products'
+            ? [
+                { field: 'product_id', headerName: 'Product ID', width: 150 },
+                { field: 'product_name', headerName: 'Product Name', width: 200 },
+                { field: 'product_quantity', headerName: 'Quantity', width: 120 },
+                { field: 'product_price', headerName: 'Price', width: 120 },
+                { field: 'reorder_level', headerName: 'Reorder Trigger', width: 170 },
+                { field: 'category_id', headerName: 'Meal Type', width: 120 },
+                {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 300,
+                    
+                    renderCell: (params) => (
+                    <div>
+                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                            View
+                        </button>
+                        {showArchived ? (
+                            <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
+                                Unarchive
+                            </button>
+                            ) : (
+                            
+                            <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
+                                Archive
+                            </button>
+                        )}
+                        </div>
+                    ),
                 },
-            },
-            {
-                field: 'action',
-                headerName: 'Action',
-                width: 180,
-                renderCell: (params) => (
-                    <div>
-                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                            View
-                        </button>
-                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                            Delete
-                        </button>
-                    </div>
-                ),
-            },
-        ]
-        : [
-            { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
-            { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
-            { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
-            { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
-            { field: 'ingredient_price', headerName: 'Price', width: 120 },
-            { field: 'supplier_id', headerName: 'Supplier ID', width: 120 },
-            { field: 'reorder_level', headerName: 'Reorder Level', width: 120 },
-            {
-                field: 'action',
-                headerName: 'Action',
-                width: 180,
-                renderCell: (params) => (
-                    <div>
-                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                            View
-                        </button>
-                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                            Delete
-                        </button>
-                    </div>
-                ),
-            },
-        ];
+            ]
+            : [
+                { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
+                { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
+                { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
+                { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
+                { field: 'ingredient_price', headerName: 'Price', width: 120 },
+                { field: 'supplier_id', headerName: 'Supplier ID', width: 170 },
+                { field: 'reorder_level', headerName: 'Reorder Level', width: 150 },
+                {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 300,
+                    renderCell: (params) => (
+                        <div>
+                            <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                View
+                            </button>
+                            {showArchived ? (
+                                <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
+                                    Unarchive
+                                </button>
+                            ) : (
+                                <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
+                                    Archive
+                                </button>
+                            )}
+                        </div>
+                    ),
+                },
+            ];
 
     const [currentProduct, setCurrentProduct] = useState({
         id: null,
@@ -269,10 +275,23 @@ const Inventory = () => {
         closeModal();
     };
 
-    const handleDelete = (id) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this item?');
-        if (confirmDelete) {
-            setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
+    const handleArchive = (item) => {
+        const confirmArchive = window.confirm(`Are you sure you want to archive "${item.name}"?`);
+
+        if (confirmArchive) {
+            setArchivedItems((prevArchived) => [...prevArchived, item]);
+            setInventoryData((prevData) => prevData.filter((dataItem) => dataItem.id !== item.id));
+            alert(`${item.name} has been archived.`);
+        }
+    };
+
+    const handleUnarchive = (item) => {
+        const confirmUnarchive = window.confirm(`Are you sure you want to unarchive "${item.name}"?`);
+
+        if (confirmUnarchive) {
+            setInventoryData((prevData) => [...prevData, item]);
+            setArchivedItems((prevArchived) => prevArchived.filter((archivedItem) => archivedItem.id !== item.id));
+            alert(`${item.name} has been unarchived.`);
         }
     };
 
@@ -288,7 +307,6 @@ const Inventory = () => {
     const handleView = (item) => {
         console.log('Selected Item:', item);
     
-        // Set the current product details
         setCurrentProduct({
             ...item,
             id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
@@ -298,18 +316,16 @@ const Inventory = () => {
             selectedInventoryType === 'products' ? item.product_name : item.ingredient_name
         );
     
-        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; 
         const itemId = selectedInventoryType === 'products' ? item.product_id : item.ingredient_id;
     
         if (!itemId || !itemType) {
             console.error('Invalid itemId or itemType:', { itemId, itemType });
             return;
         }
-    
-        // Dynamically fetch movements for the selected item
+
         fetchMovementsByID(itemId, itemType);
     
-        // Open the modal to display the movements
         setViewModalOpen(true);
     };
 
@@ -321,8 +337,8 @@ const Inventory = () => {
             return;
         }
     
-        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
-        const itemId = currentProduct.id; // Use `id` from `currentProduct`
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; 
+        const itemId = currentProduct.id;
     
         if (!itemId) {
             alert('Error: Item ID is missing. Please try again.');
@@ -360,7 +376,6 @@ const Inventory = () => {
             const newMovement = await response.json();
             console.log('New movement created:', newMovement);
     
-            // Update filteredView with the new movement
             const updatedMovement = {
                 supplier_id: newMovement.supplier_id,
                 movement_quantity: newMovement.movement_quantity,
@@ -521,12 +536,19 @@ const Inventory = () => {
                         <button className="btn add-inventory_btn" onClick={() => openModal()}>
                             Add Item
                         </button>
+
+                        <button
+                            className="btn toggle_archive_btn"
+                            onClick={() => setShowArchived(!showArchived)}
+                        >
+                            {showArchived ? 'Show Active Items' : 'Show Archived Items'}
+                        </button>
                     </div>
                 </div>
 
                 <div className="inventory_table">
                     <DataGrid
-                        rows={filteredInventory}
+                         rows={showArchived ? archivedItems : filteredInventory}
                         columns={columns}
                         pageSize={10}
                         rowsPerPageOptions={[10, 20, 50]}
