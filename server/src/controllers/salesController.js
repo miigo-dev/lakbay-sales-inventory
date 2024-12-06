@@ -1,18 +1,22 @@
 const salesService = require('../services/salesService');
 
-// Fetch sales data based on period
+// Fetch sales data by period and warehouse
 exports.getSalesData = async (req, res) => {
     try {
-        const { period } = req.query;
+        const { period, warehouseId } = req.query;
 
         if (!['daily', 'weekly', 'monthly', 'yearly'].includes(period)) {
             return res.status(400).json({ message: 'Invalid period specified' });
         }
 
-        const salesData = await salesService.getSalesData(period);
+        if (!warehouseId) {
+            return res.status(400).json({ message: 'Missing warehouseId parameter' });
+        }
+
+        const salesData = await salesService.getSalesData(period, parseInt(warehouseId, 10));
         res.status(200).json({
             labels: salesData.map((row) => row.period),
-            data: salesData.map((row) => parseFloat(row.total_sales))
+            data: salesData.map((row) => parseFloat(row.total_sales)),
         });
     } catch (error) {
         console.error('Error fetching sales data:', error);
