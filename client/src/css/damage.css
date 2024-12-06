@@ -1,222 +1,133 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
 
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; 
+    margin-bottom: 20px;
+}
+.container_button{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.action-btn {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #C2A790;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background-color: #977a60;
+}
+.reports-container {
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    max-width: 100%;
+    background-color: white;
+}
+
+.dropdown-header {
+    margin-bottom: 20px;
+}
+
+.dropdown-btn {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+}
+
+.dropdown-btn:hover {
+    background-color: #e6e6e6;
+    border-color: #b38e6a;
+}
+
+.inventory-list {
+    margin-top: 20px;
+}
+
+.inventory-list h3 {
+    margin-bottom: 10px;
+}
+
+.tab-content {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
 .damage_container {
     font-family: 'Inter', sans-serif;
     padding: 30px;
     max-width: 100%;
     background-color: white;
-    
 }
 
-.tab:hover {
-    background-color: #b38e6a; 
-    transform: scale(1.05);
-}
-
-.tab.active {
-    background-color: #b38e6a;
-    font-weight: bold;
-}
-
-.tab {
-    padding: 10px 20px;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    background-color: #d9c0a5; 
-    color: #fff; 
-    cursor: pointer;
-    border-radius: 5px;
-    margin-right: 10px;
-    justify-content: space-between;
-    transition: background-color 0.3s ease, transform 0.3s ease; 
-}
-
-.header_container {
+/* Dropdown Header */
+.dropdown-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; 
-    padding: 10px;
-    border-bottom: 1px solid #ccc; 
-}
-
-.header_container h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.header_container select.dropdown_btn {
-    margin-right: 10px;
-    padding: 5px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.addReport {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 10px 20px;
-    border: none;
-    background-color: #d9c0a5; 
-    color: #fff; 
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.header_container .addReport:hover {
-    background-color: #b59c84;
-}
-
-
-.addReport:active {
-    background-color: #b38e6a;
-    font-weight: bold;
-}
-
-.hidden_checkbox {
-    visibility: hidden;
-}
-
-.searchbar {
-    display: flex;
-    gap: 10px;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
-.searchbar_input{
+.dropdown-btn {
     padding: 10px;
-    border-radius: 5px;
+    font-size: 16px;
     border: 1px solid #ccc;
-    flex: 1;
-}
-
-.search_btn, .filter_btn, .add_product_btn, .add_product_btn2 {
-    padding: 10px 15px;
-    background-color: #d9c0a5; 
-    border: none;
     border-radius: 5px;
-    color: white; 
-    cursor: pointer; 
-    transition: background-color 0.3s; 
-}
-.add_report_btn:hover{
-    background-color: #b38e6a; 
-    transform: scale(1.05);
-    
-}
-.add_report_btn:hover{
-    background-color: #b38e6a; 
-    transform: scale(1.05);
-    
-}
-
-.add_report:active {
-    background-color: #b38e6a;
-    font-weight: bold;
-}
-
-.kain_table {
-    width: 100%;
-    border-collapse: collapse; 
-    margin-top: 20px; 
-    
-}
-.kain_table th, .order_table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
-}
-
-.kape_table {
-    width: 100%;
-    border-collapse: collapse; 
-    margin-top: 20px; 
-    
-}
-.kape_table th, .order_table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
-}
-
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
+    width: 200px;
     background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%; 
-    max-width: 700px; 
-    max-height: 90%; 
-    overflow-y: auto; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.modal-content .close {
-    position: absolute;
-    right: 20px;
-    top: 3px;
-    font-size: 40px;
+    color: #333;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
     cursor: pointer;
-    color: #555;
 }
 
-.modal-content h2 {
-    text-align: center;
-    font-size: 25px;
-    margin-bottom: 10px;
+.dropdown-btn:hover {
+    background-color: #e6e6e6;
+    border-color: #b38e6a;
+}
+
+.tab-content {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Table Styling for DataGrid */
+.grid_container .MuiDataGrid-root {
+    font-family: 'Inter', sans-serif;
+    border: none;
+}
+
+.grid_container .MuiDataGrid-columnHeaders {
+    background-color: #d9c0a5;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: left;
+}
+
+.grid_container .MuiDataGrid-cell {
+    font-size: 14px;
     color: #333;
 }
 
-.modal-content label {
-    color: #8f7255;
-    font-size: 20px;
-    color: rgb(59, 59, 59);
-}
-
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.modal-content input[type="text"], .modal-content input[type="number"] {
-    padding: 10px;
-    font-size: 18px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    outline: none;
-    width: 100%;
-}
-
-.modal-content button[type="submit"] {
-    padding: 10px;
-    font-size: 18px;
-    background-color: #b38e6a;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.modal-content button[type="submit"]:hover {
-    background-color: #8f7255;
-}
-.submit{
+/* Buttons */
+.submit {
     padding: 10px 20px;
     font-size: 16px;
     border-radius: 5px;
@@ -226,33 +137,50 @@
     background-color: #c7ad91;
     width: 100%;
 }
-.submit:hover{
+
+.submit:hover {
     background-color: #a18466;
     color: white;
 }
+
+/* Loading and Error States */
+.loading-message,
+.error-message {
+    text-align: center;
+    font-size: 16px;
+    color: #b38e6a;
+    margin-top: 20px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .modal-content {
-        width: 90%; 
+    .dropdown-btn {
+        width: 100%;
+    }
+    .tab-content {
+        margin-top: 15px;
+        padding: 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .modal-content {
-        width: 95%; 
+    .dropdown-btn {
+        width: 100%;
+        font-size: 14px;
     }
-}
-@media screen and (max-width: 700px) {
-    .container {
-        margin-left: 0;
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .container h2 {
-        font-size: 20px;
-    }
-
-    .container p {
-        font-size: 14px; 
+    .tab-content {
+        padding: 10px;
     }
 }
