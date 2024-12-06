@@ -24,9 +24,25 @@ const Inventory = () => {
     const [editedProductName, setEditedProductName] = useState(''); // State for Product Name
     const [editedProductPrice, setEditedProductPrice] = useState(0); // State for Product Price
     const [currentProductPrice, setCurrentProductPrice] = useState(0); 
+    const [categories, setCategories] = useState([]);
     
 
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/product-categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+    
+    // Call fetchCategories on component mount
+    useEffect(() => {
+        fetchCategories();
+    }, []);
 
     const fetchSuppliers = async () => {
         try {
@@ -97,54 +113,64 @@ const Inventory = () => {
     );
 
     const columns =
-        selectedInventoryType === 'products'
-            ? [
-                  { field: 'product_id', headerName: 'Product ID', width: 120 },
-                  { field: 'product_name', headerName: 'Product Name', width: 200 },
-                  { field: 'product_quantity', headerName: 'Quantity', width: 120 },
-                  { field: 'product_price', headerName: 'Price', width: 120 },
-                  { field: 'reorder_level', headerName: 'Reorder Trigger', width: 120 },
-                  { field: 'category_id', headerName: 'Meal Type', width: 120 },
-                  {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 180,
-                      renderCell: (params) => (
-                          <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                                  View
-                              </button>
-                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                                  Delete
-                              </button>
-                          </div>
-                      ),
-                  },
-              ]
-            : [
-                  { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
-                  { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
-                  { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
-                  { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
-                  { field: 'ingredient_price', headerName: 'Price', width: 120 },
-                  { field: 'supplier_id', headerName: 'Supplier ID', width: 120 },
-                  { field: 'reorder_level', headerName: 'Reorder Level', width: 120 },
-                  {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 180,
-                      renderCell: (params) => (
-                          <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                              View
-                          </button>
-                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                                  Delete
-                              </button>
-                          </div>
-                      ),
-                  },
-              ];
+    selectedInventoryType === 'products'
+        ? [
+            { field: 'product_id', headerName: 'Product ID', width: 120 },
+            { field: 'product_name', headerName: 'Product Name', width: 200 },
+            { field: 'product_quantity', headerName: 'Quantity', width: 120 },
+            { field: 'product_price', headerName: 'Price', width: 120 },
+            { field: 'reorder_level', headerName: 'Reorder Trigger', width: 120 },
+            {
+                field: 'category_id',
+                headerName: 'Meal Type',
+                width: 150,
+                renderCell: (params) => {
+                    const category = categories.find(
+                        (cat) => cat.category_id === params.value
+                    );
+                    return category ? category.category_name : 'Unknown';
+                },
+            },
+            {
+                field: 'action',
+                headerName: 'Action',
+                width: 180,
+                renderCell: (params) => (
+                    <div>
+                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                            View
+                        </button>
+                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                            Delete
+                        </button>
+                    </div>
+                ),
+            },
+        ]
+        : [
+            { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
+            { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
+            { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
+            { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
+            { field: 'ingredient_price', headerName: 'Price', width: 120 },
+            { field: 'supplier_id', headerName: 'Supplier ID', width: 120 },
+            { field: 'reorder_level', headerName: 'Reorder Level', width: 120 },
+            {
+                field: 'action',
+                headerName: 'Action',
+                width: 180,
+                renderCell: (params) => (
+                    <div>
+                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                            View
+                        </button>
+                        <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                            Delete
+                        </button>
+                    </div>
+                ),
+            },
+        ];
 
     const [currentProduct, setCurrentProduct] = useState({
         id: null,
