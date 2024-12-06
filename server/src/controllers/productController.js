@@ -76,3 +76,11 @@ exports.getProductByWarehouse = async (req, res) => {
     }
 }
 
+exports.getAllProductCategories = async (req, res) => {
+    try {
+        const categories = await productService.getAllProductCategories();
+        res.status(200).json(categories);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}

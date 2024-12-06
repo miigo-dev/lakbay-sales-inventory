@@ -56,3 +56,8 @@ exports.getProductByWarehouse = async (warehouse_id) => {
     const product = await db.query('SELECT * FROM products WHERE warehouse_id = $1', [warehouse_id]);
     return product.rows;
 }
+
+exports.getAllProductCategories = async () => {
+    const categories = await db.query('SELECT * FROM product_categories');
+    return categories.rows;
+}
