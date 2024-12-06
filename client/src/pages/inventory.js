@@ -117,71 +117,66 @@ const Inventory = () => {
     const columns =
         selectedInventoryType === 'products'
             ? [
-                  { field: 'product_id', headerName: 'Product ID', width: 150 },
-                  { field: 'product_name', headerName: 'Product Name', width: 200 },
-                  { field: 'product_quantity', headerName: 'Quantity', width: 120 },
-                  { field: 'product_price', headerName: 'Price', width: 120 },
-                  { field: 'reorder_level', headerName: 'Reorder Trigger', width: 170 },
-                  { field: 'category_id', headerName: 'Meal Type', width: 120 },
-                  {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 300,
-                     
-                      renderCell: (params) => (
-                          <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                                  View
-                              </button>
-                              {showArchived ? (
-                        <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
-                            Unarchive
+                { field: 'product_id', headerName: 'Product ID', width: 150 },
+                { field: 'product_name', headerName: 'Product Name', width: 200 },
+                { field: 'product_quantity', headerName: 'Quantity', width: 120 },
+                { field: 'product_price', headerName: 'Price', width: 120 },
+                { field: 'reorder_level', headerName: 'Reorder Trigger', width: 170 },
+                { field: 'category_id', headerName: 'Meal Type', width: 120 },
+                {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 300,
+                    
+                    renderCell: (params) => (
+                    <div>
+                        <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                            View
                         </button>
-                    ) : (
-                        <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
-                            Archive
-                        </button>
-                    )}
-                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                                  Delete
-                              </button>
-                          </div>
-                      ),
-                  },
-              ]
+                        {showArchived ? (
+                            <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
+                                Unarchive
+                            </button>
+                            ) : (
+                            
+                            <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
+                                Archive
+                            </button>
+                        )}
+                        </div>
+                    ),
+                },
+            ]
             : [
-                  { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
-                  { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
-                  { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
-                  { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
-                  { field: 'ingredient_price', headerName: 'Price', width: 120 },
-                  { field: 'supplier_id', headerName: 'Supplier ID', width: 170 },
-                  { field: 'reorder_level', headerName: 'Reorder Level', width: 150 },
-                  {
-                      field: 'action',
-                      headerName: 'Action',
-                      width: 300,
-                      renderCell: (params) => (
-                          <div>
-                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                              View
-                          </button>
-                          {showArchived ? (
-                        <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
-                            Unarchive
-                        </button>
-                    ) : (
-                        <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
-                            Archive
-                        </button>
-                    )}
-                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
-                                  Delete
-                              </button>
-                          </div>
-                      ),
-                  },
-              ];
+                { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
+                { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
+                { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
+                { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
+                { field: 'ingredient_price', headerName: 'Price', width: 120 },
+                { field: 'supplier_id', headerName: 'Supplier ID', width: 170 },
+                { field: 'reorder_level', headerName: 'Reorder Level', width: 150 },
+                {
+                    field: 'action',
+                    headerName: 'Action',
+                    width: 300,
+                    renderCell: (params) => (
+                        <div>
+                            <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                View
+                            </button>
+                            {showArchived ? (
+                                <button className="btn unarchive_btn" onClick={() => handleUnarchive(params.row)}>
+                                    Unarchive
+                                </button>
+                            ) : (
+                                <button className="btn archive_btn" onClick={() => handleArchive(params.row)}>
+                                    Archive
+                                </button>
+                            )}
+                        </div>
+                    ),
+                },
+            ];
 
     const [currentProduct, setCurrentProduct] = useState({
         id: null,
@@ -297,13 +292,6 @@ const Inventory = () => {
             setInventoryData((prevData) => [...prevData, item]);
             setArchivedItems((prevArchived) => prevArchived.filter((archivedItem) => archivedItem.id !== item.id));
             alert(`${item.name} has been unarchived.`);
-        }
-    };
-
-    const handleDelete = (id) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this item?');
-        if (confirmDelete) {
-            setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
         }
     };
 
