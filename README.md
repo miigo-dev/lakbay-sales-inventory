@@ -61,7 +61,3 @@ Before you begin, ensure you have met the following requirements:
     ```
 
 3. Open your browser and navigate to `http://localhost:3000`.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more information.
