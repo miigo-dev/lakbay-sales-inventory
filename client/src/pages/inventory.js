@@ -26,9 +26,25 @@ const Inventory = () => {
     const [currentProductPrice, setCurrentProductPrice] = useState(0); 
     const [showArchived, setShowArchived] = useState(false);
     const [archivedItems, setArchivedItems] = useState([]);
+    const [categories, setCategories] = useState([]);
     
 
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/product-categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+    
+    // Call fetchCategories on component mount
+    useEffect(() => {
+        fetchCategories();
+    }, []);
 
     const fetchSuppliers = async () => {
         try {

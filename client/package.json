@@ -16,6 +16,8 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.6",
     "client": "file:",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",

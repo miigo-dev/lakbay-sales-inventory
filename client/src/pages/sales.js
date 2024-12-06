@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const Sales = () => {
     const [timeFrame, setTimeFrame] = useState('daily'); // Matches API timeframe
-    const [isLakbayKape, setIsLakbayKape] = useState(false);
+    const [isLakbayKape, setIsLakbayKape] = useState(false); // Tracks toggle state for warehouse
     const [showAllData, setShowAllData] = useState(false);
 
     const [salesData, setSalesData] = useState({ labels: [], data: [] });
@@ -15,14 +15,16 @@ const Sales = () => {
     const [bestSellers, setBestSellers] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const toggleView = () => setIsLakbayKape(prev => !prev);
+    const warehouseId = isLakbayKape ? 2 : 1; // Determine warehouse based on toggle state
 
-    // Fetch sales data for totals and graph
+    const toggleView = () => setIsLakbayKape((prev) => !prev);
+
     const fetchSalesData = async (period) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/sales', { params: { period } });
+            const response = await axios.get('http://localhost:8080/api/sales', {
+                params: { period, warehouseId },
+            });
 
-            // Ensure response structure is valid
             if (!response.data || !response.data.labels || !response.data.data) {
                 console.error('Invalid sales data response:', response.data);
                 setSalesData({ labels: [], data: [] });
@@ -35,42 +37,50 @@ const Sales = () => {
             });
 
             const totalSales = response.data.data.reduce((sum, value) => sum + value, 0);
-            setSalesTotals(prev => ({ ...prev, [period]: totalSales }));
+            setSalesTotals((prev) => ({ ...prev, [period]: totalSales }));
         } catch (error) {
             console.error('Error fetching sales data:', error);
-            setSalesData({ labels: [], data: [] }); // Ensure fallback if error occurs
+            setSalesData({ labels: [], data: [] });
         }
     };
 
     const fetchTopSalesItems = async (period) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/top-sales', { params: { period } });
+            const response = await axios.get('http://localhost:8080/api/top-sales', {
+                params: { period, warehouseId },
+            });
             setTopSalesItems(response.data || []);
         } catch (error) {
             console.error('Error fetching top sales items:', error);
-            setTopSalesItems([]); // Ensure fallback if error occurs
+            setTopSalesItems([]);
         }
     };
 
     const fetchBestSellers = async (period) => {
         try {
-            const response = await axios.get('http://localhost:8080/api/top-sales', { params: { period } });
+            const response = await axios.get('http://localhost:8080/api/top-sales', {
+                params: { period, warehouseId },
+            });
             setBestSellers(response.data || []);
         } catch (error) {
             console.error('Error fetching best sellers:', error);
-            setBestSellers([]); // Ensure fallback if error occurs
+            setBestSellers([]);
         }
     };
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            await Promise.all([fetchSalesData(timeFrame), fetchTopSalesItems(timeFrame), fetchBestSellers(timeFrame)]);
+            await Promise.all([
+                fetchSalesData(timeFrame),
+                fetchTopSalesItems(timeFrame),
+                fetchBestSellers(timeFrame),
+            ]);
             setLoading(false);
         };
 
         fetchData();
-    }, [timeFrame, isLakbayKape]);
+    }, [timeFrame, warehouseId]);
 
     const salesGridData = [
         { id: 1, period: 'daily', amount: salesTotals.daily || 0 },
@@ -81,7 +91,7 @@ const Sales = () => {
 
     const displayedSalesGridData = showAllData
         ? salesGridData
-        : salesGridData.filter(item => item.period === timeFrame);
+        : salesGridData.filter((item) => item.period === timeFrame);
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 90 },
@@ -101,12 +111,12 @@ const Sales = () => {
                     <div className="toggle_header">
                         <input
                             type="checkbox"
-                            className='input_type'
+                            className="input_type"
                             id="toggle"
                             onChange={toggleView}
                         />
                         <div className="display">
-                            <label className='label_type' htmlFor="toggle">
+                            <label className="label_type" htmlFor="toggle">
                                 <div className="circle">
                                     <span className="material-symbols-outlined food">restaurant</span>
                                     <span className="material-symbols-outlined coffee">local_cafe</span>
@@ -125,7 +135,9 @@ const Sales = () => {
                                 onClick={() => setTimeFrame(frame)}
                                 className={frame.toLowerCase()}
                             >
-                                {`${frame.charAt(0).toUpperCase() + frame.slice(1)} - ₱${salesTotals[frame] || 0}`}
+                                {`${frame.charAt(0).toUpperCase() + frame.slice(1)} - ₱${
+                                    salesTotals[frame] || 0
+                                }`}
                             </button>
                         ))}
                     </div>
@@ -141,13 +153,7 @@ const Sales = () => {
                                 data={salesData}
                                 xField="labels"
                                 yField="data"
-                                series={[
-                                    {
-                                        name: 'Sales',
-                                        data: salesData.data,
-                                        color: '#C2A790',
-                                    },
-                                ]}
+                                series={[{ name: 'Sales', data: salesData.data }]}
                                 height={400}
                             />
                         ) : (
@@ -158,8 +164,11 @@ const Sales = () => {
             </div>
 
             <div className="sales-table">
-                <h2 className='Sales-Total'>Sales Totals</h2>
-                <button onClick={() => setShowAllData(prev => !prev)} className='show-all'>
+                <h2 className="Sales-Total">Sales Totals</h2>
+                <button
+                    onClick={() => setShowAllData((prev) => !prev)}
+                    className="show-all"
+                >
                     {showAllData ? 'Show Current Period Data' : 'Show All Data'}
                 </button>
                 <DataGrid
@@ -172,13 +181,13 @@ const Sales = () => {
             </div>
 
             <div className="top-sales">
-                <h2 className='Top'>Lakbay's Best Seller</h2>
+                <h2 className="Top">Lakbay's Best Seller</h2>
                 <div className="top-sales-list">
                     {topSalesItems.length > 0 ? (
                         topSalesItems.map((item, index) => (
                             <div key={index} className={`T${index + 1}`}>
                                 <img src={item.img} alt={`Top Item ${index + 1}`} />
-                                <p className='txt'>{item.name}</p>
+                                <p className="txt">{item.name}</p>
                             </div>
                         ))
                     ) : (

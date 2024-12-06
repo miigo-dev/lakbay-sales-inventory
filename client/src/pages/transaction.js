@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/transaction.css';
+import Export from '../assets/icons/export.svg';
 
 const Transaction = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -17,7 +18,9 @@ const Transaction = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8080/api/transaction');
-        setCompletedOrders(response.data);
+        // Sort the orders by order_id in descending order
+        const sortedOrders = response.data.sort((a, b) => b.order_id - a.order_id);
+        setCompletedOrders(sortedOrders);
         setLoading(false);
       } catch (err) {
         setError('Failed to load transaction data');
@@ -49,12 +52,12 @@ const Transaction = () => {
   const formattedSelectedDate = new Date(selectedDate).toLocaleDateString('en-CA');
 
   const filteredOrders = completedOrders
-    .map((order) => ({
-      ...order,
-      id: order.order_id,
-      order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
-    }))
-    .filter((order) => order.order_date === formattedSelectedDate);
+  .map((order) => ({
+    ...order,
+    id: order.order_id,
+    order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
+  }))
+  .filter((order) => order.order_date === formattedSelectedDate);
 
   if (loading) return <div>Loading...</div>;
 
@@ -64,7 +67,7 @@ const Transaction = () => {
     <div className="dashboard">
       <div className="transaction-container">
         <div className="header">
-          <h3>Transaction History</h3>
+        <h3>Transaction History</h3>
           <div className="date-filter">
             <label htmlFor="date-picker">Date:</label>
             <input

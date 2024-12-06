@@ -16,8 +16,8 @@ const getDateGrouping = (period) => {
     }
 };
 
-// Fetch sales data grouped by timeframe
-exports.getSalesData = async (period) => {
+// Fetch sales data grouped by timeframe and warehouse
+exports.getSalesData = async (period, warehouseId) => {
     const dateGroup = getDateGrouping(period);
 
     const query = `
@@ -28,15 +28,21 @@ exports.getSalesData = async (period) => {
             orders o
         JOIN 
             order_items oi ON o.order_id = oi.order_id
+        JOIN 
+            products p ON oi.product_id = p.product_id
         WHERE 
-            o.order_status = 'Completed'
+            o.order_status = 'Completed' AND p.warehouse_id = $1
         GROUP BY 
             ${dateGroup}
         ORDER BY 
             ${dateGroup} ASC;
     `;
 
-    const result = await db.query(query);
-    return result.rows;
+    try {
+        const result = await db.query(query, [warehouseId]);
+        return result.rows;
+    } catch (error) {
+        console.error('Database query error:', error);
+        throw new Error('Error executing database query');
+    }
 };
-
