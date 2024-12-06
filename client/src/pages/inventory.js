@@ -238,42 +238,86 @@ const Inventory = () => {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        console.log('Current Product before submitting:', currentProduct);
+        
         if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
             alert('Quantity and Reorder Level must be positive values.');
             return;
         }
-
-        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
+    
+        // Check if category_id and warehouse_id are set properly
+        if (!currentProduct.category_id || !getWarehouseId()) {
+            alert('Please ensure category and warehouse are selected.');
+            return;
+        }
+    
         const newProduct = {
             ...currentProduct,
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
-            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment), // ensure quantity is parsed
         };
-
-        if (isEditing) {
-            setInventoryData((prevData) =>
-                prevData.map((item) => (item.id === currentProduct.id ? newProduct : item))
-            );
-        } else {
-            setInventoryData((prevData) => [...prevData, newProduct]);
+    
+        console.log('Payload to be sent:', {
+            ...newProduct,
+            warehouse_id: getWarehouseId(), // Ensure warehouse_id is set correctly
+        });
+    
+        const payload = selectedInventoryType === 'products'
+            ? {
+                  product_name: newProduct.product_name,
+                  product_price: newProduct.product_price,
+                  category_id: newProduct.category_id,
+                  product_quantity: newProduct.product_quantity,
+                  reorder_level: newProduct.reorder_level,
+                  warehouse_id: getWarehouseId(), // Ensure warehouse_id is set
+              }
+            : {
+                  ingredient_name: newProduct.ingredient_name,
+                  ingredient_quantity: newProduct.quantity,
+                  ingredient_price: newProduct.ingredient_price,
+                  ingredient_unit: newProduct.ingredient_unit,
+                  reorder_level: newProduct.reorder_level,
+                  warehouse_id: getWarehouseId(), // Ensure warehouse_id is set
+              };
+    
+        const endpoint =
+            selectedInventoryType === 'products'
+                ? `http://localhost:8080/api/products`
+                : `http://localhost:8080/api/ingredients`;
+    
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error adding ${selectedInventoryType}: ${response.statusText}`);
+            }
+    
+            const addedItem = await response.json();
+            console.log(`${selectedInventoryType} added successfully:`, addedItem);
+    
+            // Update the inventory data after adding
+            setInventoryData((prevData) => [
+                ...prevData,
+                { ...addedItem, id: addedItem.product_id || addedItem.ingredient_id },
+            ]);
+    
+            closeModal();
+            alert(`${selectedInventoryType === 'products' ? 'Product' : 'Ingredient'} added successfully!`);
+        } catch (error) {
+            console.error(`Error adding ${selectedInventoryType}:`, error);
+            alert(`Failed to add ${selectedInventoryType}. Please try again.`);
         }
-
-        const transactionEntry = {
-            [nameKey]: newProduct[nameKey],
-            quantity: quantityAdjustment,
-            price: newProduct.price,
-            status: currentProduct.productStatus,
-            productId: newProduct.productId || newProduct.ingredientId,
-            remarks,
-        };
-
-        setSelectedProduct((prevTransactions) => [...prevTransactions, transactionEntry]);
-
-        closeModal();
     };
+    
 
     const handleArchive = (item) => {
         const confirmArchive = window.confirm(`Are you sure you want to archive "${item.name}"?`);
@@ -568,16 +612,17 @@ const Inventory = () => {
                             <>
                                 <label htmlFor="product_category">Product Category</label>
                                 <select
-                                    name="product_category"
+                                    name="category_id"
                                     value={currentProduct.category_id}
-                                    onChange={handleInputChange}
+                                    onChange={handleInputChange} // Ensure this is updating the state
                                 >
-                                    <option value="" disabled>
-                                        Select Type
-                                    </option>
+                                    <option value="">Select Category</option>
+                                    {categories.map((category) => (
+                                        <option key={category.category_id} value={category.category_id}>
+                                            {category.category_name}
+                                        </option>
+                                    ))}
                                 </select>
-
-                                
 
                                 <label htmlFor="productName">Product Name</label>
                                 <input
