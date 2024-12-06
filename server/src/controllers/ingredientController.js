@@ -25,7 +25,6 @@ exports.addIngredient = async (req, res) => {
             req.body.ingredient_quantity,
             req.body.ingredient_unit,
             req.body.ingredient_price,
-            req.body.supplier_id,
             req.body.reorder_level,
             req.body.type_id,
             req.body.warehouse_id
@@ -69,6 +68,15 @@ exports.addIngredientType = async (req, res) => {
     try {
         const ingredientType = await ingredientService.addIngredientType(req.body.type_name);
         res.status(201).json(ingredientType);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+exports.getAllIngredientTypes = async (req, res) => {
+    try {
+        const types = await ingredientService.getAllIngredientTypes();
+        res.status(200).json(types);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

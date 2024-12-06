@@ -27,8 +27,18 @@ const Inventory = () => {
     const [showArchived, setShowArchived] = useState(false);
     const [archivedItems, setArchivedItems] = useState([]);
     const [categories, setCategories] = useState([]);
-    
+    const [ingredientTypes, setIngredientTypes] = useState([]);
 
+    const fetchIngredientTypes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/ingredient-types');
+            const data = await response.json();
+            setIngredientTypes(data);
+        } catch (error) {
+            console.error('Error fetching ingredient types:', error);
+        }
+    };
+    
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
 
     const fetchCategories = async () => {
@@ -153,7 +163,6 @@ const Inventory = () => {
                 { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
                 { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
                 { field: 'ingredient_price', headerName: 'Price', width: 120 },
-                { field: 'supplier_id', headerName: 'Supplier ID', width: 170 },
                 { field: 'reorder_level', headerName: 'Reorder Level', width: 150 },
                 {
                     field: 'action',
@@ -194,6 +203,10 @@ const Inventory = () => {
     });
 
     const openModal = (product = null) => {
+        if (selectedInventoryType === 'ingredients') {
+            fetchIngredientTypes(); // Fetch ingredient types only for ingredients
+        }
+    
         if (product) {
             setCurrentProduct({
                 ...product,
@@ -209,16 +222,19 @@ const Inventory = () => {
                 price: '',
                 supplierId: '',
                 reorderLevel: 0,
+                ingredient_type_id: '', // Initialize ingredient type
                 productStatus: 'in',
                 section: selectedSection,
                 type: selectedInventoryType,
+                warehouse_id: getWarehouseId(), // Set warehouse ID
             });
             setIsEditing(false);
         }
+    
         setModalOpen(true);
         setQuantityAdjustment(0);
         setRemarks('');
-    };
+    };    
 
     const closeModal = () => {
         setModalOpen(false);
@@ -246,9 +262,22 @@ const Inventory = () => {
             return;
         }
     
-        // Check if category_id and warehouse_id are set properly
-        if (!currentProduct.category_id || !getWarehouseId()) {
-            alert('Please ensure category and warehouse are selected.');
+        // Check if warehouse_id is valid
+        const warehouseId = getWarehouseId();
+        if (!warehouseId) {
+            alert('Please ensure a valid warehouse is selected.');
+            return;
+        }
+    
+        // For products, ensure category_id is selected
+        if (selectedInventoryType === 'products' && !currentProduct.category_id) {
+            alert('Please ensure a category is selected for the product.');
+            return;
+        }
+    
+        // For ingredients, ensure ingredient_type_id is selected
+        if (selectedInventoryType === 'ingredients' && !currentProduct.ingredient_type_id) {
+            alert('Please ensure an ingredient type is selected.');
             return;
         }
     
@@ -262,26 +291,27 @@ const Inventory = () => {
     
         console.log('Payload to be sent:', {
             ...newProduct,
-            warehouse_id: getWarehouseId(), // Ensure warehouse_id is set correctly
+            warehouse_id: warehouseId,
         });
     
         const payload = selectedInventoryType === 'products'
             ? {
-                  product_name: newProduct.product_name,
-                  product_price: newProduct.product_price,
-                  category_id: newProduct.category_id,
-                  product_quantity: newProduct.product_quantity,
-                  reorder_level: newProduct.reorder_level,
-                  warehouse_id: getWarehouseId(), // Ensure warehouse_id is set
-              }
+                product_name: newProduct.product_name,
+                product_price: newProduct.product_price,
+                category_id: newProduct.category_id,
+                product_quantity: newProduct.product_quantity,
+                reorder_level: newProduct.reorder_level,
+                warehouse_id: warehouseId,
+            }
             : {
-                  ingredient_name: newProduct.ingredient_name,
-                  ingredient_quantity: newProduct.quantity,
-                  ingredient_price: newProduct.ingredient_price,
-                  ingredient_unit: newProduct.ingredient_unit,
-                  reorder_level: newProduct.reorder_level,
-                  warehouse_id: getWarehouseId(), // Ensure warehouse_id is set
-              };
+                ingredient_name: newProduct.ingredient_name,
+                ingredient_quantity: newProduct.ingredient_quantity,
+                ingredient_price: newProduct.ingredient_price,
+                ingredient_unit: newProduct.ingredient_unit,
+                reorder_level: newProduct.reorder_level,
+                ingredient_type_id: currentProduct.ingredient_type_id, 
+                warehouse_id: warehouseId,
+            };
     
         const endpoint =
             selectedInventoryType === 'products'
@@ -316,9 +346,8 @@ const Inventory = () => {
             console.error(`Error adding ${selectedInventoryType}:`, error);
             alert(`Failed to add ${selectedInventoryType}. Please try again.`);
         }
-    };
+    };    
     
-
     const handleArchive = (item) => {
         const confirmArchive = window.confirm(`Are you sure you want to archive "${item.name}"?`);
 
@@ -664,13 +693,16 @@ const Inventory = () => {
                             <>
                                 <label htmlFor="ingredient_type">Ingredient Type</label>
                                 <select
-                                    name="ingredient_typpe"
-                                    value={currentProduct.ingredient_id}
+                                    name="ingredient_type_id"
+                                    value={currentProduct.ingredient_type_id}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>
-                                        Select Type
-                                    </option>
+                                    <option value="">Select Ingredient Type</option>
+                                    {ingredientTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.type_name}
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <label htmlFor="ingredientName">Ingredient Name</label>
@@ -697,7 +729,7 @@ const Inventory = () => {
                                     value={currentProduct.ingredient_unit}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>
+                                    <option value="">
                                         Select Unit of Measure
                                     </option>
                                     <option value="kg">Kilograms (kg)</option>
