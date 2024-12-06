@@ -22,8 +22,8 @@ exports.addProduct = async (
     return rows[0];  
 }
 
-exports.updateProduct = async () => {
-    const { rows } = await db.query('UPDATE products SET warehouse_id = $1, product_name = $2, category_id = $3, product_price = $4, reorder_level = $5, product_status = $6, remarks = $7 WHERE product_id = $8 RETURNING *', [warehouse_id, product_name, category_id, product_price, reorder_level, product_status, remarks, id]);
+exports.updateProduct = async (id, product_name, product_price) => {
+    const { rows } = await db.query('UPDATE products SET product_name = $1, product_price = $2 WHERE product_id = $3 RETURNING *', [product_name, product_price, id]);
     return rows[0];
 }
 

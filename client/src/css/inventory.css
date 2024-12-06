@@ -133,8 +133,9 @@
 }
 
 .btn:hover {
-    transform: translateY(3px) scale(1.05);
+    transform: translateY(3px) scale(1.01);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    color: white;
 }
 
 .add-inventory_btn {
@@ -175,7 +176,7 @@
 .view_btn {
     background: #5cb85c;
     color: white;
-    margin-right: 5px; /* Add space between the buttons */
+    margin-right: 5px; 
     transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     border: none;
     padding: 10px 20px;
@@ -214,17 +215,15 @@
     color: #333;
 }
 
-/* Style for the modal header */
 .modal-header {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 20px;
-    text-align: center; /* Center-align the header */
+    text-align: center; 
     border-bottom: 2px solid #ddd;
     padding-bottom: 10px;
 }
 
-/* Style for input fields */
 .modal-content1 input, 
 .modal-content1 select, 
 .modal-content1 button {
@@ -236,9 +235,8 @@
     box-sizing: border-box;
 }
 
-/* Style for the submit button */
 .modal-content1 button {
-    background-color: #C2A790; /* Green background */
+    background-color: #C2A790; 
     color: white;
     font-size: 1rem;
     cursor: pointer;
@@ -247,10 +245,9 @@
 }
 
 .modal-content1 button:hover {
-    background-color: #C2A790; /* Slightly darker green on hover */
+    background-color: #C2A790; 
 }
 
-/* Add spacing between form fields */
 .modal-content1 .form-group {
     margin-bottom: 15px;
 }
@@ -262,11 +259,12 @@
     left: 0;
     top: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-y: auto; 
 }
 
 .modal_view2 {
@@ -279,9 +277,37 @@
     overflow-y: auto; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
+ 
 }
 
+.table_container {
+    flex: 1; /* Allow it to expand within the modal */
+    overflow-y: auto; /* Enable vertical scrolling for the table */
+    max-height: 300px; /* Set the max height for the scrollable area */
+    margin-top: 20px; /* Add spacing */
+}
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    position: sticky; /* Keep the header visible while scrolling */
+    top: 0;
+    background-color: #f8f8f8;
+    z-index: 1;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    font-weight: bold;
+}
 
 .close-btn:hover {
     background-color: #a68a6b;
@@ -298,7 +324,7 @@
     margin-top: 15px; 
 }
 
-.btn_in_btn, .btn_out_btn {
+.btn_in_btn, .btn_out_btn, .btn_edit_btn {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
@@ -310,7 +336,7 @@
 }
 
 .btn_in_btn {
-    background: #5cb85c; /* Green background for 'In' button */
+    background: #5cb85c; 
 }
 
 .btn_in_btn:hover {
@@ -320,7 +346,7 @@
 }
 
 .btn_out_btn {
-    background: #d9534f; /* Red background for 'Out' button */
+    background: #d9534f; 
 }
 
 .btn_out_btn:hover {
@@ -329,9 +355,84 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
+.btn_edit_btn {
+    background: #F1C40F; 
+   
+}
+
+.btn_edit_btn:hover {
+    background: #ddb30d;
+    transform: translateY(3px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+
+}
+
 .toggle-header {
     display: flex;
     align-items: center;
     justify-content: space-between; 
     padding: 20px;
+}
+
+.submit_add {
+    background-color: #C2A790;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    color: white;
+    width: 100%; 
+    text-align: center; 
+}
+
+.submit_add:hover {
+    background-color: #C2A790;
+    color: white;
+    transform: translateY(3px) scale(1.01);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.edit_form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit_form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    color: #333;
+}
+
+.edit_form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.save_button {
+    background-color: #fcd332;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.save_button:hover {
+    background-color: #ddb30d;
+}
+
+.edit_form label {
+    font-size: 20px; /* Change this value to your desired font size */
+    color: #333; /* Optional: change the text color */
+    margin-bottom: 8px; /* Optional: add some space below the label */
+    display: block; /* Optional: make the label a block element */
 }
