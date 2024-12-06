@@ -65,24 +65,77 @@ const Orders = () => {
     fetchMenuItems();
   }, []);
 
+  const [activeDiscountType, setActiveDiscountType] = useState(null); 
+
+  const applyDiscount = (type) => {
+    let discountLabel = null;
+    let discountValue = 0;
+  
+    if (type === 'SNR') {
+      if (snrActive) {
+        setSNRActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setSNRActive(true);
+        setPWDActive(false);
+        setSTUActive(false);
+        discountLabel = 'Senior Discounted';
+        discountValue = 20;
+      }
+    } else if (type === 'PWD') {
+      if (pwdActive) {
+        setPWDActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setPWDActive(true);
+        setSNRActive(false);
+        setSTUActive(false);
+        discountLabel = 'PWD Discounted';
+        discountValue = 20;
+      }
+    } else if (type === 'STU') {
+      if (stuActive) {
+        setSTUActive(false);
+        discountLabel = null;
+        discountValue = 0;
+      } else {
+        setSTUActive(true);
+        setSNRActive(false);
+        setPWDActive(false);
+        discountLabel = 'Student Discounted';
+        discountValue = 20;
+      }
+    }
+  
+    setActiveDiscountType(discountLabel);
+    setDiscount(discountValue);
+  
+  };
+  
+  
+
   const addOrder = () => {
     if (quantity > 0) {
       if (selectedItem.category === 'drinks' && !size) {
         alert("Please select a size for drinks.");
         return;
       }
-      setOrders((prevOrders) => [
-        ...prevOrders,
-        {
-          product_id: selectedItem.product_id,
-          item: selectedItem.productname,
-          size: selectedItem.category === 'meals' ? '' : size,
-          quantity,
-          price: parseFloat(selectedItem.price),
-          category: selectedItem.category,
-          date: new Date().toLocaleString(),
-        },
-      ]);
+  
+      const newOrder = {
+        product_id: selectedItem.product_id,
+        item: selectedItem.productname,
+        size: selectedItem.category === 'meals' ? '' : size,
+        quantity,
+        price: parseFloat(selectedItem.price),
+        category: selectedItem.category,
+        discountType: activeDiscountType || null, // Include discount type if active
+        date: new Date().toLocaleString(),
+      };
+  
+      setOrders((prevOrders) => [...prevOrders, newOrder]);
+      console.log("Added Order:", newOrder); // Debugging log
       setIsModalOpen(false);
     } else {
       alert("Please select a quantity greater than 0.");
@@ -96,60 +149,80 @@ const Orders = () => {
   const handleCharge = async () => {
     const amount = parseFloat(customAmount);
     if (orders.length === 0) {
-        alert("Please add items to your order before charging.");
-        return;
+      alert("Please add items to your order before charging.");
+      return;
     }
-
+  
     const totalOrderAmount = calculateTotalPrice();
     if (amount >= totalOrderAmount) {
-        try {
-            const newOrder = {
-                order_status: 'Pending',
-                order_date: new Date(),
-                order_items: orders.map(order => ({
-                    product_id: order.product_id,
-                    quantity: order.quantity,
-                    order_total: order.price * order.quantity,
-                })),
-            };
-            const response = await axios.post('http://localhost:8080/api/orders', newOrder);
-            const orderId = response.data.order_id;
-
-            const newOrderObject = {
-                orderNumber,
-                amount: totalOrderAmount.toFixed(2),
-                status: 'Pending',
-            };
-
-            setCompletedOrders(prev => [...prev, newOrderObject]);
-            setOrderHistory(prev => [...prev, newOrderObject]);
-            setRecentOrder({
-                orderNumber,
-                amount: totalOrderAmount,
-                items: orders.map(order => ({
-                    item: order.item,
-                    quantity: order.quantity,
-                    size: order.size,
-                })),
-            });
-            setChange(amount - totalOrderAmount);
-            setCustomAmount('');
-            setOrders([]);
-        } catch (error) {
-            console.error('Error creating order:', error);
-            alert('Failed to create order');
-        }
+      try {
+        const newOrder = {
+          order_status: 'Pending',
+          order_date: new Date(),
+          order_items: orders.map(order => ({
+            product_id: order.product_id,
+            quantity: order.quantity,
+            order_total: order.price * order.quantity,
+          })),
+        };
+  
+        const response = await axios.post('http://localhost:8080/api/orders', newOrder);
+        const backendOrderId = response.data.order_id; // Use the backend-provided order ID
+  
+        const newOrderObject = {
+          orderNumber: backendOrderId,
+          amount: totalOrderAmount.toFixed(2),
+          status: 'Pending',
+        };
+  
+        setCompletedOrders(prev => [...prev, newOrderObject]);
+        setOrderHistory(prev => [...prev, newOrderObject]);
+  
+        // Update recentOrder with the backend order ID
+        setRecentOrder({
+          orderNumber: backendOrderId, // Use backend ID here
+          amount: totalOrderAmount,
+          items: orders.map(order => ({
+            item: order.item,
+            quantity: order.quantity,
+            size: order.size,
+          })),
+        });
+  
+        setChange(amount - totalOrderAmount);
+        setCustomAmount('');
+        setOrders([]);
+      } catch (error) {
+        console.error('Error creating order:', error);
+        alert('Failed to create order');
+      }
     } else {
-        alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
-        setChange(0);
+      alert(`Please enter an amount greater than the total price of ${totalOrderAmount.toFixed(2)}.`);
+      setChange(0);
     }
   };
 
+  const fetchUpdatedStock = async () => {
+    try {
+        const productResponse = await axios.get('http://localhost:8080/api/products/');
+        const updatedItems = productResponse.data.map(item => ({
+            product_id: item.product_id,
+            productname: item.product_name,
+            category: categoryMap[item.category_id] || 'unknown',
+            price: parseFloat(item.product_price),
+            stockquantity: item.product_quantity,
+            warehouse_id: item.warehouse_id 
+        }));
+        setMenuItems(updatedItems);
+        setFilteredMenuItems(updatedItems.filter(item => item.warehouse_id === (isLakbayKape ? 2 : 1)));
+    } catch (err) {
+        console.error("Error fetching updated stock:", err);
+        setError("Failed to refresh stock data");
+    }
+  };
+  
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
-    console.log("Order Number: ", completedOrder.orderNumber); // Log the order number
-    console.log("Endpoint: ", `http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`); // Log the endpoint
-
     try {
         await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
         setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
@@ -160,6 +233,7 @@ const Orders = () => {
                     : order
             )
         );
+        await fetchUpdatedStock(); // Re-fetch stock quantities after completing the order
     } catch (error) {
         console.error('Error completing order:', error);
         alert('Failed to complete order');
@@ -171,39 +245,7 @@ const Orders = () => {
     return total - (total * discount / 100); 
   };
 
-  const applyDiscount = (type) => {
-    if (type === 'SNR') {
-      if (snrActive) {
-        setSNRActive(false);
-        setDiscount(0);
-      } else {
-        setSNRActive(true);
-        setPWDActive(false);
-        setSTUActive(false);
-        setDiscount(20); 
-      }
-    } else if (type === 'PWD') {
-      if (pwdActive) {
-        setPWDActive(false);
-        setDiscount(0);
-      } else {
-        setPWDActive(true);
-        setSNRActive(false);
-        setSTUActive(false);
-        setDiscount(20);
-      }
-    } else if (type === 'STU') {
-      if (stuActive) {
-        setSTUActive(false);
-        setDiscount(0);
-      } else {
-        setSTUActive(true);
-        setSNRActive(false);
-        setPWDActive(false);
-        setDiscount(10);
-      }
-    }
-  };
+  
 
   const handleQuantityChange = (operation) => {
     setQuantity((prev) => {
@@ -216,6 +258,19 @@ const Orders = () => {
     });
   };
 
+  const handleQuantityInput = (e) => {
+    const inputValue = e.target.value;
+    const parsedValue = parseInt(inputValue, 10);
+  
+    if (isNaN(parsedValue) || parsedValue < 0) {
+      setQuantity(0);
+    } else if (parsedValue > selectedItem.stockquantity) {
+      setQuantity(selectedItem.stockquantity); 
+    } else {
+      setQuantity(parsedValue); 
+    }
+  };
+  
   const handleSizeSelection = (selectedSize) => setSize(selectedSize);
 
   const displayedItems = filteredMenuItems.filter(item =>
@@ -378,15 +433,18 @@ const Orders = () => {
               </ul>
             </div>
 
-            <div className='order_container'>
+            <div className="order_container">
               {displayedItems.map((item, index) => (
-                <div
-                  key={index}
-                  className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
-                  onClick={() => handleItemClick(item)}
-                >
-                  {item.productname}
-                </div>
+                  <div
+                      key={index}
+                      className={`order_item ${item.stockquantity === 0 ? 'out-of-stock' : ''}`}
+                      onClick={() => handleItemClick(item)}
+                  >
+                      <div>{item.productname}</div>
+                      <div className="quantity-label">
+                          Qty: {item.stockquantity}
+                      </div>
+                  </div>
               ))}
             </div>
           </div>
@@ -416,6 +474,15 @@ const Orders = () => {
               </ul>
             )}
           </div>
+          <div className="overall-discount-container">
+            {activeDiscountType ? (
+              <p className="overall-discount-label">
+              {activeDiscountType}
+              </p>
+            ) : (
+              <p className="overall-discount-label"></p>
+            )}
+          </div>      
 
           <div className="discount-buttons">
             <button
@@ -516,7 +583,13 @@ const Orders = () => {
             )}
             <div className="quantity-control">
               <button onClick={() => handleQuantityChange('decrease')}>-</button>
-              <span>{quantity}</span>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => handleQuantityInput(e)}
+                min="0"
+                className="quantity-input"
+              />
               <button onClick={() => handleQuantityChange('increase')}>+</button>
             </div>
             <button onClick={addOrder} className="proceed-button">Add Order</button>
@@ -524,11 +597,11 @@ const Orders = () => {
         </div>
       )}
   
-      {recentOrder && (
+        {recentOrder && (
         <div className="recent-order-modal">
           <div className="recent-order-content">
             <h2 className='total-price'>Change: {change.toFixed(2)}</h2>
-            <p>Order Number: {recentOrder.orderNumber}</p>
+            <p>Order Number: {recentOrder.orderNumber}</p> {/* Use the correct order number */}
             <p>Items: {recentOrder.items.map((orderItem) => orderItem.item).join(', ')}</p>
             <p>Amount: {recentOrder.amount.toFixed(2)}</p>
             <button className="close-button" onClick={handleCloseRecentOrderModal}>Close</button>
