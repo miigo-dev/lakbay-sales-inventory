@@ -20,6 +20,11 @@ const Inventory = () => {
     const [isLakbayKape, setIsLakbayKape] = useState(false);
     const [remarks, setRemarks] = useState('');
     const [suppliers, setSuppliers] = useState([]);
+    const [editModalOpen, setEditModalOpen] = useState(false); // State for Edit Modal
+    const [editedProductName, setEditedProductName] = useState(''); // State for Product Name
+    const [editedProductPrice, setEditedProductPrice] = useState(0); // State for Product Price
+    const [currentProductPrice, setCurrentProductPrice] = useState(0); 
+    
 
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
 
@@ -131,8 +136,8 @@ const Inventory = () => {
                       renderCell: (params) => (
                           <div>
                               <button className="btn view_btn" onClick={() => handleView(params.row)}>
-                                  View
-                              </button>
+                              View
+                          </button>
                               <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
                                   Delete
                               </button>
@@ -254,7 +259,7 @@ const Inventory = () => {
         setQuantityModalOpen(false);
     };
 
-    const handleView = async (item) => {
+    const handleView = (item) => {
         console.log('Selected Item:', item);
     
         // Set the current product details
@@ -276,11 +281,11 @@ const Inventory = () => {
         }
     
         // Dynamically fetch movements for the selected item
-        await fetchMovementsByID(itemId, itemType);
+        fetchMovementsByID(itemId, itemType);
     
         // Open the modal to display the movements
         setViewModalOpen(true);
-    };    
+    };
 
     const handleQuantityAdjustmentSubmit = async () => {
         const adjustmentValue = parseInt(quantityAdjustment, 10);
@@ -363,6 +368,18 @@ const Inventory = () => {
             alert('Failed to create movement. Please try again.');
         }
     };
+
+    const openEditModal = () => {
+        setEditedProductName(currentProductName); // Prefill with current product name
+        setEditedProductPrice(currentProductPrice); // Prefill with current product price
+        setEditModalOpen(true);
+    };
+    
+    const saveEditChanges = () => {
+        // Update logic here (e.g., update database or state)
+ 
+        setEditModalOpen(false); // Close Edit Modal
+    };
     
 
     return (
@@ -434,6 +451,8 @@ const Inventory = () => {
                                         Select Type
                                     </option>
                                 </select>
+
+                                
 
                                 <label htmlFor="productName">Product Name</label>
                                 <input
@@ -537,7 +556,7 @@ const Inventory = () => {
                             </>
                         )}
 
-                        <button onClick={handleSubmit} className="submit">
+                        <button onClick={handleSubmit} className="submit_add">
                             {isEditing ? 'Update' : 'Add'}
                         </button>
                         <button className="close_button" onClick={closeModal}>
@@ -557,7 +576,7 @@ const Inventory = () => {
                                     : 'Inventory of Ingredient'}
                                 : {currentProductName}
                             </h2>
-                            <span onClick={() => setViewModalOpen(false)} className="close">
+                            <span onClick={() => setViewModalOpen(false)} className="close_button">
                                 &times;
                             </span>
                         </div>
@@ -568,8 +587,12 @@ const Inventory = () => {
                             <button onClick={() => openQuantityModal('out')} className="btn_out_btn">
                                 Out
                             </button>
-                        </div>
 
+                            <button onClick={openEditModal} className="btn_edit_btn">
+                                Edit
+                            </button>
+                        </div>
+                        <div className="table_container">
                         <table>
                             <thead>
                                 <tr>
@@ -598,6 +621,7 @@ const Inventory = () => {
                                 })}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -641,7 +665,7 @@ const Inventory = () => {
 
                         <button
                             onClick={handleQuantityAdjustmentSubmit}
-                            className="submit-btn"
+                            className="btn submit-btn"
                         >
                             Submit Adjustment
                         </button>
@@ -651,6 +675,44 @@ const Inventory = () => {
                     </div>
                 </div>
             )}
+
+{editModalOpen && (
+    <div className="modal_view">
+        <div className="modal_view2">
+            <div className="header_container">
+                <h2>Edit Product Details</h2>
+                <span onClick={() => setEditModalOpen(false)} className="close_button">
+                    &times;
+                </span>
+            </div>
+            <div className="edit_form">
+                <label>
+                    Product Name:
+                    <input
+                        type="text"
+                        value={editedProductName}
+                        onChange={(e) => setEditedProductName(e.target.value)}
+                    />
+                </label>
+                <label>
+                    Product Price:
+                    <input
+                        type="number"
+                        value={editedProductPrice}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            // Allow empty string or convert to number
+                            setEditedProductPrice(value === '' ? '' : Number(value));
+                        }}
+                    />
+                </label>
+                <button onClick={saveEditChanges} className="save_button">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+)}
         </div>
     );
 };
