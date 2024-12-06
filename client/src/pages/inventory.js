@@ -122,7 +122,7 @@ const Inventory = () => {
             { field: 'reorder_level', headerName: 'Reorder Trigger', width: 120 },
             {
                 field: 'category_id',
-                headerName: 'Meal Type',
+                headerName: 'Category',
                 width: 150,
                 renderCell: (params) => {
                     const category = categories.find(
