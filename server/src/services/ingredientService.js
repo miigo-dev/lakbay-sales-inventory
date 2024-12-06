@@ -24,8 +24,8 @@ exports.addIngredient = async (
     return result.rows[0];
 }
 
-exports.updateIngredient = async ( id, ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id) => { 
-    const result = await db.query('UPDATE ingredients SET ingredient_name = $1, ingredient_quantity = $2, ingredient_unit = $3, ingredient_price = $4, supplier_id = $5 , reorder_level = $6, type_id = $7, warehouse_id = $8 WHERE ingredient = $9 RETURNING *', [ingredient_name, ingredient_quantity, ingredient_unit, ingredient_price, supplier_id, reorder_level, type_id, warehouse_id, id]);
+exports.updateIngredient = async (id, ingredient_name, ingredient_price) => {
+    const result = await db.query('UPDATE ingredients SET ingredient_name = $1, ingredient_price = $2 WHERE ingredient_id = $3 RETURNING *', [ingredient_name, ingredient_price, id]);
     return result.rows[0];
 }
 

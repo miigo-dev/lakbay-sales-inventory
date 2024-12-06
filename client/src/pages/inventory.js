@@ -427,15 +427,18 @@ const Inventory = () => {
                 )
             );
     
-            setEditModalOpen(false); // Close the modal
+            // Close all modals
+            setEditModalOpen(false);
+            setViewModalOpen(false);
+            setModalOpen(false); // In case it's also open
+            setQuantityModalOpen(false);
+    
             alert('Product updated successfully!');
         } catch (error) {
             console.error('Error updating product:', error);
             alert('Failed to update the product. Please try again.');
         }
     };
-      
-    
 
     return (
         <div className="dashboard_container">
