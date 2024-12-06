@@ -17,7 +17,9 @@ const Transaction = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8080/api/transaction');
-        setCompletedOrders(response.data);
+        // Sort the orders by order_id in descending order
+        const sortedOrders = response.data.sort((a, b) => b.order_id - a.order_id);
+        setCompletedOrders(sortedOrders);
         setLoading(false);
       } catch (err) {
         setError('Failed to load transaction data');
@@ -49,12 +51,12 @@ const Transaction = () => {
   const formattedSelectedDate = new Date(selectedDate).toLocaleDateString('en-CA');
 
   const filteredOrders = completedOrders
-    .map((order) => ({
-      ...order,
-      id: order.order_id,
-      order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
-    }))
-    .filter((order) => order.order_date === formattedSelectedDate);
+  .map((order) => ({
+    ...order,
+    id: order.order_id,
+    order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
+  }))
+  .filter((order) => order.order_date === formattedSelectedDate);
 
   if (loading) return <div>Loading...</div>;
 
