@@ -91,7 +91,7 @@
     }
 
     .input_type {
-        display: none; /* Hide the default checkbox */
+        display: none; 
     }
 
     .display {
