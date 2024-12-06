@@ -1,106 +1,203 @@
 import '../css/sales.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { DataGrid } from '@mui/x-data-grid';
+import axios from 'axios';
 
 const Sales = () => {
-    const [timeFrame, setTimeFrame] = useState('Today');
+    const [timeFrame, setTimeFrame] = useState('daily'); // Matches API timeframe
+    const [isLakbayKape, setIsLakbayKape] = useState(false);
+    const [showAllData, setShowAllData] = useState(false);
 
-    const getSalesData = (frame) => {
-        switch (frame) {
-            case 'Today':
-                return {
-                    labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM'],
-                    data: [12, 19, 3, 5, 2],
-                };
-            case 'Weekly':
-                return {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [50, 100, 75, 125],
-                };
-            case 'Monthly':
-                return {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [200, 300, 250, 400],
-                };
-            case 'Yearly':
-                return {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    data: [1200, 1500, 1300, 1600, 2000, 1800, 2200, 2400, 2600, 3000, 3200, 3500],
-                };
-            default:
-                return { labels: [], data: [] };
+    const [salesData, setSalesData] = useState({ labels: [], data: [] });
+    const [salesTotals, setSalesTotals] = useState({});
+    const [topSalesItems, setTopSalesItems] = useState([]);
+    const [bestSellers, setBestSellers] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const toggleView = () => setIsLakbayKape(prev => !prev);
+
+    // Fetch sales data for totals and graph
+    const fetchSalesData = async (period) => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/sales', { params: { period } });
+
+            // Ensure response structure is valid
+            if (!response.data || !response.data.labels || !response.data.data) {
+                console.error('Invalid sales data response:', response.data);
+                setSalesData({ labels: [], data: [] });
+                return;
+            }
+
+            setSalesData({
+                labels: response.data.labels,
+                data: response.data.data,
+            });
+
+            const totalSales = response.data.data.reduce((sum, value) => sum + value, 0);
+            setSalesTotals(prev => ({ ...prev, [period]: totalSales }));
+        } catch (error) {
+            console.error('Error fetching sales data:', error);
+            setSalesData({ labels: [], data: [] }); // Ensure fallback if error occurs
         }
     };
 
-    const calculateTotalSales = (data) => {
-        return data.reduce((total, value) => total + value, 0);
+    const fetchTopSalesItems = async (period) => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/top-sales', { params: { period } });
+            setTopSalesItems(response.data || []);
+        } catch (error) {
+            console.error('Error fetching top sales items:', error);
+            setTopSalesItems([]); // Ensure fallback if error occurs
+        }
     };
 
-    const salesData = getSalesData(timeFrame);
-    const totalSales = calculateTotalSales(salesData.data);
-
-    // Pre-calculate totals for each time frame
-    const totalSalesData = {
-        Today: calculateTotalSales(getSalesData('Today').data),
-        Weekly: calculateTotalSales(getSalesData('Weekly').data),
-        Monthly: calculateTotalSales(getSalesData('Monthly').data),
-        Yearly: calculateTotalSales(getSalesData('Yearly').data),
+    const fetchBestSellers = async (period) => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/top-sales', { params: { period } });
+            setBestSellers(response.data || []);
+        } catch (error) {
+            console.error('Error fetching best sellers:', error);
+            setBestSellers([]); // Ensure fallback if error occurs
+        }
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            await Promise.all([fetchSalesData(timeFrame), fetchTopSalesItems(timeFrame), fetchBestSellers(timeFrame)]);
+            setLoading(false);
+        };
+
+        fetchData();
+    }, [timeFrame, isLakbayKape]);
+
+    const salesGridData = [
+        { id: 1, period: 'daily', amount: salesTotals.daily || 0 },
+        { id: 2, period: 'weekly', amount: salesTotals.weekly || 0 },
+        { id: 3, period: 'monthly', amount: salesTotals.monthly || 0 },
+        { id: 4, period: 'yearly', amount: salesTotals.yearly || 0 },
+    ];
+
+    const displayedSalesGridData = showAllData
+        ? salesGridData
+        : salesGridData.filter(item => item.period === timeFrame);
+
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 90 },
+        { field: 'period', headerName: 'Period', width: 150 },
+        { field: 'amount', headerName: 'Sales Amount (₱)', width: 180 },
+    ];
+
+    const bestSellerColumns = [
+        { field: 'name', headerName: 'Product', width: 150 },
+        { field: 'sales', headerName: 'Sales', width: 100 },
+    ];
 
     return (
         <div className='damage_container'>
             <div className="content-wrapper">
                 <div className="sales-timeframes">
-
-                    <h2 className='text'>Sales</h2>
+                    <div className="toggle_header">
+                        <input
+                            type="checkbox"
+                            className='input_type'
+                            id="toggle"
+                            onChange={toggleView}
+                        />
+                        <div className="display">
+                            <label className='label_type' htmlFor="toggle">
+                                <div className="circle">
+                                    <span className="material-symbols-outlined food">restaurant</span>
+                                    <span className="material-symbols-outlined coffee">local_cafe</span>
+                                </div>
+                            </label>
+                            <span className="categ-txt">
+                                {isLakbayKape ? 'Lakbay Kape' : 'Lakbay Kain'}
+                            </span>
+                        </div>
+                    </div>
 
                     <div className="timeframe-options">
-                        {['Today', 'Weekly', 'Monthly', 'Yearly'].map((frame) => (
-                            <button 
-                                key={frame} 
-                                onClick={() => setTimeFrame(frame)} 
-                                className={frame.toLowerCase()} // Add class based on frame
+                        {['daily', 'weekly', 'monthly', 'yearly'].map((frame) => (
+                            <button
+                                key={frame}
+                                onClick={() => setTimeFrame(frame)}
+                                className={frame.toLowerCase()}
                             >
-                                {frame}- ₱{totalSalesData[frame]}
+                                {`${frame.charAt(0).toUpperCase() + frame.slice(1)} - ₱${salesTotals[frame] || 0}`}
                             </button>
                         ))}
                     </div>
                 </div>
 
                 <div className="line-graph-container">
-                    <h2>{timeFrame} Sales</h2>
+                    <h2>{timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)} Sales</h2>
                     <div className="line-graph">
-                        <LineChart
-                            data={salesData}
-                            xField="labels"
-                            yField="data"
-                            series={[{ name: 'Sales', data: salesData.data, color: '#C2A790' }]}
-                            height={400}
-                        />
+                        {loading ? (
+                            <p>Loading chart...</p>
+                        ) : salesData.labels?.length > 0 && salesData.data?.length > 0 ? (
+                            <LineChart
+                                data={salesData}
+                                xField="labels"
+                                yField="data"
+                                series={[
+                                    {
+                                        name: 'Sales',
+                                        data: salesData.data,
+                                        color: '#C2A790',
+                                    },
+                                ]}
+                                height={400}
+                            />
+                        ) : (
+                            <p>No sales data available for this period.</p>
+                        )}
                     </div>
                 </div>
             </div>
 
+            <div className="sales-table">
+                <h2 className='Sales-Total'>Sales Totals</h2>
+                <button onClick={() => setShowAllData(prev => !prev)} className='show-all'>
+                    {showAllData ? 'Show Current Period Data' : 'Show All Data'}
+                </button>
+                <DataGrid
+                    rows={displayedSalesGridData}
+                    columns={columns}
+                    pageSize={4}
+                    rowsPerPageOptions={[4]}
+                    disableSelectionOnClick
+                />
+            </div>
+
             <div className="top-sales">
-    <h2 className='Top'>Lakbay's Best Seller</h2>
-    <div className="top-sales-list">
-        <div className="top-sales-item">
-            <img src="path/to/image1.jpg" alt="Top Product 1" />
-            <p>Product 1</p>
-        </div>
-        <div className="top-sales-item">
-            <img src="path/to/image2.jpg" alt="Top Product 2" />
-            <p>Product 2</p>
-        </div>
-        <div className="top-sales-item">
-            <img src="path/to/image3.jpg" alt="Top Product 3" />
-            <p>Product 3</p>
-        </div>
-        {/* Add more items as needed */}
-    </div>
-</div>
+                <h2 className='Top'>Lakbay's Best Seller</h2>
+                <div className="top-sales-list">
+                    {topSalesItems.length > 0 ? (
+                        topSalesItems.map((item, index) => (
+                            <div key={index} className={`T${index + 1}`}>
+                                <img src={item.img} alt={`Top Item ${index + 1}`} />
+                                <p className='txt'>{item.name}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No top sales items available.</p>
+                    )}
+                </div>
+            </div>
 
-
+            <div className="best-seller-table">
+                <h2>Top Best Sellers</h2>
+                <DataGrid
+                    rows={bestSellers.map((item, idx) => ({ id: idx + 1, ...item }))}
+                    columns={bestSellerColumns}
+                    pageSize={3}
+                    rowsPerPageOptions={[3, 5, 10]}
+                    pagination
+                    disableSelectionOnClick
+                />
+            </div>
         </div>
     );
 };

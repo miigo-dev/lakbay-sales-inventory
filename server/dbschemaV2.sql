@@ -1,238 +1,169 @@
-CREATE TABLE Roles (
-    RoleID SERIAL PRIMARY KEY,
-    RoleName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE Users (
-    UserID SERIAL PRIMARY KEY,
-    FirstName VARCHAR(100),
-    LastName VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    Username VARCHAR(255) NOT NULL,
-    Password VARCHAR(255) NOT NULL,
-    RoleID INT REFERENCES Roles(RoleID),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Suppliers (
-    SupplierID SERIAL PRIMARY KEY,
-    SupplierName VARCHAR(100) NOT NULL,
-    ContactPerson VARCHAR(100),
-    PhoneNumber VARCHAR(20),
-    Email VARCHAR(100),
-    Address VARCHAR(255)
-);
-
-CREATE TABLE Products (
-    ProductID SERIAL PRIMARY KEY,
-    ProductName VARCHAR(100) NOT NULL,
-    Category VARCHAR(50),
-    UnitOfMeasure VARCHAR(50),
-    Price DECIMAL(10, 2) NOT NULL,
-    StockQuantity INT NOT NULL,
-    ReorderLevel INT DEFAULT 10,
-    ProductStatus VARCHAR(50) DEFAULT 'Active',
-    SupplierID INT REFERENCES Suppliers(SupplierID)
-);
-
-CREATE TABLE ProductIn (
-    ProductInID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    QuantityAdded INT NOT NULL,
-    SupplierID INT REFERENCES Suppliers(SupplierID),
-    ReceivedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Remarks TEXT
-);
-
-CREATE TABLE ProductOut (
-    ProductOutID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    QuantityRemoved INT NOT NULL,
-    RemovalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Reason VARCHAR(100),
-    Remarks TEXT
-);
-
-CREATE TABLE Orders (
-    OrderID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    Quantity INT NOT NULL,
-    OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    OrderStatus VARCHAR(50) DEFAULT 'Pending',
-    OrderTotal DECIMAL(10, 2),
-    UserID INT REFERENCES Users(UserID)
-);
-
-CREATE TABLE Sales (
-    SaleID SERIAL PRIMARY KEY,
-    ProductID INT REFERENCES Products(ProductID),
-    Quantity INT NOT NULL,
-    SaleDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    SaleStatus VARCHAR(50) DEFAULT 'Completed',
-    UserID INT REFERENCES Users(UserID)
-);
-
-CREATE TABLE Logs (
-    LogID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    Action VARCHAR(255),
-    ActionType VARCHAR(50),
-    TableAffected VARCHAR(100),
-    Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Permissions (
-    PermissionID SERIAL PRIMARY KEY,
-    PermissionName VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE RolePermissions (
-    RolePermissionID SERIAL PRIMARY KEY,
-    RoleID INT REFERENCES Roles(RoleID),
-    PermissionID INT REFERENCES Permissions(PermissionID)
-);
-
-CREATE TABLE UserPermissions (
-    UserPermissionID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    PermissionID INT REFERENCES Permissions(PermissionID)
-);
-
--- Insert statements
-
-INSERT INTO Roles (RoleName) VALUES 
-('Owner'),
-('Admin'),
-('Inventory Personnel'),
-('Cashier');
-
-INSERT INTO Users (FirstName, LastName, PhoneNumber, Username, Password, RoleID) VALUES 
-('John', 'Doe', '09123456789', 'johndoe', 'hashed_password_1', 1),
-('Jane', 'Smith', '09122334455', 'janesmith', 'hashed_password_2', 2),
-('Alex', 'Johnson', '09125678901', 'alexjohnson', 'hashed_password_3', 3),
-('Emily', 'Davis', '09129876543', 'emilydavis', 'hashed_password_4', 4);
-
-INSERT INTO Suppliers (SupplierName, ContactPerson, PhoneNumber, Email, Address) VALUES 
-('Supplier A', 'Alice Brown', '09121111111', 'alice@suppliera.com', '123 Supplier St.'),
-('Supplier B', 'Bob Green', '09122222222', 'bob@supplierb.com', '456 Supplier Ave.');
-
-INSERT INTO Products (ProductName, Category, UnitOfMeasure, Price, StockQuantity, ReorderLevel, ProductStatus, SupplierID) VALUES 
-('Espresso', 'Beverage', 'ml', 150.00, 50, 10, 'Active', 1),
-('Frappuccino', 'Beverage', 'ml', 180.00, 30, 10, 'Active', 1),
-('Biryani', 'Food', 'pcs', 250.00, 20, 5, 'Active', 2),
-('Sinigang', 'Food', 'pcs', 300.00, 25, 5, 'Active', 2),
-('Coke', 'Beverage', 'ml', 60.00, 100, 20, 'Active', 2);
-
-INSERT INTO ProductIn (ProductID, QuantityAdded, SupplierID, ReceivedDate, Remarks) VALUES 
-(1, 20, 1, CURRENT_TIMESTAMP, 'New batch received'),
-(3, 15, 2, CURRENT_TIMESTAMP, 'Monthly delivery');
-
-INSERT INTO ProductOut (ProductID, QuantityRemoved, RemovalDate, Reason, Remarks) VALUES 
-(2, 5, CURRENT_TIMESTAMP, 'Expired', 'Old stock removed'),
-(4, 2, CURRENT_TIMESTAMP, 'Damaged', 'Sinigang pots spilled');
-
-INSERT INTO Orders (ProductID, Quantity, OrderDate, OrderStatus, OrderTotal, UserID) VALUES 
-(1, 3, CURRENT_TIMESTAMP, 'Completed', 450.00, 4), 
-(3, 2, CURRENT_TIMESTAMP, 'Pending', 500.00, 4), 
-(5, 10, CURRENT_TIMESTAMP, 'Completed', 600.00, 4);
-
-INSERT INTO Sales (ProductID, Quantity, SaleDate, SaleStatus, UserID) VALUES 
-(1, 3, CURRENT_TIMESTAMP, 'Completed', 4), 
-(2, 1, CURRENT_TIMESTAMP, 'Completed', 4), 
-(3, 2, CURRENT_TIMESTAMP, 'Completed', 4);
-
-INSERT INTO Permissions (PermissionName) VALUES 
-('View Inventory'),
-('Edit Inventory'),
-('View Orders'),
-('Edit Orders'),
-('Manage Users');
-
-INSERT INTO RolePermissions (RoleID, PermissionID) VALUES 
-(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
-(2, 1), (2, 2), (2, 3), (2, 4),
-(3, 1), (3, 2),
-(4, 3), (4, 4);
-
-INSERT INTO UserPermissions (UserID, PermissionID) VALUES 
-(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
-(2, 1), (2, 2), (2, 3), (2, 4),
-(3, 1), (3, 2),
-(4, 3), (4, 4);
-
--- Optimized queries
-
-CREATE INDEX idx_products_name ON Products(ProductName);
-CREATE INDEX idx_orders_date ON Orders(OrderDate);
-
-SELECT o.OrderID, p.ProductName, o.Quantity 
-FROM Orders o
-JOIN Products p ON o.ProductID = p.ProductID;
-
-SELECT ProductName, Price FROM Products WHERE StockQuantity > 0;
-
-INSERT INTO Products (ProductName, Price) VALUES 
-('Coffee', 3.00),
-('Tea', 2.50);
-
-CREATE VIEW ActiveProducts AS 
-SELECT * FROM Products WHERE ProductStatus = 'Active';
-
--- Sales Loss computation
-
-SELECT o.OrderID,
-       p.ProductName,
-       o.Quantity AS OrderedQuantity,
-       p.Price,
-       CASE 
-           WHEN p.StockQuantity < o.Quantity THEN (o.Quantity - p.StockQuantity) * p.Price 
-           ELSE 0 
-       END AS PotentialSalesLoss
-FROM Orders o
-JOIN Products p ON o.ProductID = p.ProductID
-WHERE p.ProductStatus = 'Expired' OR p.StockQuantity < o.Quantity;
-
-('John', 'Doe', '09123456789', 'johndoe', 'hashed_password_1', 1),
-
--- reg new user --
-
-{
-    "firstname": "a",
-    "lastname": "b",
-    "phonenumber": "123",
-    "username": "admin",
-    "password": "password",
-    "roleid": "1"
-}
-
--- alter tables (optional) --
-
-ALTER TABLE Products ALTER COLUMN SupplierID DROP NOT NULL;
-
-ALTER TABLE products ADD COLUMN lastupdated TIMESTAMP DEFAULT NOW();
-
-ALTER TABLE products ADD COLUMN updatedby VARCHAR(255);
-
 -- new --
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE suppliers (
+    supplier_id SERIAL PRIMARY KEY,
+    supplier_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone_number VARCHAR(20),
+    address VARCHAR(255)
+);
+
+CREATE TABLE warehouses (
+    warehouse_id SERIAL PRIMARY KEY,
+    warehouse_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE ingredient_types (
+    type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE product_categories (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL,
+    warehouse_id INT REFERENCES warehouses(warehouse_id)
+);
 
 CREATE TABLE ingredients (
     ingredient_id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(100) NOT NULL,
-    ingredient_type VARCHAR(50),
-    quantity INT NOT NULL,
-    unit VARCHAR(50),
-    price DECIMAL(10, 2) NOT NULL,
+    ingredient_quantity INT,
+    ingredient_unit VARCHAR(50),
+    ingredient_price DECIMAL(10, 2) NOT NULL,
     supplier_id INT REFERENCES suppliers(supplier_id),
     reorder_level INT DEFAULT 10,
-    ingredient_status VARCHAR(50) DEFAULT 'Active'
+    type_id INT REFERENCES ingredient_types(type_id),
+    warehouse_id INT REFERENCES warehouses(warehouse_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    supplier_id INT REFERENCES suppliers(supplier_id),
+    product_quantity INT NOT NULL CHECK (product_quantity >= 0),
+    product_price DECIMAL(10, 2) NOT NULL,
     reorder_level INT DEFAULT 10,
-    product_status VARCHAR(50) DEFAULT 'Active'
+    category_id INT REFERENCES product_categories(category_id),
+    warehouse_id INT REFERENCES warehouses(warehouse_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE movements (
+    movement_id SERIAL PRIMARY KEY,
+    item_type VARCHAR(10) NOT NULL CHECK (item_type IN ('PRODUCT', 'INGREDIENT')),
+    item_id INT NOT NULL,
+    movement_quantity INT NOT NULL,
+    movement_type VARCHAR(10) NOT NULL CHECK (movement_type IN ('IN', 'OUT')),
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    remarks TEXT,
+    movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES products(product_id) ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    order_status VARCHAR(50) DEFAULT 'Pending',
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_items (
+    order_item_id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    order_total DECIMAL(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE sales (
+    sale_id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(product_id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    discount DECIMAL(10, 2) DEFAULT 0,
+    total DECIMAL(10, 2),
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE discounts (
+    discount_id SERIAL PRIMARY KEY,
+    discount_name VARCHAR(100) NOT NULL,
+    discount_value DECIMAL(10, 2) NOT NULL,
+    discount_type VARCHAR(50) CHECK (discount_type IN ('Percentage', 'Fixed'))
+);
+
+-- date-fns readable format --
+const result = await db.query('SELECT * FROM products WHERE ...');
+const product = result.rows[0];
+product.created_at = formatDate(product.created_at); // Using the utility function
+product.updated_at = formatDate(product.updated_at);
+
+-- reset sequence --
+ALTER SEQUENCE table_name_column_name_seq RESTART WITH 1;
+
+-- update timestamp --
+
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- trigger for each table --
+
+CREATE TRIGGER update_ingredients_timestamp
+BEFORE UPDATE ON ingredients
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_products_timestamp
+BEFORE UPDATE ON products
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_product_movement_timestamp
+BEFORE UPDATE ON product_movements
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_ingredient_movement_timestamp
+BEFORE UPDATE ON ingredient_movements
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_orders_timestamp
+BEFORE UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+-- order summary update --
+
+CREATE OR REPLACE FUNCTION update_order_summary_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_order_summary_timestamp_trigger
+BEFORE UPDATE ON order_summary
+FOR EACH ROW
+EXECUTE FUNCTION update_order_summary_timestamp();

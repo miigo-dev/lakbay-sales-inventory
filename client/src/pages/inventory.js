@@ -1,476 +1,661 @@
+import { DataGrid } from '@mui/x-data-grid';
 import { useState, useEffect } from 'react';
 import '../css/inventory.css';
 
 const Inventory = () => {
-  const [activeTab, setActiveTab] = useState('Order Status');
-  const [activeSection, setActiveSection] = useState('Lakbay Kape');
-  const [products, setProducts] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false); // State for edit modal
-  const [modalData, setModalData] = useState({
-    productName: '',
-    category: '',
-    unitofMeasure: '',
-    price: '',
-    stockQuantity: '',
-    reorderLevel: '',
-    productStatus: '',
-    supplierId: '',
-  });
-  const [editingProductId, setEditingProductId] = useState(null); // State for tracking which product is being edited
+    const [selectedSection, setSelectedSection] = useState('lakbayKain'); // Default to lakbayKain
+    const [selectedInventoryType, setSelectedInventoryType] = useState('products');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [inventoryData, setInventoryData] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState([]);
+    const [quantityAdjustment, setQuantityAdjustment] = useState(0);
+    const [quantityModalOpen, setQuantityModalOpen] = useState(false);
+    const [adjustmentType, setAdjustmentType] = useState('');
+    const [filteredView, setFilteredView] = useState([]);
+    const [currentProductName, setCurrentProductName] = useState(null);
+    const [viewFilter, setViewFilter] = useState('all');
+    const [isLakbayKape, setIsLakbayKape] = useState(false);
+    const [remarks, setRemarks] = useState('');
+    const [suppliers, setSuppliers] = useState([]);
 
-  const openModal = () => {
-    console.log("Add Product button clicked!");
-    setModalData({
-      productName: '',
-      category: '',
-      unitofMeasure: '',
-      price: '',
-      stockQuantity: '',
-      reorderLevel: '',
-      productStatus: '',
-      supplierId: ''
-    });
-    setModalOpen(true);
-  };
+    const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
 
-  const openEditModal = (product) => {
-    console.log("Edit Product button clicked!", product);
-    setModalData({
-      productName: product.productname,
-      category: product.category,
-      unitofMeasure: product.unitofmeasure,
-      price: product.price,
-      stockQuantity: product.stockquantity,
-      reorderLevel: product.reorderlevel,
-      productStatus: product.productstatus,
-      supplierId: product.supplierId
-    });
-    setEditingProductId(product.productid); // Set the ID of the product being edited
-    setEditModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setEditModalOpen(false); // Close edit modal as well
-  };
-
-  const inputChange = (e) => {
-    const { name, value } = e.target;
-    setModalData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/api/get-inv'); // Update with your API endpoint
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
-
-  const submitForm = async () => {
-    const url = 'http://localhost:8080/api/add-inv'; // Only POST for adding products
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ProductName: modalData.productName,
-          Category: modalData.category,
-          UnitOfMeasure: modalData.unitofMeasure,
-          Price: modalData.price,
-          StockQuantity: modalData.stockQuantity,
-          SupplierID: modalData.supplierId || null,
-        })
-      });
-
-      if (response.ok) {
-        const newProduct = await response.json();
-        console.log('New Product:', newProduct); // Log the new product
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
-        setModalOpen(false);
-      } else {
-        console.error('Failed to save product:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error saving product:', error);
-    }
-  };
-
-  // !! add auth implementation for editedby column in db !!
-
-  const editProduct = async () => {
-    const url = `http://localhost:8080/api/inventory/${editingProductId}`; // Endpoint for editing products
-  
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ProductName: modalData.productName,
-          Category: modalData.category,
-          UnitOfMeasure: modalData.unitofMeasure,
-          Price: modalData.price,
-          StockQuantity: modalData.stockQuantity,
-          SupplierID: modalData.supplierId || null,
-        }),
-      });
-  
-      if (response.ok) {
-        const updatedProduct = await response.json();
-        console.log('Updated Product:', updatedProduct);
-        setProducts((prevProducts) => {
-          const index = prevProducts.findIndex((item) => item.productid === editingProductId);
-          if (index > -1) {
-            const updatedProducts = [...prevProducts];
-            updatedProducts[index] = updatedProduct;
-            return updatedProducts;
-          }
-          return prevProducts;
-        });
-        setEditModalOpen(false); // Close edit modal
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to update product:', response.statusText, errorData);
-      }
-    } catch (error) {
-      console.error('Error updating product:', error);
-    }
-  };
-  
-
-  const deleteProduct = async (productId) => {
-    const confirmDelete = window.confirm('Delete this item?');
-  
-    if (confirmDelete) {
-      try {
-        const response = await fetch(`http://localhost:8080/api/inventory/${productId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          // Filter out the deleted product from the state
-          setProducts((prevProducts) => prevProducts.filter((item) => item.productid !== productId));
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to delete item:', response.statusText, errorData);
+    const fetchSuppliers = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/suppliers');
+            const data = await response.json();
+            setSuppliers(data);
+        } catch (error) {
+            console.error('Error fetching suppliers:', error);
         }
-      } catch (error) {
-        console.error('Error deleting item:', error);
-      }
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+    const fetchInventoryData = async () => {
+        try {
+            const warehouseId = getWarehouseId();
+            const type = selectedInventoryType;
+    
+            const url = `http://localhost:8080/api/${type}/warehouses/${warehouseId}`;
+            const response = await fetch(url);
+            const data = await response.json();
+    
+            setInventoryData(
+                data.map((item) => ({
+                    ...item,
+                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id, // Explicit id assignment
+                }))
+            );
+        } catch (error) {
+            console.error('Error fetching inventory data:', error);
+        }
+    };
 
-  return (
-    <div className="inventory_container">
-    <div className="searchbar">
-      <input type="text" placeholder="Search a product" className="searchbar_input" />
-      <button className="search_btn">Search</button>
-      <button className="filter_btn">Filter</button>
-    </div>
+    const fetchMovementsByID = async (itemId, itemType) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/movements/${itemType}/${itemId}`);
+            if (!response.ok) {
+                throw new Error(`Error fetching movements: ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+    
+            // Map the data to only include necessary fields
+            const mappedData = data.map((movement) => ({
+                supplier_id: movement.supplier_id,
+                movement_quantity: movement.movement_quantity,
+                movement_type: movement.movement_type,
+                remarks: movement.remarks,
+                movement_date: new Date(movement.movement_date).toLocaleDateString(),
+            }));
+    
+            setFilteredView(mappedData);
+        } catch (error) {
+            console.error('Error fetching movements:', error);
+            alert('Failed to fetch movement history. Please try again.');
+        }
+    };
+    
 
-    <div className="toggle-buttons">
-      {/* Toggle between Lakbay Kape and Lakbay Kain */}
-      <button
-        className={`toggle-btn ${activeSection === 'Lakbay Kape' ? 'active' : ''}`}
-        onClick={() => setActiveSection('Lakbay Kape')}
-      >
-        Lakbay Kape
-      </button>
-      <button
-        className={`toggle-btn ${activeSection === 'Lakbay Kain' ? 'active' : ''}`}
-        onClick={() => setActiveSection('Lakbay Kain')}
-      >
-        Lakbay Kain
-      </button>
-      <button className="toggle-btn">Add Report</button>
-    </div>
+    useEffect(() => {
+        fetchInventoryData();
+        fetchSuppliers();
+    }, [selectedSection, selectedInventoryType]);
 
-    {/* Container for both sections */}
-    <div className="content-container">
-      {/* Conditionally render content based on active section */}
-      {activeSection === 'Lakbay Kape' && (
-        <div>
-          <h2>Lakbay Kape</h2>
-          <div className="tabs">
-            <button
-              className={`tab ${activeTab === 'Order Status' ? 'active' : ''}`}
-              onClick={() => setActiveTab('Order Status')}
-            >
-              Order Status
-            </button>
-            <button
-              className={`tab ${activeTab === 'Product Status' ? 'active' : ''}`}
-              onClick={() => setActiveTab('Product Status')}
-            >
-              Product Status
-            </button>
-            <button className="add_product_btn2" onClick={openModal} disabled={activeTab === 'Order Status'}>
-              Add Product
-            </button>
-          </div>
+    // Filter data based on the search term
+    const filteredInventory = inventoryData.filter((item) =>
+        selectedInventoryType === 'products'
+            ? (item.product_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+            : (item.ingredient_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+    );
 
-          {/* Render the appropriate table */}
-          {activeTab === 'Order Status' ? (
-            <div>
-              <table className="order_table">
-                <thead>
-                  <tr>
-                    <td><input type="checkbox" className="hidden_checkbox" /></td>
-                    <th>Order ID</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Store</th>
-                    <th>Instruction</th>
-                    <th>Items</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-              </table>
+    const columns =
+        selectedInventoryType === 'products'
+            ? [
+                  { field: 'product_id', headerName: 'Product ID', width: 120 },
+                  { field: 'product_name', headerName: 'Product Name', width: 200 },
+                  { field: 'product_quantity', headerName: 'Quantity', width: 120 },
+                  { field: 'product_price', headerName: 'Price', width: 120 },
+                  { field: 'reorder_level', headerName: 'Reorder Trigger', width: 120 },
+                  { field: 'category_id', headerName: 'Meal Type', width: 120 },
+                  {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 180,
+                      renderCell: (params) => (
+                          <div>
+                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                  View
+                              </button>
+                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                                  Delete
+                              </button>
+                          </div>
+                      ),
+                  },
+              ]
+            : [
+                  { field: 'ingredient_id', headerName: 'Ingredient ID', width: 120 },
+                  { field: 'ingredient_name', headerName: 'Ingredient Name', width: 200 },
+                  { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
+                  { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
+                  { field: 'ingredient_price', headerName: 'Price', width: 120 },
+                  { field: 'supplier_id', headerName: 'Supplier ID', width: 120 },
+                  { field: 'reorder_level', headerName: 'Reorder Level', width: 120 },
+                  {
+                      field: 'action',
+                      headerName: 'Action',
+                      width: 180,
+                      renderCell: (params) => (
+                          <div>
+                              <button className="btn view_btn" onClick={() => handleView(params.row)}>
+                                  View
+                              </button>
+                              <button className="btn out_btn" onClick={() => handleDelete(params.row.id)}>
+                                  Delete
+                              </button>
+                          </div>
+                      ),
+                  },
+              ];
+
+    const [currentProduct, setCurrentProduct] = useState({
+        id: null,
+        productId: '',
+        productName: '',
+        quantity: '',
+        unitMeasure: '',
+        price: '',
+        supplierId: '',
+        reorderLevel: '',
+        expiryDate: 'date',
+        productStatus: 'in',
+        section: 'main',
+        type: 'products',
+    });
+
+    const openModal = (product = null) => {
+        if (product) {
+            setCurrentProduct({
+                ...product,
+                quantity: product.quantity >= 0 ? product.quantity : 0,
+            });
+            setIsEditing(true);
+        } else {
+            setCurrentProduct({
+                id: null,
+                productId: '',
+                productName: '',
+                quantity: 0,
+                price: '',
+                supplierId: '',
+                reorderLevel: 0,
+                productStatus: 'in',
+                section: selectedSection,
+                type: selectedInventoryType,
+            });
+            setIsEditing(false);
+        }
+        setModalOpen(true);
+        setQuantityAdjustment(0);
+        setRemarks('');
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        if ((name === 'quantity' || name === 'reorderLevel') && value < 0) {
+            alert(`${name} must be a positive value.`);
+            return;
+        }
+
+        setCurrentProduct((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = () => {
+        if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
+            alert('Quantity and Reorder Level must be positive values.');
+            return;
+        }
+
+        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
+        const newProduct = {
+            ...currentProduct,
+            section: selectedSection,
+            type: selectedInventoryType,
+            id: isEditing ? currentProduct.id : inventoryData.length + 1,
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
+        };
+
+        if (isEditing) {
+            setInventoryData((prevData) =>
+                prevData.map((item) => (item.id === currentProduct.id ? newProduct : item))
+            );
+        } else {
+            setInventoryData((prevData) => [...prevData, newProduct]);
+        }
+
+        const transactionEntry = {
+            [nameKey]: newProduct[nameKey],
+            quantity: quantityAdjustment,
+            price: newProduct.price,
+            status: currentProduct.productStatus,
+            productId: newProduct.productId || newProduct.ingredientId,
+            remarks,
+        };
+
+        setSelectedProduct((prevTransactions) => [...prevTransactions, transactionEntry]);
+
+        closeModal();
+    };
+
+    const handleDelete = (id) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this item?');
+        if (confirmDelete) {
+            setInventoryData((prevData) => prevData.filter((item) => item.id !== id));
+        }
+    };
+
+    const openQuantityModal = (type) => {
+        setAdjustmentType(type);
+        setQuantityModalOpen(true);
+    };
+
+    const closeQuantityModal = () => {
+        setQuantityModalOpen(false);
+    };
+
+    const handleView = async (item) => {
+        console.log('Selected Item:', item);
+    
+        // Set the current product details
+        setCurrentProduct({
+            ...item,
+            id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
+        });
+    
+        setCurrentProductName(
+            selectedInventoryType === 'products' ? item.product_name : item.ingredient_name
+        );
+    
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
+        const itemId = selectedInventoryType === 'products' ? item.product_id : item.ingredient_id;
+    
+        if (!itemId || !itemType) {
+            console.error('Invalid itemId or itemType:', { itemId, itemType });
+            return;
+        }
+    
+        // Dynamically fetch movements for the selected item
+        await fetchMovementsByID(itemId, itemType);
+    
+        // Open the modal to display the movements
+        setViewModalOpen(true);
+    };    
+
+    const handleQuantityAdjustmentSubmit = async () => {
+        const adjustmentValue = parseInt(quantityAdjustment, 10);
+    
+        if (isNaN(adjustmentValue) || adjustmentValue <= 0) {
+            alert('Please enter a positive integer for quantity adjustment.');
+            return;
+        }
+    
+        const itemType = selectedInventoryType === 'products' ? 'product' : 'ingredient'; // Lowercase for URL
+        const itemId = currentProduct.id; // Use `id` from `currentProduct`
+    
+        if (!itemId) {
+            alert('Error: Item ID is missing. Please try again.');
+            console.error('Missing Item ID:', currentProduct);
+            return;
+        }
+    
+        console.log('Payload being sent:', {
+            itemType: itemType.toUpperCase(),
+            itemId,
+            quantity: adjustmentValue,
+            movementType: adjustmentType.toUpperCase(),
+            supplierId: currentProduct.supplier_id || null,
+            remarks,
+        });
+    
+        try {
+            const response = await fetch('http://localhost:8080/api/movements', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    itemType: itemType.toUpperCase(),
+                    itemId,
+                    quantity: adjustmentValue,
+                    movementType: adjustmentType.toUpperCase(),
+                    supplierId: currentProduct.supplier_id || null,
+                    remarks,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error creating movement: ${response.statusText}`);
+            }
+    
+            const newMovement = await response.json();
+            console.log('New movement created:', newMovement);
+    
+            // Update filteredView with the new movement
+            const updatedMovement = {
+                supplier_id: newMovement.supplier_id,
+                movement_quantity: newMovement.movement_quantity,
+                movement_type: newMovement.movement_type,
+                remarks: newMovement.remarks,
+                movement_date: new Date(newMovement.movement_date).toLocaleDateString(),
+            };
+    
+            setFilteredView((prevMovements) => [...prevMovements, updatedMovement]);
+    
+            setInventoryData((prevInventory) =>
+                prevInventory.map((item) => {
+                    if (item.id === itemId) {
+                        const updatedQuantity =
+                            adjustmentType.toUpperCase() === 'IN'
+                                ? item[selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity'] + adjustmentValue
+                                : item[selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity'] - adjustmentValue;
+            
+                        return {
+                            ...item,
+                            [selectedInventoryType === 'products' ? 'product_quantity' : 'ingredient_quantity']: updatedQuantity,
+                        };
+                    }
+                    return item;
+                })
+            );
+            
+    
+            setQuantityAdjustment('');
+            setRemarks('');
+            closeQuantityModal();
+            alert(`Movement ${adjustmentType.toUpperCase()} created successfully!`);
+        } catch (error) {
+            console.error('Error creating movement:', error);
+            alert('Failed to create movement. Please try again.');
+        }
+    };
+    
+
+    return (
+        <div className="dashboard_container">
+            <div className="dashboard_header">
+                <input
+                    className="search-bar"
+                    placeholder="Search anything here"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
-          ) : (
-            <table className="order_table">
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Unit of Measure</th>
-                  <th>Price</th>
-                  <th>Stock Quantity</th>
-                  <th>Reorder Level</th>
-                  <th>Product Status</th>
-                  <th>Supplier ID</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(products) && products.length > 0 ? (
-                  products.map((product) => (
-                    <tr key={product.productid}>
-                      <td>{product.productid}</td>
-                      <td>{product.productname}</td>
-                      <td>{product.category}</td>
-                      <td>{product.unitofmeasure}</td>
-                      <td>{product.price}</td>
-                      <td>{product.stockquantity}</td>
-                      <td>{product.reorderlevel}</td>
-                      <td>{product.productstatus}</td>
-                      <td>{product.supplierId}</td>
-                      <td>
-                        <button onClick={() => openEditModal(product)}>Edit</button>
-                        <button onClick={() => deleteProduct(product.productid)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="10">No products available.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-      )}
 
-      {activeSection === 'Lakbay Kain' && (
-        <div>
-          <h2>Lakbay Kain</h2>
-          <div className="tabs">
-            <button
-              className={`tab ${activeTab === 'Order Status' ? 'active' : ''}`}
-              onClick={() => setActiveTab('Order Status')}
-            >
-              Order Status
-            </button>
-            <button
-              className={`tab ${activeTab === 'Product Status' ? 'active' : ''}`}
-              onClick={() => setActiveTab('Product Status')}
-            >
-              Product Status
-            </button>
-            <button className="add_product_btn2" onClick={openModal} disabled={activeTab === 'Order Status'}>
-              Add Product
-            </button>
-          </div>
+            <div className="dashboard_content">
+                <div className="dashboard_title">
+                    <h2>Inventory</h2>
+                    <div className="actions">
+                        <select
+                            className="inventory_section_dropdown"
+                            value={selectedSection}
+                            onChange={(e) => setSelectedSection(e.target.value)}
+                        >
+                            <option value="lakbayKain">Lakbay Kain</option>
+                            <option value="lakbayKape">Lakbay Kape</option>
+                        </select>
 
-          {/* Render the appropriate table */}
-          {activeTab === 'Order Status' ? (
-            <div>
-              <table className="order_table">
-                <thead>
-                  <tr>
-                    <td><input type="checkbox" className="hidden_checkbox" /></td>
-                    <th>Order ID</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Store</th>
-                    <th>Instruction</th>
-                    <th>Items</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-              </table>
+                        <select
+                            className="inventory_type_dropdown"
+                            value={selectedInventoryType}
+                            onChange={(e) => setSelectedInventoryType(e.target.value)}
+                        >
+                            <option value="products">Products</option>
+                            <option value="ingredients">Ingredients</option>
+                        </select>
+
+                        <button className="btn add-inventory_btn" onClick={() => openModal()}>
+                            Add Item
+                        </button>
+                    </div>
+                </div>
+
+                <div className="inventory_table">
+                    <DataGrid
+                        rows={filteredInventory}
+                        columns={columns}
+                        pageSize={10}
+                        rowsPerPageOptions={[10, 20, 50]}
+                        components={{
+                            NoRowsOverlay: () => <div>No data available</div>,
+                        }}
+                    />
+                </div>
             </div>
-          ) : (
-            <table className="order_table">
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Unit of Measure</th>
-                  <th>Price</th>
-                  <th>Stock Quantity</th>
-                  <th>Reorder Level</th>
-                  <th>Product Status</th>
-                  <th>Supplier ID</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(products) && products.length > 0 ? (
-                  products.map((product) => (
-                    <tr key={product.productid}>
-                      <td>{product.productid}</td>
-                      <td>{product.productname}</td>
-                      <td>{product.category}</td>
-                      <td>{product.unitofmeasure}</td>
-                      <td>{product.price}</td>
-                      <td>{product.stockquantity}</td>
-                      <td>{product.reorderlevel}</td>
-                      <td>{product.productstatus}</td>
-                      <td>{product.supplierId}</td>
-                      <td>
-                        <button onClick={() => openEditModal(product)}>Edit</button>
-                        <button onClick={() => deleteProduct(product.productid)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="10">No products available.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
+
+            {modalOpen && (
+                <div className="modal">
+                    <div className="modal_content">
+                        <h2>{isEditing ? 'Edit Inventory' : 'Add Inventory'}</h2>
+
+                        {selectedInventoryType === 'products' ? (
+                            <>
+                                <label htmlFor="product_category">Product Category</label>
+                                <select
+                                    name="product_category"
+                                    value={currentProduct.category_id}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" disabled>
+                                        Select Type
+                                    </option>
+                                </select>
+
+                                <label htmlFor="productName">Product Name</label>
+                                <input
+                                    type="text"
+                                    name="product_name"
+                                    placeholder="Product Name"
+                                    value={currentProduct.product_name}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="quantity">Quantity</label>
+                                <input
+                                    type="number"
+                                    name="product_quantity"
+                                    placeholder="Quantity"
+                                    value={currentProduct.product_quantity}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="price">Price</label>
+                                <input
+                                    type="text"
+                                    name="product_price"
+                                    placeholder="Price"
+                                    value={currentProduct.product_price}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="reorderLevel">Reorder Trigger</label>
+                                <input
+                                    type="number"
+                                    name="reorder_level"
+                                    placeholder="Reorder Level"
+                                    value={currentProduct.reorder_level}
+                                    onChange={handleInputChange}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <label htmlFor="ingredient_type">Ingredient Type</label>
+                                <select
+                                    name="ingredient_typpe"
+                                    value={currentProduct.ingredient_id}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" disabled>
+                                        Select Type
+                                    </option>
+                                </select>
+
+                                <label htmlFor="ingredientName">Ingredient Name</label>
+                                <input
+                                    type="text"
+                                    name="ingredient_name"
+                                    placeholder="Ingredient Name"
+                                    value={currentProduct.ingredient_name}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="quantity">Quantity</label>
+                                <input
+                                    type="number"
+                                    name="ingredient_quantity"
+                                    placeholder="Ingredient Quantity"
+                                    value={currentProduct.ingredient_quantity}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="ingredient_unit">Unit of Measure</label>
+                                <select
+                                    name="ingredient_unit"
+                                    value={currentProduct.ingredient_unit}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" disabled>
+                                        Select Unit of Measure
+                                    </option>
+                                    <option value="kg">Kilograms (kg)</option>
+                                    <option value="g">Grams (g)</option>
+                                    <option value="L">Liters (L)</option>
+                                    <option value="ml">Milliliters (ml)</option>
+                                </select>
+
+                                <label htmlFor="price">Price</label>
+                                <input
+                                    type="text"
+                                    name="ingredient_price"
+                                    placeholder="Ingredient Price"
+                                    value={currentProduct.ingredient_price}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label htmlFor="reorderLevel">Reorder Level</label>
+                                <input
+                                    type="number"
+                                    name="reorder_level"
+                                    placeholder="Reorder Trigger"
+                                    value={currentProduct.reorder_level}
+                                    onChange={handleInputChange}
+                                />
+                            </>
+                        )}
+
+                        <button onClick={handleSubmit} className="submit">
+                            {isEditing ? 'Update' : 'Add'}
+                        </button>
+                        <button className="close_button" onClick={closeModal}>
+                            &times;
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {viewModalOpen && (
+                <div className="modal_view">
+                    <div className="modal_view2">
+                        <div className="header_container">
+                            <h2>
+                                {selectedInventoryType === 'products'
+                                    ? 'Inventory of Product'
+                                    : 'Inventory of Ingredient'}
+                                : {currentProductName}
+                            </h2>
+                            <span onClick={() => setViewModalOpen(false)} className="close">
+                                &times;
+                            </span>
+                        </div>
+                        <div className="viewModal_in_out_btn">
+                            <button onClick={() => openQuantityModal('in')} className="btn_in_btn">
+                                In
+                            </button>
+                            <button onClick={() => openQuantityModal('out')} className="btn_out_btn">
+                                Out
+                            </button>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Quantity</th>
+                                    <th>Type</th>
+                                    <th>Remarks</th>
+                                    <th>Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredView.map((movement, index) => {
+                                    // Find the supplier name using the supplier_id
+                                    const supplier = suppliers.find(
+                                        (sup) => sup.supplier_id === movement.supplier_id
+                                    );
+                                    return (
+                                        <tr key={index}>
+                                            <td>{movement.movement_date}</td>
+                                            <td>{movement.movement_quantity}</td>
+                                            <td>{movement.movement_type}</td>
+                                            <td>{movement.remarks}</td>
+                                            <td>{supplier ? supplier.supplier_name : 'N/A'}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {quantityModalOpen && (
+                <div className="modal1">
+                    <div className="modal-content1">
+                        <h3>Update Quantity</h3>
+
+                        <label htmlFor="supplier_id">Supplier</label>
+                        <select
+                            name="supplier_id"
+                            value={currentProduct.supplier_id}
+                            onChange={(e) => setCurrentProduct({ ...currentProduct, supplier_id: e.target.value })}
+                        >
+                            <option value="">Select Supplier</option>
+                            {suppliers.map((supplier) => (
+                                <option key={supplier.supplier_id} value={supplier.supplier_id}>
+                                    {supplier.supplier_name} 
+                                </option>
+                            ))}
+                        </select>
+
+                        <label htmlFor="quantityAdjustment">Quantity</label>
+                        <input
+                            type="number"
+                            name="quantityAdjustment"
+                            placeholder="Enter quantity to add"
+                            value={quantityAdjustment}
+                            onChange={(e) => setQuantityAdjustment(e.target.value)}
+                        />
+
+                        <label htmlFor="remarks">Remarks</label>
+                        <input
+                            type="text"
+                            name="remarks"
+                            placeholder="Enter remarks"
+                            value={remarks}
+                            onChange={(e) => setRemarks(e.target.value)}
+                        />
+
+                        <button
+                            onClick={handleQuantityAdjustmentSubmit}
+                            className="submit-btn"
+                        >
+                            Submit Adjustment
+                        </button>
+                        <button onClick={closeQuantityModal} className="btn close_btn">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-
-   {/* Add Product Modal */}
-{modalOpen && (
-  <div className="modal">
-    <div className="modal-content">
-      <span className="close" onClick={closeModal}>&times;</span>
-      <h2>Add Product</h2>
-      
-      <form onSubmit={(e) => { e.preventDefault(); submitForm(); }}>
-
-        
-
-        <label>Product Name:</label>
-        <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
-        <br />
-
-
-        <label>Category:</label>
-        <input type="text" name="category" value={modalData.category} onChange={inputChange} required />
-        <br />
-
-
-        <label>Unit of Measure:</label>
-        <input type="text" name="unitOfMeasure" value={modalData.unitOfMeasure} onChange={inputChange} required />
-        <br />
-
-
-        <label>Price:</label>
-        <input type="number" name="price" value={modalData.price} onChange={inputChange} required />
-        <br />
-
-       
-        <label>Stock Quantity:</label>
-        <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required />
-        <br />
-
-   
-        <label>Reorder Level:</label>
-        <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required />
-        <br />
-
- 
-        <label>Product Status:</label>
-        <select name="productStatus" value={modalData.productStatus} onChange={inputChange} required>
-          <option value="Available">Available</option>
-          <option value="Out of Stock">Out of Stock</option>
-        </select>
-        <br />
-
-      
-        <label>Supplier ID:</label>
-        <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} required />
-        <br />
-
-  
-        <button type="submit">Add Product</button>
-      </form>
-    </div>
-  </div>
-)}
-
-
-{editModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>&times;</span>
-
-            <h2>Edit Product</h2>
-
-            <form onSubmit={(e) => { e.preventDefault(); editProduct(); }}>
-              <label>Product Name:</label>
-              <input type="text" name="productName" value={modalData.productName} onChange={inputChange} required />
-              <br />
-
-              <label>Category:</label>
-              <input type="text" name="category" value={modalData.category} onChange={inputChange} required />
-              <br />
-
-              <label>Unit of Measure:</label>
-              <input type="text" name="unitofMeasure" value={modalData.unitofMeasure} onChange={inputChange} required />
-              <br />
-
-              <label>Price:</label>
-              <input type="number" name="price" value={modalData.price} onChange={inputChange} required /><br />
-              <label>Stock Quantity:</label>
-              <input type="number" name="stockQuantity" value={modalData.stockQuantity} onChange={inputChange} required /><br />
-              <label>Reorder Level:</label>
-              <input type="number" name="reorderLevel" value={modalData.reorderLevel} onChange={inputChange} required /><br />
-              <label>Product Status:</label>
-              <input type="text" name="productStatus" value={modalData.productStatus} onChange={inputChange} required /><br />
-              <label>Supplier ID (optional):</label>
-              <input type="text" name="supplierId" value={modalData.supplierId} onChange={inputChange} /><br />
-              <button type="submit">Save Changes</button>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-);
+    );
 };
 export default Inventory;

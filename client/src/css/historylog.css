@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+/* Container for the History Log Page */
+.historylog-container {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+  }
+  
+  /* Back Button Styling */
+  .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .back-button img {
+    width: 24px;
+    height: auto;
+  }
+  
+  /* Title of the Page */
+  .historylog-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Flexbox Layout for Search Bar and Date Picker */
+  .historylog-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  /* Search Bar Styling */
+  .historylog-search-bar {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Date Picker Styling */
+  .historylog-date-picker {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .date-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* DataGrid Container */
+  .historylog-data-grid-container {
+    height: 400px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Custom styling for DataGrid Pagination controls */
+  .historylog-container .MuiDataGrid-root .MuiTablePagination-root {
+    font-size: 14px;
+  }
+  
+  .historylog-container .MuiDataGrid-columnHeaders {
+    background-color: #007BFF;
+    color: white;
+    font-weight: 600;
+  }
+  
+  .historylog-container .MuiDataGrid-cell {
+    font-size: 14px;
+  }
+  
+  .historylog-container .MuiDataGrid-row:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  .historylog-container .MuiDataGrid-columnHeaderTitle {
+    text-align: center;
+  }
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .historylog-container {
+      width: 95%;
+      padding: 10px;
+    }
+  
+    .historylog-title {
+      font-size: 1.5rem;
+    }
+  
+    .historylog-content {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .historylog-search-bar,
+    .historylog-date-picker {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+  
+    .historylog-data-grid-container {
+      height: 300px;
+    }
+  }
+
+  

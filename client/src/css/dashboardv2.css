@@ -1,60 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
-
-.container {
-    margin-left: 260px;
-    height: 100vh;
-    padding: 20px;
-    background-color: white;
-    max-width: calc(100% - 260px);
+/* Container for both charts */
+.chart-container {
     display: flex;
-    flex-wrap: wrap; 
-    gap: 30px;
-}
-
-.card-sales, .card-products {
-    flex: 1 1 calc(50% - 20px);
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    max-height: fit-content;
-}
-
-.card-summary {
-    flex: 1 1 100%;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    max-width: fit-content;
-    max-height: fit-content;
-}
-
-.card-icon {
-    margin-bottom: 30px;
-}
-
-.sales-info-main {
-    flex-grow: 1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.products-info-main {
-    flex-grow: 1;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.card-info {
+    justify-content: space-between; /* Place charts side by side */
+    gap: 20px; /* Space between the two charts */
+    margin-top: 20px;
+    flex-wrap: wrap; /* Allows charts to stack on smaller screens */
+  }
+  
+  /* Individual chart item */
+  .chart-item {
+    flex: 1; /* Ensures both charts take up equal space */
     display: flex;
-    justify-content: space-between;
-    align-items: left;
-    font-size: 10px;
-}
-
-.sales-info-main h2, .products-info-main h2 {
-    font-size: 26px;
-    font-weight: 600;
-    margin-top: 10px;
-}
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 48%; /* Ensures charts do not overflow, adjusts width */
+    height: 300px; /* Sets a fixed height for charts */
+  }
+  
+  /* Ensure the Pie chart stays on the right */
+  .pie-chart {
+    flex: 0 0 45%; /* Fixes the width of the Pie chart */
+    max-width: 45%; /* Ensures Pie chart does not exceed this width */
+    height: 300px; /* Fix the height of the Pie chart */
+    margin-top: 0;
+    padding-top: 0;
+  }
+  
+  /* Specific styles for Bar Chart */
+  .bar-chart {
+    flex: 0 0 45%; /* Fixes the width of the Bar chart */
+    max-width: 45%; /* Ensures Bar chart does not exceed this width */
+    height: 300px; /* Fix the height of the Bar chart */
+  }
+  
+  /* Responsive styles for smaller screens */
+  @media (max-width: 768px) {
+    .chart-container {
+      flex-direction: column; /* Stack the charts vertically */
+      align-items: center;
+    }
+  
+    .chart-item {
+      max-width: 90%; /* Ensure charts take up most of the screen width */
+      margin-bottom: 20px;
+      height: 250px; /* Adjust height for smaller screens */
+    }
+  
+    .pie-chart, .bar-chart {
+      max-width: 100%; /* Make sure the charts fill the available width */
+    }
+  }
+  

@@ -1,14 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz@0,14..32;1,14..32&display=swap');
+
 .damage_container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    max-width: calc(100% - 260px);
-    margin-left: 330px;
-    margin-top: 50px;
+    font-family: 'Inter', sans-serif;
+    padding: 30px;
+    max-width: 100%;
+    background-color: white;
+    
 }
 
 .tab:hover {
@@ -29,23 +26,48 @@
     color: #fff; 
     cursor: pointer;
     border-radius: 5px;
-    margin-right: 10px; 
+    margin-right: 10px;
+    justify-content: space-between;
     transition: background-color 0.3s ease, transform 0.3s ease; 
 }
-.addReport{
-    margin-left: 10px;
+
+.header_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 10px;
+    border-bottom: 1px solid #ccc; 
+}
+
+.header_container h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.header_container select.dropdown_btn {
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.addReport {
+    margin-top: 10px;
+    margin-bottom: 10px;
     padding: 10px 20px;
     border: none;
     background-color: #d9c0a5; 
     color: #fff; 
     border-radius: 5px;
-
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.addReport:hover{
-    background-color: #b38e6a; 
-    transform: scale(1.05);
+.header_container .addReport:hover {
+    background-color: #b59c84;
 }
+
 
 .addReport:active {
     background-color: #b38e6a;
@@ -194,7 +216,20 @@
 .modal-content button[type="submit"]:hover {
     background-color: #8f7255;
 }
-
+.submit{
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #c7ad91;
+    width: 100%;
+}
+.submit:hover{
+    background-color: #a18466;
+    color: white;
+}
 @media (max-width: 768px) {
     .modal-content {
         width: 90%; 

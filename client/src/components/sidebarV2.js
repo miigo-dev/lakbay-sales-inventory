@@ -30,6 +30,11 @@ const SidebarV2 = () => {
 
                         <a href="#">
                             <span class="material-icons-sharp">grid_view</span>
+                            <h3>Transaction</h3>
+                        </a>
+
+                        <a href="#">
+                            <span class="material-icons-sharp">grid_view</span>
                             <h3>Inventory</h3>
                         </a>
 

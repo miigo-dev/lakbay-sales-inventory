@@ -1,0 +1,350 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* Global font styling */
+* {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body and text elements */
+body, p, span, div, .toggle-text, .txt {
+  color: #53545C;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+h4, h5, h6 {
+  font-weight: 500;
+}
+.toggle_container{
+  padding: 10px;
+  justify-content: space-between;
+  display: flex;
+}
+.categ-txt{
+  margin-left: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.lakbay-categ-txt{
+  padding-top: 20px;
+}
+
+/* Layout Containers */
+.chart-container, .dashboard-container, .order-summaries, .top-sales-list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.chart-item, .order-kain-sum, .order-kape-sum {
+  flex: 1;
+  min-width: 280px;
+  box-sizing: border-box;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Graph Containers */
+.pie-chart-container, .bar-graph-container, .line-graph-container, .stock-info-wrapper {
+  padding-top: 20px;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+
+.pie-chart-container h2, .line-graph-container h2 {
+  margin-bottom: 1rem;
+}
+
+/* Recent Transactions Table */
+.recent-transactions {
+  width: 100%;
+  margin-top: 50px;
+  overflow-x: auto;
+  /* Allow horizontal scrolling on smaller screens */
+}
+
+/* Flexbox alignment for recent transactions to be aligned with pie chart */
+.pie-transaction-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Add space between stock container and pie chart container */
+  flex-wrap: wrap; /* Ensures items wrap on smaller screens */
+}
+
+/* Pie chart container */
+.pie-chart-container, .stock-info-wrapper {
+  flex: 1; /* Ensure both containers take equal space */
+  min-width: 100px; /* Prevent collapse on small screens */
+}
+.bar-graph-container{
+  min-width: 400px;
+}
+.stock-info{
+  border-radius: 15px;
+  background-color: #f9f9f9; /* Light background for the container */
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-top: 15px;
+}
+.stock-info-wrapper {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Same shadow for consistency */
+  padding: 1rem;
+}
+
+/* Responsive design tweaks */
+@media (max-width: 1024px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.875rem; /* Slightly smaller text for medium screens */
+    padding: 0.75rem; /* Adjust padding for better fit */
+  }
+
+  .recent-transactions {
+    overflow-x: scroll; /* Ensure horizontal scrolling works even at 1024px */
+  }
+
+  .recent-transactions table {
+    min-width: 400px; /* Reduce minimum width for smaller screens */
+  }
+
+  .pie-transaction-container {
+    flex-direction: column;
+    align-items: center; /* Center items on smaller screens */
+  }
+
+  .pie-chart-container, .stock-info-wrapper {
+    width: 100%; /* Allow both pie chart and table to take full width */
+    max-width: 100%; /* Ensure they do not exceed available width */
+    min-width: 0; /* Ensure they don't become too small */
+  }
+}
+
+@media (max-width: 768px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.75rem; /* Further reduce font size for small screens */
+    padding: 0.5rem; /* Adjust padding to fit smaller screens */
+  }
+
+  .recent-transactions table {
+    min-width: 320px; /* Further reduce table width for mobile screens */
+  }
+
+  .time-range-buttons button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .time-range-selector select {
+    font-size: 0.75rem;
+
+  
+  }
+}
+
+@media (max-width: 480px) {
+  .recent-transactions th, .recent-transactions td {
+    font-size: 0.7rem; /* Make text smaller on very small screens */
+    padding: 0.4rem; /* Even smaller padding */
+  }
+
+  .recent-transactions table {
+    min-width: 280px; /* Allow for tight space on small mobile devices */
+  }
+}
+
+/* Time Range Buttons */
+.time-range-buttons {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.timeRangeTxt{
+  padding-right: 10px;
+}
+.time-range-selector{
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px 10px;
+}
+
+.time-range-buttons button {
+  background-color: #F0F0F0;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+
+.time-range-buttons button:hover {
+  background-color: #D0C0A5;
+  transform: scale(1.05);
+}
+
+.time-range-buttons button:active {
+  background-color: #BBA788;
+  transform: scale(0.95);
+}
+
+.time-range-buttons button.active {
+  background-color: #C2A790;
+  color: #fff;
+}
+
+/* Timeframe Buttons */
+.timeframe-options button {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.timeframe-options button.today { background-color: #FFE2E5; }
+.timeframe-options button.weekly { background-color: #C9F7F5; }
+.timeframe-options button.monthly { background-color: #FFF4DE; }
+.timeframe-options button.yearly { background-color: #E1F0FF; }
+
+/* Toggle Switch */
+.switch {
+  margin-top: 10px;  
+  position: relative;
+  width: 3.75rem;
+  height: 2.125rem;
+}
+.summary-order-kain{
+  border-radius: 15px;
+  background-color: #f9f9f9; /* Light background for the container */
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-top: 15px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #D9C0A5;
+  border-radius: 2.125rem;
+  transition: background-color 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.625rem;
+  width: 1.625rem;
+  border-radius: 50%;
+  left: 0.25rem;
+  bottom: 0.25rem;
+  background-color: white;
+  transition: transform 0.4s;
+}
+
+.stock-info-wrapper{
+  border-radius: 15px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-top: 20px;
+  border-style:  solid;
+  border-color: #ccc;
+  border-width: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Same shadow for consistency */
+
+
+}
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(1.875rem);
+}
+.toggle-container{
+  margin-left: 0;
+}
+
+/* Top Sales Section */
+.top-sales {
+  margin-top: 2.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 0.625rem 0;
+}
+
+.top-sales-list {
+  display: inline-flex;
+  gap: 1rem;
+}
+
+.top-sales-item {
+  text-align: center;
+  min-width: 7.5rem;
+}
+
+.top-sales-item img {
+  width: 6.25rem;
+  height: 6.25rem;
+  border-radius: 0.5rem;
+}
+
+/* Order Summary */
+.order-summary-container {
+  margin-top: 1.25rem;
+}
+
+.order-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.order-kain-kape-sum{
+padding-left: 15px;
+padding-right: 15px;
+}
+
+.order-summary-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+
+.order-summary-item span {
+  font-weight: 600;
+}
+
+.order-summary-item span.value {
+  color: #4CAF50;
+}
