@@ -8,6 +8,9 @@ import {
   Outlet,
 } from 'react-router-dom';
 
+import ForgotPassword from './pages/forgotpassword';
+
+
 import Dashboard from './pages/dashboard';
 import Login from './pages/login';
 import Register from './pages/register';
@@ -146,6 +149,8 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Navigate to='/login' />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+
         <Route element={<PrivateRoutes />}>
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/orders' element={<Orders />} />
