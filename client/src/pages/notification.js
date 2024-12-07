@@ -1,28 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Modal, Box, Typography, Button } from '@mui/material';
 import '../css/notification.css';
 
 const Notification = () => {
-  const [notifications] = useState([
-    {
-      id: 1,
-      time: 'November 15, 2024 12:00 PM',
-      title: 'NEW FEATURE: Restrict cashier punching',
-      message:
-        "Have you experienced 'No Cashier' reports? This is when your cashiers are punching sales without them logging on to Hello button on the POS! Considered this resolved! With this new feature in your...",
-    },
-    {
-      id: 2,
-      time: 'November 15, 2024 12:00 PM',
-      title: 'NEW FEATURE: Are you tired of linking ingredients?',
-      message:
-        'We got you, partner! With this new Copy Inventory Tool, pwede ka nang kumopya ng linking of ingredients from one item to another! Check out the instructions below.',
-    },
-  ]);
-
+  const [movements, setMovements] = useState([]);
+  const [priceChanges, setPriceChanges] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const fetchMovements = async () => {
+    try {
+      const response = await fetch('/alerts/movements');
+      const data = await response.json();
+      setMovements(data);
+    } catch (error) {
+      console.error('Error fetching movements:', error);
+    }
+  };
+
+  const fetchPriceChanges = async () => {
+    try {
+      const response = await fetch('/alerts/price-changes');
+      const data = await response.json();
+      setPriceChanges(data);
+    } catch (error) {
+      console.error('Error fetching price changes:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMovements();
+    fetchPriceChanges();
+  }, []);
 
   const handleOpen = (notification) => {
     setSelectedNotification(notification);
@@ -50,14 +60,28 @@ const Notification = () => {
     },
   ];
 
+  const rows = [
+    ...movements.map((m, index) => ({
+      id: `M-${index}`,
+      time: new Date(m.movement_date).toLocaleString(),
+      title: `${m.item_type} Movement`,
+      message: `${m.item_name} was moved ${m.movement_quantity} (${m.movement_type}).`,
+    })),
+    ...priceChanges.map((p, index) => ({
+      id: `P-${index}`,
+      time: new Date(p.updated_at).toLocaleString(),
+      title: 'Price Change',
+      message: `${p.product_name} price changed to $${p.product_price}.`,
+    })),
+  ];
+
   return (
     <div className="notification-page">
       <h1>Notifications</h1>
       <div style={{ height: 400, width: '100%' }}>
-        <DataGrid rows={notifications} columns={columns} pageSize={5} />
+        <DataGrid rows={rows} columns={columns} pageSize={5} />
       </div>
 
-      {/* Modal */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
