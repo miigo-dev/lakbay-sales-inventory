@@ -8,6 +8,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { DataGrid } from '@mui/x-data-grid';
 import '../css/dashboard.css';
 import '../css/styles.css';
+import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
@@ -255,6 +256,51 @@ const Dashboard = () => {
     updateCharts(timeRange, selectedCategory);
   }, [timeRange, selectedCategory]);
 
+  const getTodayOrders = async (category) => {
+    try {
+      // Fetch all orders from the backend
+      const response = await axios.get('http://localhost:8080/api/orders');
+      const allOrders = response.data;
+  
+      // Filter orders based on today's date and category
+      const today = new Date().toISOString().split('T')[0];
+      const filteredOrders = allOrders.filter(
+        (order) => order.date === today && order.category === category
+      );
+  
+      return filteredOrders;
+    } catch (error) {
+      console.error('Error fetching today\'s orders:', error);
+      return [];
+    }
+  };
+  
+  useEffect(() => {
+    const fetchTodayOrders = async () => {
+      const todayOrdersKain = await getTodayOrders('kain');
+      const todayOrdersKape = await getTodayOrders('kape');
+  
+      if (selectedCategory === 'kain') {
+        setAllOrdersCountKain(todayOrdersKain.length);
+        setPendingOrdersCountKain(
+          todayOrdersKain.filter((order) => order.status === 'pending').length
+        );
+        setCompletedOrdersCountKain(
+          todayOrdersKain.filter((order) => order.status === 'completed').length
+        );
+      } else {
+        setAllOrdersCountKape(todayOrdersKape.length);
+        setPendingOrdersCountKape(
+          todayOrdersKape.filter((order) => order.status === 'pending').length
+        );
+        setCompletedOrdersCountKape(
+          todayOrdersKape.filter((order) => order.status === 'completed').length
+        );
+      }
+    };
+  
+    fetchTodayOrders();
+  }, [selectedCategory]); 
 
   return loading ? (
 <div>lodidbnas</div>

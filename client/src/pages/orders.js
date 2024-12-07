@@ -579,6 +579,7 @@ const Orders = () => {
                     ),
                   },
                 ]}
+                autoHeight
               />
             </div>
           )}

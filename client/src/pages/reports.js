@@ -109,10 +109,6 @@ const Reports = () => {
 
         switch (activeTab) {
             case 'Transaction':
-                const tsn = utils.json_to_sheet(exportData);
-                    const tsn1 = utils.book_new();
-                    utils.book_append_sheet(tsn1, tsn, 'Report');
-                writeFileXLSX(tsn1, 'Transactionreports.xlsx');
                 exportData = completedOrders.map((order) => ({
                     'Order No.': order.order_id,
                     'Date': new Date(order.order_date).toLocaleDateString('en-CA'),
@@ -120,10 +116,6 @@ const Reports = () => {
                 }));
                 break;
             case 'Inventory':
-                const inv = utils.json_to_sheet(exportData);
-                    const inv1 = utils.book_new();
-                    utils.book_append_sheet(inv1, inv, 'Report');
-                writeFileXLSX(inv1, 'Inventoryreports.xlsx');
                 exportData = inventoryData.map((item) => ({
                     'ID': item.product_id,
                     'Name': item.product_name,
@@ -133,10 +125,6 @@ const Reports = () => {
                 }));
                 break;
             case 'Supplier':
-                const supp = utils.json_to_sheet(exportData);
-                    const supp1 = utils.book_new();
-                    utils.book_append_sheet(supp1, supp, 'Report');
-                writeFileXLSX(supp1, 'Supplierreports.xlsx');
                 exportData = supplierData.map((supplier) => ({
                     'ID': supplier.supplier_id,
                     'Supplier Name': supplier.supplier_name,
@@ -146,11 +134,7 @@ const Reports = () => {
                 }));
                 break;
             case 'Sales':
-                const sa = utils.json_to_sheet(exportData);
-                    const sa1 = utils.book_new();
-                    utils.book_append_sheet(sa1, sa, 'Report');
                 exportData = [
-                    writeFileXLSX(sa1, 'Salesreports.xlsx'),
                     { 'Period': 'Daily', 'Sales Amount': salesTotals.daily || 0 },
                     { 'Period': 'Weekly', 'Sales Amount': salesTotals.weekly || 0 },
                     { 'Period': 'Monthly', 'Sales Amount': salesTotals.monthly || 0 },
@@ -160,10 +144,10 @@ const Reports = () => {
             default:
                 return;
         }
-
-      
-
-        
+        const ws = utils.json_to_sheet(exportData);
+        const wb = utils.book_new();
+        utils.book_append_sheet(wb, ws, 'Report');
+        writeFileXLSX(wb, 'reports.xlsx');
     };
 
     const generatePDF = () => {
