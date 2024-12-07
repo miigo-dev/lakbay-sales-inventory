@@ -115,7 +115,7 @@ const Transaction = () => {
             },
           ]}
           getRowId={(row) => row.order_id}
-          autoHeight={false} 
+           autoHeight={false}
           style={{
             maxHeight: 700, 
           }}
