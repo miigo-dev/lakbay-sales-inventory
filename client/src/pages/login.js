@@ -82,7 +82,7 @@ const Login = () => {
             </div>
 
             <div className="forgot_pass">
-                <a href="/forgot_password">Forgot Password</a>
+                <a href="/forgotpassword">Forgot Password</a>
             </div>
 
             {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
