@@ -23,6 +23,8 @@ const Reports = () => {
     const [timeFrame, setTimeFrame] = useState('daily');
     const [showAllData, setShowAllData] = useState(false);
     const [isLakbayKape, setIsLakbayKape] = useState(false);
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
     const warehouseId = isLakbayKape ? 2 : 1;
 
@@ -94,6 +96,15 @@ const Reports = () => {
         }
     };
 
+    const filterDataByDateRange = (data) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        return data.filter((item) => {
+            const itemDate = new Date(item.order_date); 
+            return itemDate >= start && itemDate <= end;
+        });
+    };
+
     useEffect(() => {
         setError(null);
         setLoading(true);
@@ -105,17 +116,23 @@ const Reports = () => {
     }, [activeTab, selectedSection, selectedType, timeFrame, warehouseId]);
 
     const exportToExcel = () => {
-        let exportData = [];
-
+        let exportData; 
+    
         switch (activeTab) {
-            case 'Transaction':
-                exportData = completedOrders.map((order) => ({
+            case 'Transaction': {
+                const filteredData = filterDataByDateRange(completedOrders);
+                exportData = filteredData.map((order) => ({
                     'Order No.': order.order_id,
                     'Date': new Date(order.order_date).toLocaleDateString('en-CA'),
                     'Status': order.order_status,
                 }));
+                const ws = utils.json_to_sheet(exportData);
+                const wb = utils.book_new();
+                utils.book_append_sheet(wb, ws, 'Transaction Report');
+                writeFileXLSX(wb, 'Transactionreports.xlsx');
                 break;
-            case 'Inventory':
+            }
+            case 'Inventory': {
                 exportData = inventoryData.map((item) => ({
                     'ID': item.product_id,
                     'Name': item.product_name,
@@ -123,8 +140,13 @@ const Reports = () => {
                     'Price': item.product_price,
                     'Reorder Trigger': item.reorder_level,
                 }));
+                const ws = utils.json_to_sheet(exportData);
+                const wb = utils.book_new();
+                utils.book_append_sheet(wb, ws, 'Inventory Report');
+                writeFileXLSX(wb, 'Inventoryreports.xlsx');
                 break;
-            case 'Supplier':
+            }
+            case 'Supplier': {
                 exportData = supplierData.map((supplier) => ({
                     'ID': supplier.supplier_id,
                     'Supplier Name': supplier.supplier_name,
@@ -132,42 +154,46 @@ const Reports = () => {
                     'Phone Number': supplier.phone_number,
                     'Address': supplier.address,
                 }));
+                const ws = utils.json_to_sheet(exportData);
+                const wb = utils.book_new();
+                utils.book_append_sheet(wb, ws, 'Supplier Report');
+                writeFileXLSX(wb, 'Supplierreports.xlsx');
                 break;
-            case 'Sales':
-                exportData = [
-                    { 'Period': 'Daily', 'Sales Amount': salesTotals.daily || 0 },
-                    { 'Period': 'Weekly', 'Sales Amount': salesTotals.weekly || 0 },
-                    { 'Period': 'Monthly', 'Sales Amount': salesTotals.monthly || 0 },
-                    { 'Period': 'Yearly', 'Sales Amount': salesTotals.yearly || 0 },
-                ];
+            }
+            case 'Sales': {
+                exportData = salesData.labels.map((label, index) => ({
+                    'Label': label,
+                    'Amount': salesData.data[index],
+                }));
+                const ws = utils.json_to_sheet(exportData);
+                const wb = utils.book_new();
+                utils.book_append_sheet(wb, ws, 'Sales Report');
+                writeFileXLSX(wb, 'Salesreports.xlsx');
                 break;
+            }
             default:
-                return;
+                console.warn('No valid active tab selected for export.');
         }
-        const ws = utils.json_to_sheet(exportData);
-        const wb = utils.book_new();
-        utils.book_append_sheet(wb, ws, 'Report');
-        writeFileXLSX(wb, 'reports.xlsx');
     };
 
     const generatePDF = () => {
         const doc = new jsPDF();
-
         if (activeTab === 'Transaction') {
+            const filteredData = filterDataByDateRange(completedOrders);
             const columns = ['ID', 'Date', 'Order No.', 'Status'];
-            const rows = completedOrders.map((order, index) => [
-                index + 1, 
+            const rows = filteredData.map((order, index) => [
+                index + 1,
                 new Date(order.order_date).toLocaleDateString('en-CA'),
                 order.order_id,
                 order.order_status,
             ]);
 
+            doc.text('Transaction Report', 14, 15);
             doc.autoTable({
                 head: [columns],
                 body: rows,
-                startY: 20, 
+                startY: 30,
                 theme: 'striped',
-                columnStyles: { id: { cellWidth: 'auto' } },
             });
             doc.save('Transactionreports.pdf');
         }
@@ -250,27 +276,51 @@ const Reports = () => {
                 return (
                     <div className="transaction-container">
                         <h3>Transaction History</h3>
-                        {loading ? (
-                            <p>Loading...</p>
-                        ) : error ? (
-                            <p>{error}</p>
-                        ) : (
-                            <DataGrid
-                                rows={completedOrders.map((order) => ({
-                                    ...order,
-                                    id: order.order_id,
-                                    order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
-                                }))}
-                                columns={[
-                                    { field: 'order_date', headerName: 'Date', width: 150 },
-                                    { field: 'order_id', headerName: 'Order No.', width: 100 },
-                                    { field: 'order_status', headerName: 'Status', width: 150 },
-                                ]}
-                                getRowId={(row) => row.order_id}
-                                pageSize={10}
-                                rowsPerPageOptions={[10, 20, 50]}
-                                autoHeight
-                                disableSelectionOnClick
+                    <div className="date-filter">
+                        <label htmlFor="start-date">From:</label>
+                        <input
+                            type="date"
+                            id="start-date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
+                        <label htmlFor="end-date">To:</label>
+                        <input
+                            type="date"
+                            id="end-date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : error ? (
+                        <p>{error}</p>
+                    ) : (
+                        <DataGrid
+                        className="grid_container"
+                            rows={filterDataByDateRange(completedOrders).map((order) => ({
+                                ...order,
+                                id: order.order_id,
+                                order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
+                            }))}
+                            columns={[
+                                { field: 'order_date', headerName: 'Date', width: 150 },
+                                { field: 'order_id', headerName: 'Order No.', width: 100 },
+                                { field: 'order_status', headerName: 'Status', width: 150 },
+                            ]}
+                            
+                            getRowId={(row) => row.order_id}
+                            pageSize={10}
+                            rowsPerPageOptions={[10, 20, 50]}
+                            autoHeight={false}
+
+                            style={{
+                                maxHeight: 700, 
+                              }}
+                            disableSelectionOnClick
+                            
+                                
                             />
                         )}
                     </div>
