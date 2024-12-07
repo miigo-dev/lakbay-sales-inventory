@@ -28,6 +28,9 @@ const Orders = () => {
   const [stuActive, setSTUActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [todaysOrdersCount, setTodaysOrdersCount] = useState(0); 
+  const [totalPendingOrders, setTotalPendingOrders] = useState(0);
+  const [totalCompletedOrders, setTotalCompletedOrders] = useState(0);
 
   const categoryMap = {
     1: 'meals',
@@ -39,6 +42,61 @@ const Orders = () => {
     7: 'frappes',
     8: 'affogato Series'
   };
+
+  useEffect(() => {
+    const fetchTodaysOrders = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        const response = await axios.get('http://localhost:8080/api/transaction');
+        const todayOrders = response.data.filter((order) =>
+          new Date(order.order_date).toISOString().split('T')[0] === today
+        );
+        setTodaysOrdersCount(todayOrders.length); // Set the count of today's orders
+      } catch (err) {
+        console.error('Error fetching today\'s orders:', err);
+      }
+    };
+
+    fetchTodaysOrders();
+  }, []);
+
+  useEffect(() => {
+    const fetchPendingOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/orders');
+        const pendingOrders = response.data.filter(order => order.order_status === 'Pending');
+  
+        setCompletedOrders(
+          response.data.map(order => ({
+            orderNumber: order.order_id,
+            amount: parseFloat(order.total_amount).toFixed(2),
+            status: order.order_status,
+          }))
+        );
+  
+        // Update the total pending orders count
+        setTotalPendingOrders(pendingOrders.length);
+      } catch (error) {
+        console.error('Error fetching pending orders:', error);
+      }
+    };
+  
+    fetchPendingOrders();
+  }, []);
+  
+  useEffect(() => {
+    const fetchCompletedOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/transaction');
+        const completedOrders = response.data.filter(order => order.order_status === 'Completed');
+        setTotalCompletedOrders(completedOrders.length); // Set the total count of completed orders
+      } catch (err) {
+        console.error('Error fetching completed orders:', err);
+      }
+    };
+  
+    fetchCompletedOrders();
+  }, []);  
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -173,10 +231,10 @@ const Orders = () => {
           status: 'Pending',
         };
   
+        // Update completedOrders and totalPendingOrders in real-time
         setCompletedOrders(prev => [...prev, newOrderObject]);
-        setOrderHistory(prev => [...prev, newOrderObject]);
+        setTotalPendingOrders(prev => prev + 1);
   
-        // Update recentOrder with the backend order ID
         setRecentOrder({
           orderNumber: backendOrderId, // Use backend ID here
           amount: totalOrderAmount,
@@ -199,6 +257,7 @@ const Orders = () => {
       setChange(0);
     }
   };
+  
 
   const fetchUpdatedStock = async () => {
     try {
@@ -221,23 +280,36 @@ const Orders = () => {
   
   const completeOrder = async (index) => {
     const completedOrder = completedOrders[index];
+  
     try {
-        await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
-        setCompletedOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
-        setOrderHistory((prevHistory) =>
-            prevHistory.map((order) =>
-                order.orderNumber === completedOrder.orderNumber
-                    ? { ...order, status: 'Completed' }
-                    : order
-            )
-        );
-        await fetchUpdatedStock(); // Re-fetch stock quantities after completing the order
+      // Update order status on the backend
+      await axios.put(`http://localhost:8080/api/orders/${completedOrder.orderNumber}/complete`, { order_status: 'Completed' });
+  
+      // Remove from pending orders
+      setCompletedOrders(prevOrders => prevOrders.filter((_, i) => i !== index));
+      setTotalPendingOrders(prev => prev - 1);
+  
+      // Increment the count of completed orders
+      setTotalCompletedOrders(prevCount => prevCount + 1);
+  
+      // Update today's order count
+      setTodaysOrdersCount(prevCount => prevCount + 1);
+  
+      // Add to order history with status updated
+      setOrderHistory(prevHistory =>
+        [...prevHistory, { ...completedOrder, status: 'Completed' }]
+      );
+  
+      // Optionally refresh stock
+      await fetchUpdatedStock();
+  
     } catch (error) {
-        console.error('Error completing order:', error);
-        alert('Failed to complete order');
+      console.error('Error completing order:', error);
+      alert('Failed to complete order');
     }
   };
-
+  
+  
   const calculateTotalPrice = () => {
     const total = orders.reduce((total, order) => total + order.price * order.quantity, 0);
     return total - (total * discount / 100); 
@@ -581,6 +653,7 @@ const Orders = () => {
                 ]}
                 autoHeight
               />
+
             </div>
           )}
         </div>

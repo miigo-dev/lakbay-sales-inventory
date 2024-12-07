@@ -23,6 +23,7 @@ ChartJS.register(
 const Dashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [protectedData, setProtectedData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [selectedTimeFrameKain, setSelectedTimeFrameKain] = useState('today'); 
@@ -36,6 +37,9 @@ const Dashboard = () => {
   const [timeRange, setTimeRange] = useState('weekly');
   const [selectedCategory, setSelectedCategory] = useState('kain');
   const [barChartData, setBarChartData] = useState({});
+  const [todaysOrdersCount, setTodaysOrdersCount] = useState(0);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+  const [completedOrdersCount, setCompletedOrdersCount] = useState(0);
   const [pieChartData, setPieChartData] = useState({
     labels: ['Kain', 'Kape'],
     datasets: [{ data: [300, 150], backgroundColor: ['#C2A790', '#7B6B5D'], borderWidth: 1 }]
@@ -54,7 +58,36 @@ const Dashboard = () => {
     useEffect(() => {
     }, [selectedCategory]);
 
-
+    useEffect(() => {
+      const fetchOrderData = async () => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+          const transactionResponse = await axios.get('http://localhost:8080/api/transaction');
+          const ordersResponse = await axios.get('http://localhost:8080/api/orders');
+  
+          // Filter today's orders
+          const todayOrders = transactionResponse.data.filter(
+            (order) => new Date(order.order_date).toISOString().split('T')[0] === today
+          );
+  
+          // Filter pending and completed orders
+          const pendingOrders = ordersResponse.data.filter((order) => order.order_status === 'Pending');
+          const completedOrders = transactionResponse.data.filter((order) => order.order_status === 'Completed');
+  
+          setTodaysOrdersCount(todayOrders.length);
+          setPendingOrdersCount(pendingOrders.length);
+          setCompletedOrdersCount(completedOrders.length);
+          setLoading(false);
+        } catch (err) {
+          console.error("Error fetching order data:", err);
+          setError("Failed to load order data.");
+          setLoading(false);
+        }
+      };
+  
+      fetchOrderData();
+    }, []);
+  
   const [pieChartText, setPieChartText] = useState('');
 
   const salesData = {
@@ -302,6 +335,8 @@ const Dashboard = () => {
     fetchTodayOrders();
   }, [selectedCategory]); 
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
   return loading ? (
 <div>lodidbnas</div>
    ) : (
@@ -327,9 +362,9 @@ const Dashboard = () => {
       <h3>Today's Order Counts:</h3>
       <div>
         <h1></h1>
-        <p>Total Orders: {selectedCategory === 'kain' ? allOrdersCountKain : allOrdersCountKape}</p>
-        <p>Pending Orders: {selectedCategory === 'kain' ? pendingOrdersCountKain : pendingOrdersCountKape}</p>
-        <p>Completed Orders: {selectedCategory === 'kain' ? completedOrdersCountKain : completedOrdersCountKape}</p>
+        <p>Today's Orders: {todaysOrdersCount}</p>
+        <p>Pending Orders: {pendingOrdersCount}</p>
+        <p>Completed Orders: {completedOrdersCount}</p>
       </div>
     </div>
 
