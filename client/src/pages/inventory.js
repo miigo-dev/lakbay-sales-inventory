@@ -343,25 +343,35 @@ const Inventory = () => {
     };    
     
     const handleArchive = (item) => {
-        const confirmArchive = window.confirm(`Are you sure you want to archive "${item.name}"?`);
-
+        const itemName =
+            selectedInventoryType === 'products'
+                ? item.product_name
+                : item.ingredient_name;
+    
+        const confirmArchive = window.confirm(`Are you sure you want to archive "${itemName}"?`);
+    
         if (confirmArchive) {
             setArchivedItems((prevArchived) => [...prevArchived, item]);
             setInventoryData((prevData) => prevData.filter((dataItem) => dataItem.id !== item.id));
-            alert(`${item.name} has been archived.`);
+            alert(`${itemName} has been archived.`);
         }
     };
-
+    
     const handleUnarchive = (item) => {
-        const confirmUnarchive = window.confirm(`Are you sure you want to unarchive "${item.name}"?`);
-
+        const itemName =
+            selectedInventoryType === 'products'
+                ? item.product_name
+                : item.ingredient_name;
+    
+        const confirmUnarchive = window.confirm(`Are you sure you want to unarchive "${itemName}"?`);
+    
         if (confirmUnarchive) {
             setInventoryData((prevData) => [...prevData, item]);
             setArchivedItems((prevArchived) => prevArchived.filter((archivedItem) => archivedItem.id !== item.id));
-            alert(`${item.name} has been unarchived.`);
+            alert(`${itemName} has been unarchived.`);
         }
     };
-
+    
     const openQuantityModal = (type) => {
         setAdjustmentType(type);
         setQuantityModalOpen(true);
