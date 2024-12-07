@@ -628,7 +628,11 @@ const Inventory = () => {
                         rowsPerPageOptions={[10, 20, 50]}
                         components={{
                             NoRowsOverlay: () => <div>No data available</div>,
+                        
                         }}
+                        style={{
+                            maxHeight: 700, 
+                          }}
                     />
                 </div>
             </div>

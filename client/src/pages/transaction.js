@@ -6,6 +6,8 @@ import Export from '../assets/icons/export.svg';
 
 const Transaction = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [completedOrders, setCompletedOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,7 +59,12 @@ const Transaction = () => {
     id: order.order_id,
     order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
   }))
-  .filter((order) => order.order_date === formattedSelectedDate);
+  .filter((order) => {
+    const orderDate = new Date(order.order_date);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return orderDate >= start && orderDate <= end;
+  });
 
   if (loading) return <div>Loading...</div>;
 
@@ -69,12 +76,20 @@ const Transaction = () => {
         <div className="header">
         <h3>Transaction History</h3>
           <div className="date-filter">
-            <label htmlFor="date-picker">Date:</label>
+           
+              <label htmlFor="start-date">From:</label>
             <input
               type="date"
-              id="date-picker"
-              value={selectedDate}
-              onChange={handleDateChange}
+              id="start-date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <label htmlFor="end-date">To:</label>
+            <input
+              type="date"
+              id="end-date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
         </div>
@@ -100,7 +115,7 @@ const Transaction = () => {
             },
           ]}
           getRowId={(row) => row.order_id}
-          autoHeight={false} 
+           autoHeight={false}
           style={{
             maxHeight: 700, 
           }}

@@ -86,11 +86,13 @@
     margin-top: 20px;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
 }
 
 .inventory_table table {
     width: 100%;
     border-collapse: collapse;
+    
 }
 
 .inventory_table th,
@@ -99,6 +101,7 @@
     text-align: left;
     border-bottom: 1px solid #ddd;
     font-size: 14px;
+    
 }
 
 .inventory_table th {
@@ -329,10 +332,10 @@
 }
 
 .table_container {
-    flex: 1; /* Allow it to expand within the modal */
-    overflow-y: auto; /* Enable vertical scrolling for the table */
-    max-height: 300px; /* Set the max height for the scrollable area */
-    margin-top: 20px; /* Add spacing */
+    flex: 1; 
+    overflow-y: auto;
+    max-height: 300px; 
+    margin-top: 20px;
 }
 
 table {
