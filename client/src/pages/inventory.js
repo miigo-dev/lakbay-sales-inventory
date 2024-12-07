@@ -27,8 +27,18 @@ const Inventory = () => {
     const [showArchived, setShowArchived] = useState(false);
     const [archivedItems, setArchivedItems] = useState([]);
     const [categories, setCategories] = useState([]);
-    
+    const [ingredientTypes, setIngredientTypes] = useState([]);
 
+    const fetchIngredientTypes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/ingredient-types');
+            const data = await response.json();
+            setIngredientTypes(data);
+        } catch (error) {
+            console.error('Error fetching ingredient types:', error);
+        }
+    };
+    
     const getWarehouseId = () => (selectedSection === 'lakbayKape' ? 2 : 1);
 
     const fetchCategories = async () => {
@@ -68,7 +78,7 @@ const Inventory = () => {
             setInventoryData(
                 data.map((item) => ({
                     ...item,
-                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id, // Explicit id assignment
+                    id: selectedInventoryType === 'products' ? item.product_id : item.ingredient_id,
                 }))
             );
         } catch (error) {
@@ -85,7 +95,6 @@ const Inventory = () => {
     
             const data = await response.json();
     
-            // Map the data to only include necessary fields
             const mappedData = data.map((movement) => ({
                 supplier_id: movement.supplier_id,
                 movement_quantity: movement.movement_quantity,
@@ -107,7 +116,6 @@ const Inventory = () => {
         fetchSuppliers();
     }, [selectedSection, selectedInventoryType]);
 
-    // Filter data based on the search term
     const filteredInventory = inventoryData.filter((item) =>
         selectedInventoryType === 'products'
             ? (item.product_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
@@ -153,7 +161,6 @@ const Inventory = () => {
                 { field: 'ingredient_quantity', headerName: 'Quantity', width: 120 },
                 { field: 'ingredient_unit', headerName: 'Unit', width: 120 },
                 { field: 'ingredient_price', headerName: 'Price', width: 120 },
-                { field: 'supplier_id', headerName: 'Supplier ID', width: 170 },
                 { field: 'reorder_level', headerName: 'Reorder Level', width: 150 },
                 {
                     field: 'action',
@@ -194,6 +201,10 @@ const Inventory = () => {
     });
 
     const openModal = (product = null) => {
+        if (selectedInventoryType === 'ingredients') {
+            fetchIngredientTypes();
+        }
+    
         if (product) {
             setCurrentProduct({
                 ...product,
@@ -209,16 +220,19 @@ const Inventory = () => {
                 price: '',
                 supplierId: '',
                 reorderLevel: 0,
+                ingredient_type_id: '', 
                 productStatus: 'in',
                 section: selectedSection,
                 type: selectedInventoryType,
+                warehouse_id: getWarehouseId(),
             });
             setIsEditing(false);
         }
+    
         setModalOpen(true);
         setQuantityAdjustment(0);
         setRemarks('');
-    };
+    };    
 
     const closeModal = () => {
         setModalOpen(false);
@@ -238,63 +252,126 @@ const Inventory = () => {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        console.log('Current Product before submitting:', currentProduct);
+        
         if (currentProduct.quantity < 0 || currentProduct.reorderLevel < 0) {
             alert('Quantity and Reorder Level must be positive values.');
             return;
         }
-
-        const nameKey = selectedInventoryType === 'products' ? 'product_name' : 'ingredient_name';
+    
+        const warehouseId = getWarehouseId();
+        if (!warehouseId) {
+            alert('Please ensure a valid warehouse is selected.');
+            return;
+        }
+    
+        if (selectedInventoryType === 'products' && !currentProduct.category_id) {
+            alert('Please ensure a category is selected for the product.');
+            return;
+        }
+    
+        if (selectedInventoryType === 'ingredients' && !currentProduct.ingredient_type_id) {
+            alert('Please ensure an ingredient type is selected.');
+            return;
+        }
+    
         const newProduct = {
             ...currentProduct,
             section: selectedSection,
             type: selectedInventoryType,
             id: isEditing ? currentProduct.id : inventoryData.length + 1,
-            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment),
+            quantity: parseInt(currentProduct.quantity) + parseInt(quantityAdjustment), 
         };
-
-        if (isEditing) {
-            setInventoryData((prevData) =>
-                prevData.map((item) => (item.id === currentProduct.id ? newProduct : item))
-            );
-        } else {
-            setInventoryData((prevData) => [...prevData, newProduct]);
+    
+        console.log('Payload to be sent:', {
+            ...newProduct,
+            warehouse_id: warehouseId,
+        });
+    
+        const payload = selectedInventoryType === 'products'
+            ? {
+                product_name: newProduct.product_name,
+                product_price: newProduct.product_price,
+                category_id: newProduct.category_id,
+                product_quantity: newProduct.product_quantity,
+                reorder_level: newProduct.reorder_level,
+                warehouse_id: warehouseId,
+            }
+            : {
+                ingredient_name: newProduct.ingredient_name,
+                ingredient_quantity: newProduct.ingredient_quantity,
+                ingredient_price: newProduct.ingredient_price,
+                ingredient_unit: newProduct.ingredient_unit,
+                reorder_level: newProduct.reorder_level,
+                ingredient_type_id: currentProduct.ingredient_type_id, 
+                warehouse_id: warehouseId,
+            };
+    
+        const endpoint =
+            selectedInventoryType === 'products'
+                ? `http://localhost:8080/api/products`
+                : `http://localhost:8080/api/ingredients`;
+    
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error adding ${selectedInventoryType}: ${response.statusText}`);
+            }
+    
+            const addedItem = await response.json();
+            console.log(`${selectedInventoryType} added successfully:`, addedItem);
+    
+            setInventoryData((prevData) => [
+                ...prevData,
+                { ...addedItem, id: addedItem.product_id || addedItem.ingredient_id },
+            ]);
+    
+            closeModal();
+            alert(`${selectedInventoryType === 'products' ? 'Product' : 'Ingredient'} added successfully!`);
+        } catch (error) {
+            console.error(`Error adding ${selectedInventoryType}:`, error);
+            alert(`Failed to add ${selectedInventoryType}. Please try again.`);
         }
-
-        const transactionEntry = {
-            [nameKey]: newProduct[nameKey],
-            quantity: quantityAdjustment,
-            price: newProduct.price,
-            status: currentProduct.productStatus,
-            productId: newProduct.productId || newProduct.ingredientId,
-            remarks,
-        };
-
-        setSelectedProduct((prevTransactions) => [...prevTransactions, transactionEntry]);
-
-        closeModal();
-    };
-
+    };    
+    
     const handleArchive = (item) => {
-        const confirmArchive = window.confirm(`Are you sure you want to archive "${item.name}"?`);
-
+        const itemName =
+            selectedInventoryType === 'products'
+                ? item.product_name
+                : item.ingredient_name;
+    
+        const confirmArchive = window.confirm(`Are you sure you want to archive "${itemName}"?`);
+    
         if (confirmArchive) {
             setArchivedItems((prevArchived) => [...prevArchived, item]);
             setInventoryData((prevData) => prevData.filter((dataItem) => dataItem.id !== item.id));
-            alert(`${item.name} has been archived.`);
+            alert(`${itemName} has been archived.`);
         }
     };
-
+    
     const handleUnarchive = (item) => {
-        const confirmUnarchive = window.confirm(`Are you sure you want to unarchive "${item.name}"?`);
-
+        const itemName =
+            selectedInventoryType === 'products'
+                ? item.product_name
+                : item.ingredient_name;
+    
+        const confirmUnarchive = window.confirm(`Are you sure you want to unarchive "${itemName}"?`);
+    
         if (confirmUnarchive) {
             setInventoryData((prevData) => [...prevData, item]);
             setArchivedItems((prevArchived) => prevArchived.filter((archivedItem) => archivedItem.id !== item.id));
-            alert(`${item.name} has been unarchived.`);
+            alert(`${itemName} has been unarchived.`);
         }
     };
-
+    
     const openQuantityModal = (type) => {
         setAdjustmentType(type);
         setQuantityModalOpen(true);
@@ -424,7 +501,6 @@ const Inventory = () => {
             return;
         }
     
-        // Pre-fill the modal with product or ingredient details
         if (selectedInventoryType === 'products') {
             setEditedProductName(currentProduct.product_name);
             setEditedProductPrice(currentProduct.product_price);
@@ -433,7 +509,7 @@ const Inventory = () => {
             setEditedProductPrice(currentProduct.ingredient_price);
         }
     
-        setEditModalOpen(true); // Open the modal
+        setEditModalOpen(true); 
     };       
     
     const saveEditChanges = async () => {
@@ -442,7 +518,6 @@ const Inventory = () => {
             return;
         }
     
-        // Determine the payload and endpoint based on selectedInventoryType
         const payload =
             selectedInventoryType === 'products'
                 ? {
@@ -474,7 +549,6 @@ const Inventory = () => {
     
             const updatedItem = await response.json();
     
-            // Update the state with the new product/ingredient details
             setInventoryData((prevData) =>
                 prevData.map((item) =>
                     item.id === currentProduct.id ? {
@@ -554,7 +628,11 @@ const Inventory = () => {
                         rowsPerPageOptions={[10, 20, 50]}
                         components={{
                             NoRowsOverlay: () => <div>No data available</div>,
+                        
                         }}
+                        style={{
+                            maxHeight: 700, 
+                          }}
                     />
                 </div>
             </div>
@@ -568,16 +646,17 @@ const Inventory = () => {
                             <>
                                 <label htmlFor="product_category">Product Category</label>
                                 <select
-                                    name="product_category"
+                                    name="category_id"
                                     value={currentProduct.category_id}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>
-                                        Select Type
-                                    </option>
+                                    <option value="">Select Category</option>
+                                    {categories.map((category) => (
+                                        <option key={category.category_id} value={category.category_id}>
+                                            {category.category_name}
+                                        </option>
+                                    ))}
                                 </select>
-
-                                
 
                                 <label htmlFor="productName">Product Name</label>
                                 <input
@@ -619,13 +698,16 @@ const Inventory = () => {
                             <>
                                 <label htmlFor="ingredient_type">Ingredient Type</label>
                                 <select
-                                    name="ingredient_typpe"
-                                    value={currentProduct.ingredient_id}
+                                    name="ingredient_type_id"
+                                    value={currentProduct.ingredient_type_id}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>
-                                        Select Type
-                                    </option>
+                                    <option value="">Select Ingredient Type</option>
+                                    {ingredientTypes.map((type) => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.type_name}
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <label htmlFor="ingredientName">Ingredient Name</label>
@@ -652,7 +734,7 @@ const Inventory = () => {
                                     value={currentProduct.ingredient_unit}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" disabled>
+                                    <option value="">
                                         Select Unit of Measure
                                     </option>
                                     <option value="kg">Kilograms (kg)</option>
@@ -730,7 +812,6 @@ const Inventory = () => {
                             </thead>
                             <tbody>
                                 {filteredView.map((movement, index) => {
-                                    // Find the supplier name using the supplier_id
                                     const supplier = suppliers.find(
                                         (sup) => sup.supplier_id === movement.supplier_id
                                     );
@@ -826,7 +907,6 @@ const Inventory = () => {
                         value={editedProductPrice}
                         onChange={(e) => {
                             const value = e.target.value;
-                            // Allow empty string or convert to number
                             setEditedProductPrice(value === '' ? '' : Number(value));
                         }}
                     />
