@@ -3,9 +3,13 @@ import '../css/header.css';
 import { useNavigate } from 'react-router-dom';
 import notification from '../assets/icons/notif.svg';
 import user from '../assets/icons/user.svg';
+import { unauthenticateUser } from '../redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
+import { onLogout } from '../api/auth';
 
 
 const Header = () => {
+  const dispatch = useDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
   const navigate = useNavigate();
@@ -26,6 +30,15 @@ const Header = () => {
   const handleDropdownClick = (path) => {
     navigate(path);
     setIsDropdownOpen(false); // Close the dropdown after navigation
+  };
+
+  const logout = async () => {
+    try {
+      await onLogout();
+      dispatch(unauthenticateUser());
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (
@@ -56,7 +69,7 @@ const Header = () => {
             >
               About
             </button>
-            <button className="dropdown-item">Logout</button>
+            <button className="dropdown-item" onClick={logout}>Logout</button>
           </div>
         </div>
       </div>

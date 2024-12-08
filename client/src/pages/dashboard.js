@@ -261,14 +261,6 @@ const Dashboard = () => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await onLogout();
-      dispatch(unauthenticateUser());
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -428,8 +420,6 @@ const Dashboard = () => {
   </div>  
   </div>
   </div>
-
-<button onClick={logout} className="btn btn-primary">Logout</button>
 </div>
 
   );
