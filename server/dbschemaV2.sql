@@ -100,11 +100,13 @@ CREATE TABLE sales (
     sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE discounts (
-    discount_id SERIAL PRIMARY KEY,
-    discount_name VARCHAR(100) NOT NULL,
-    discount_value DECIMAL(10, 2) NOT NULL,
-    discount_type VARCHAR(50) CHECK (discount_type IN ('Percentage', 'Fixed'))
+CREATE TABLE notifications (
+    notification_id SERIAL PRIMARY KEY,
+    notification_type VARCHAR(50) NOT NULL,
+    entity_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- date-fns readable format --
