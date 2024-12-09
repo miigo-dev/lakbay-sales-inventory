@@ -24,6 +24,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const supplierRoutes = require('./routes/supplierRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const salesRoutes = require('./routes/salesRoutes');
+const alertRoutes = require('./routes/alertRoutes');
 
 // initialize route
 app.use('/api', authRoutes, 
@@ -34,7 +35,8 @@ app.use('/api', authRoutes,
     orderRoutes, 
     supplierRoutes, 
     transactionRoutes, 
-    salesRoutes
+    salesRoutes,
+    alertRoutes
 );
 
 const appStart = () => {
