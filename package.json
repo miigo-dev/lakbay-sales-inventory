@@ -4,5 +4,9 @@
     "react-router-dom": "^6.26.2",
     "recharts": "^2.13.3",
     "redux": "^5.0.1"
+  },
+  "scripts": {
+  "build": "cd client && npm install && npm run build && cd ../server && npm install",
+  "start": "cd server && npm start"
   }
 }
