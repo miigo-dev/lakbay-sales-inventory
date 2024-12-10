@@ -47,3 +47,35 @@ exports.getOrderDetailsById = async (orderId) => {
     };
 };
 
+exports.getCompletedOrdersWithItems = async () => {
+    const { rows } = await db.query(`
+        SELECT 
+            o.order_id, 
+            o.order_status, 
+            TO_CHAR(o.order_date, 'YYYY-MM-DD') AS order_date,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'product_id', oi.product_id,
+                        'product_name', p.product_name,
+                        'quantity', oi.quantity,
+                        'order_total', oi.order_total
+                    )
+                ) FILTER (WHERE oi.order_id IS NOT NULL), 
+                '[]'
+            ) AS order_items
+        FROM orders o
+        LEFT JOIN order_items oi ON o.order_id = oi.order_id
+        LEFT JOIN products p ON oi.product_id = p.product_id
+        WHERE o.order_status = 'Completed'
+        GROUP BY o.order_id
+        ORDER BY o.order_date DESC;
+    `);
+
+    return rows.map(row => ({
+        order_id: row.order_id,
+        order_status: row.order_status,
+        order_date: row.order_date,
+        order_items: row.order_items || [], // Ensure empty array
+    }));
+};

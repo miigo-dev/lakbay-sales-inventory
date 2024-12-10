@@ -53,14 +53,27 @@ const Reports = () => {
         try {
             setLoading(true);
             const response = await axios.get('http://localhost:8080/api/transaction');
-            const sortedOrders = response.data.sort((a, b) => b.order_id - a.order_id);
-            setCompletedOrders(sortedOrders);
+            console.log('API Response:', response.data); // Debug log
+    
+            const formattedOrders = response.data.map(order => ({
+                ...order,
+                id: order.order_id, // Required for DataGrid
+                order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
+                order_items: order.order_items.map(item => ({
+                    ...item,
+                    id: item.product_id, // Required for DataGrid
+                    order_total: `₱${item.order_total}`,
+                })),
+            }));
+    
+            setCompletedOrders(formattedOrders);
             setLoading(false);
         } catch (err) {
+            console.error('Failed to load transaction data:', err);
             setError('Failed to load transaction data');
             setLoading(false);
         }
-    };
+    };  
 
     const fetchInventoryData = async () => {
         try {
@@ -119,7 +132,9 @@ const Reports = () => {
         const start = new Date(startDate);
         const end = new Date(endDate);
         return data.filter((item) => {
-            const itemDate = new Date(item.order_date); 
+            // Ensure `item.order_date` is valid and properly formatted
+            const itemDate = new Date(item.order_date);
+            if (isNaN(itemDate)) return false; // Skip invalid dates
             return itemDate >= start && itemDate <= end;
         });
     };
@@ -135,103 +150,121 @@ const Reports = () => {
     }, [activeTab, selectedSection, selectedType, timeFrame, warehouseId]);
 
     const exportToExcel = () => {
-        let exportData; 
-    
-        switch (activeTab) {
-            case 'Transaction': {
-                const filteredData = filterDataByDateRange(completedOrders);
-                exportData = filteredData.map((order) => ({
-                    'Order No.': order.order_id,
-                    'Date': new Date(order.order_date).toLocaleDateString('en-CA'),
-                    'Status': order.order_status,
-                }));
-                const ws = utils.json_to_sheet(exportData);
-                const wb = utils.book_new();
-                utils.book_append_sheet(wb, ws, 'Transaction Report');
-                writeFileXLSX(wb, 'Transactionreports.xlsx');
-                break;
+        try {
+            let exportData; 
+            switch (activeTab) {
+                case 'Transaction': {
+                    const filteredData = filterDataByDateRange(completedOrders);
+                    if (!filteredData.length) throw new Error('No data available for export.');
+                
+                    exportData = filteredData.flatMap((order) =>
+                        order.order_items.map((item) => ({
+                            'Order No.': order.order_id || 'N/A',
+                            'Date': new Date(order.order_date).toLocaleDateString('en-CA'),
+                            'Status': order.order_status || 'N/A',
+                            'Product Name': item.product_name || 'N/A',
+                            'Quantity': item.quantity || 0,
+                            'Total': `₱${item.order_total || 0}`,
+                        }))
+                    );
+                    break;
+                }
+                
+                case 'Inventory': {
+                    exportData = inventoryData.map((item) => ({
+                        'ID': item.product_id || 'N/A',
+                        'Name': item.product_name || 'N/A',
+                        'Quantity': item.product_quantity || 0,
+                        'Price': item.product_price || 0,
+                        'Reorder Trigger': item.reorder_level || 0,
+                    }));
+                    break;
+                }
+                case 'Supplier': {
+                    exportData = supplierData.map((supplier) => ({
+                        'ID': supplier.supplier_id || 'N/A',
+                        'Supplier Name': supplier.supplier_name || 'N/A',
+                        'Email': supplier.email || 'N/A',
+                        'Phone Number': supplier.phone_number || 'N/A',
+                        'Address': supplier.address || 'N/A',
+                    }));
+                    break;
+                }
+                case 'Sales': {
+                    exportData = salesData.labels.map((label, index) => ({
+                        'Label': label || 'N/A',
+                        'Amount': salesData.data[index] || 0,
+                    }));
+                    break;
+                }
+                case 'Orders': {
+                    exportData = staticOrders.map((order) => ({
+                        'Order ID': order.order_id || 'N/A',
+                        'Items': order.order_items.join(', ') || 'N/A',
+                        'Order Date': order.order_date || 'N/A',
+                        'Status': order.status || 'N/A',
+                    }));
+                    break;
+                }
+                default:
+                    throw new Error('Invalid active tab for export.');
             }
-            case 'Inventory': {
-                exportData = inventoryData.map((item) => ({
-                    'ID': item.product_id,
-                    'Name': item.product_name,
-                    'Quantity': item.product_quantity,
-                    'Price': item.product_price,
-                    'Reorder Trigger': item.reorder_level,
-                }));
-                const ws = utils.json_to_sheet(exportData);
-                const wb = utils.book_new();
-                utils.book_append_sheet(wb, ws, 'Inventory Report');
-                writeFileXLSX(wb, 'Inventoryreports.xlsx');
-                break;
-            }
-            case 'Supplier': {
-                exportData = supplierData.map((supplier) => ({
-                    'ID': supplier.supplier_id,
-                    'Supplier Name': supplier.supplier_name,
-                    'Email': supplier.email,
-                    'Phone Number': supplier.phone_number,
-                    'Address': supplier.address,
-                }));
-                const ws = utils.json_to_sheet(exportData);
-                const wb = utils.book_new();
-                utils.book_append_sheet(wb, ws, 'Supplier Report');
-                writeFileXLSX(wb, 'Supplierreports.xlsx');
-                break;
-            }
-            case 'Sales': {
-                exportData = salesData.labels.map((label, index) => ({
-                    'Label': label,
-                    'Amount': salesData.data[index],
-                }));
-                const ws = utils.json_to_sheet(exportData);
-                const wb = utils.book_new();
-                utils.book_append_sheet(wb, ws, 'Sales Report');
-                writeFileXLSX(wb, 'Salesreports.xlsx');
-                break;
-            }
-            case 'Orders': {
-                exportData = staticOrders.map((order) => ({
-                    'Order ID': order.order_id,
-                    'Item': order.order_items.join(', '), 
-                    'Order Date': order.order_date,
-                    'Status': order.status,
-                    
-                }));
-    
-                const ws = utils.json_to_sheet(exportData);
-                const wb = utils.book_new();
-                utils.book_append_sheet(wb, ws, 'Orders Report');
-                writeFileXLSX(wb, 'Ordersreports.xlsx');
-                break;
-            }
-            
-            default:
-                console.warn('No valid active tab selected for export.');
+            const ws = utils.json_to_sheet(exportData);
+            const wb = utils.book_new();
+            utils.book_append_sheet(wb, ws, `${activeTab} Report`);
+            writeFileXLSX(wb, `${activeTab}Report.xlsx`);
+        } catch (error) {
+            alert(error.message);
         }
     };
 
     const generatePDF = () => {
         const doc = new jsPDF();
-        if (activeTab === 'Transaction') {
-            const filteredData = filterDataByDateRange(completedOrders);
-            const columns = ['ID', 'Date', 'Order No.', 'Status'];
-            const rows = filteredData.map((order, index) => [
-                index + 1,
-                new Date(order.order_date).toLocaleDateString('en-CA'),
-                order.order_id,
-                order.order_status,
-            ]);
 
-            doc.text('Transaction Report', 14, 15);
-            doc.autoTable({
-                head: [columns],
-                body: rows,
-                startY: 30,
-                theme: 'striped',
-            });
-            doc.save('Transactionreports.pdf');
+    if (activeTab === 'Transaction') {
+        const filteredData = filterDataByDateRange(completedOrders);
+
+        if (!filteredData.length) {
+            alert('No data available for the selected date range.');
+            return;
         }
+
+        // Define columns for the PDF
+        const columns = ['ID', 'Date', 'Order No.', 'Status', 'Items', 'Total'];
+
+        // Map data rows for the table
+        const rows = filteredData.map((order, index) => [
+            index + 1, // Sequential ID
+            new Date(order.order_date).toLocaleDateString('en-CA'), // Format order date
+            order.order_id || 'N/A', // Order ID
+            order.order_status || 'N/A', // Order status
+            order.order_items
+                .map((item) => item.product_name || 'Unnamed Product') // Extract product names
+                .join(', '), // Combine names into a single string
+            `₱${order.order_items.reduce((sum, item) => sum + parseFloat(item.order_total.replace('₱', '') || 0), 0).toFixed(2)}`, // Parse and calculate order total
+        ]);
+
+        // Calculate the grand total
+        const grandTotal = filteredData.reduce(
+            (sum, order) =>
+                sum +
+                order.order_items.reduce((orderSum, item) => orderSum + parseFloat(item.order_total.replace('₱', '') || 0), 0),
+            0
+        );
+
+        // Add title and table to the PDF
+        doc.text('Transaction Report', 14, 15);
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            foot: [['', '', '', '', 'Grand Total:', `₱${grandTotal.toFixed(2)}`]], // Add grand total row
+            startY: 30,
+            theme: 'striped',
+        });
+
+        // Save the PDF with a descriptive name
+        doc.save('TransactionReport.pdf');
+    }
 
         if (activeTab === 'Inventory') {
             const title = `Inventory List: ${selectedSection} - ${selectedType === 'products' ? 'Products' : 'Ingredients'}`;
@@ -355,30 +388,30 @@ const Reports = () => {
                         <p>{error}</p>
                     ) : (
                         <DataGrid
-                        className="grid_container"
-                            rows={filterDataByDateRange(completedOrders).map((order) => ({
-                                ...order,
-                                id: order.order_id,
-                                order_date: new Date(order.order_date).toLocaleDateString('en-CA'),
-                            }))}
+                            rows={completedOrders.flatMap((order) =>
+                                order.order_items.map((item, index) => ({
+                                    id: `${order.order_id}-${index}`, // Unique ID for each item
+                                    order_id: order.order_id,
+                                    order_date: order.order_date,
+                                    order_status: order.order_status,
+                                    product_name: item.product_name,
+                                    quantity: item.quantity,
+                                    order_total: item.order_total,
+                                }))
+                            )}
                             columns={[
                                 { field: 'order_date', headerName: 'Date', width: 150 },
                                 { field: 'order_id', headerName: 'Order No.', width: 100 },
                                 { field: 'order_status', headerName: 'Status', width: 150 },
+                                { field: 'product_name', headerName: 'Product Name', width: 200 },
+                                { field: 'quantity', headerName: 'Quantity', width: 100 },
+                                { field: 'order_total', headerName: 'Total', width: 120 },
                             ]}
-                            
-                            getRowId={(row) => row.order_id}
                             pageSize={10}
                             rowsPerPageOptions={[10, 20, 50]}
-                            autoHeight={false}
-
-                            style={{
-                                maxHeight: 700, 
-                              }}
+                            autoHeight
                             disableSelectionOnClick
-                            
-                                
-                            />
+                        />
                         )}
                     </div>
                 );
