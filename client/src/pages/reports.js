@@ -25,7 +25,26 @@ const Reports = () => {
     const [isLakbayKape, setIsLakbayKape] = useState(false);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-
+    const [staticOrders, setStaticOrders] = useState([
+        {
+            order_date: '2024-12-01',
+            order_id: 101,
+            order_items: ['Burger', 'Fries', 'Coke'],
+            status: 'Completed',
+        },
+        {
+            order_date: '2024-12-02',
+            order_id: 102,
+            order_items: ['Pizza', 'Salad'],
+            status: 'Completed',
+        },
+        {
+            order_date: '2024-12-03',
+            order_id: 103,
+            order_items: ['Pasta', 'Garlic Bread', 'Wine'],
+            status: 'Completed',
+        },
+    ]);
     const warehouseId = isLakbayKape ? 2 : 1;
 
     const toggleView = () => setIsLakbayKape((prev) => !prev);
@@ -171,6 +190,22 @@ const Reports = () => {
                 writeFileXLSX(wb, 'Salesreports.xlsx');
                 break;
             }
+            case 'Orders': {
+                exportData = staticOrders.map((order) => ({
+                    'Order ID': order.order_id,
+                    'Item': order.order_items.join(', '), 
+                    'Order Date': order.order_date,
+                    'Status': order.status,
+                    
+                }));
+    
+                const ws = utils.json_to_sheet(exportData);
+                const wb = utils.book_new();
+                utils.book_append_sheet(wb, ws, 'Orders Report');
+                writeFileXLSX(wb, 'Ordersreports.xlsx');
+                break;
+            }
+            
             default:
                 console.warn('No valid active tab selected for export.');
         }
@@ -266,7 +301,29 @@ const Reports = () => {
             });
             doc.save('Salesreport.pdf');
         }
-
+        if (activeTab === 'Orders') {
+            const title = 'Orders Report';
+            doc.text(title, 14, 15);
+    
+            const columns = ['Order ID', 'Item', 'Order Date', 'Status'];
+            const rows = staticOrders.map((order) => [
+                order.order_id,
+                order.order_items.join(', '),
+                order.order_date,
+                order.status,
+                 
+            ]);
+    
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: 30,
+                theme: 'striped',
+                columnStyles: { id: { cellWidth: 'auto' } },
+            });
+    
+            doc.save('Ordersreports.pdf');
+        }
        
     };
 
@@ -450,8 +507,37 @@ const Reports = () => {
                         />
                     </div>
                 );
-            default:
-                return null;
+                case 'Orders':
+                    return (
+                        <div className="static-orders-container">
+                            <h3>Static Orders</h3>
+                            {loading ? (
+                                <p>Loading...</p>
+                            ) : error ? (
+                                <p>{error}</p>
+                            ) : (
+                                <DataGrid
+                                    rows={staticOrders.map((order, index) => ({
+                                        id: index,
+                                        order_date: order.order_date,
+                                        order_id: order.order_id,
+                                        status: order.status,
+                                    }))}
+                                    columns={[
+                                        { field: 'order_date', headerName: 'Order Date', width: 150 },
+                                        { field: 'order_id', headerName: 'Order ID', width: 100 },
+                                        { field: 'status', headerName: 'Status', width: 150 },
+                                    ]}
+                                    pageSize={5}
+                                    rowsPerPageOptions={[5, 10]}
+                                    autoHeight
+                                    disableSelectionOnClick
+                                />
+                            )}
+                        </div>
+                    );
+                    default:
+                    return null;
         }
     };
 
@@ -468,13 +554,14 @@ const Reports = () => {
                     <option value="Inventory">Inventory</option>
                     <option value="Supplier">Supplier</option>
                     <option value="Sales">Sales</option>
+                    <option value="Orders">Orders (Static)</option>
                 </select>
                 <div className="container_button">
                     <button className="action-btn" onClick={generatePDF}>
                         <img src={Export} alt="Export Icon" style={{ width: '1.5em', height: '1.5em' }} />
                     </button>
                     <button className="action-btn" onClick={exportToExcel}>
-                        <img src={Download} alt="Dwonload Icon" style={{ width: '1.5em', height: '1.5em' }} />
+                        <img src={Download} alt="Download Icon" style={{ width: '1.5em', height: '1.5em' }} />
                     </button>
                 </div>
             </div>
