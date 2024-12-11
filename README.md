@@ -44,6 +44,7 @@ Before you begin, ensure you have met the following requirements:
     DB_DATABASE = db
     DB_PASSWORD = password
     DB_PORT = port
+    SSL_MODE = require
     ```
 
 ## Running the Project
