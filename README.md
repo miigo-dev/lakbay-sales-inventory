@@ -1,4 +1,4 @@
-# React Sales Inventory
+# Web-Based Sales and Inventory System for LAKBAY
 
 This project is a sales inventory management system built with React for the frontend and Node.js with Express for the backend. It uses PostgreSQL as the database.
 
